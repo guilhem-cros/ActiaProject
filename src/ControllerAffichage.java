@@ -161,6 +161,7 @@ public class ControllerAffichage implements Initializable{
                         text.setPrefHeight(100);
                         text.maxWidth(160);
                         text.setPrefWidth(160);
+                        text.setStyle("-fx-border-color: grey;");
                         grid.add(text, countP, count); //ajout / remplissage de la case courante de grid
                     }
                     countP++;
@@ -225,6 +226,7 @@ public class ControllerAffichage implements Initializable{
             txt.setPrefHeight(100);
             txt.maxWidth(160);
             txt.setPrefWidth(160);
+            txt.setStyle("-fx-border-color: grey;");
             BackgroundFill bf = new BackgroundFill(Color.rgb(171, 171, 171), CornerRadii.EMPTY , Insets.EMPTY);
             txt.setBackground(new Background(bf));
             gridp.add(txt, count, 0); //ajout de la case courante remplie à grid

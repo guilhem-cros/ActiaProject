@@ -182,7 +182,7 @@ public class Controller implements Initializable{
             /*Déclaration de la nouvelle fenetre*/
             Stage stage = setNewStage("logs.fxml");
             System.out.println(stage);
-            stage.setTitle("Mots de passes : " + currentElement.getCodeElt() + " " + currentElement.getNom());
+            stage.setTitle("Mots de passe : " + currentElement.getCodeElt() + " " + currentElement.getNom());
             stage.showAndWait();
         }
     }
