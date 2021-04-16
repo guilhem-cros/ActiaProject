@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane fx:id="paneId" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
+   <children>
+      <ComboBox fx:id="productList" layoutX="158.0" layoutY="183.0" onAction="#selectProduct" prefHeight="36.0" prefWidth="243.0" promptText="Sélectionnez un produit" visibleRowCount="3" />
+      <Button fx:id="valideButton" layoutX="490.0" layoutY="600.0" mnemonicParsing="false" onAction="#validate" prefWidth="100.0" text="Valider">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="configButton" layoutX="951.0" layoutY="79.0" mnemonicParsing="false" onAction="#openConfig" prefWidth="100.0" text="Configurer">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <CheckBox fx:id="autoBox" layoutX="158.0" layoutY="477.0" mnemonicParsing="false" onAction="#setAuto" text="Auto" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </CheckBox>
+      <CheckBox fx:id="manuelBox" layoutX="158.0" layoutY="514.0" mnemonicParsing="false" onAction="#setManuel" text="Manuel" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </CheckBox>
+      <ImageView fx:id="actiaLogo" fitHeight="100.0" fitWidth="380.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@media/logoActia.png" />
+         </image>
+      </ImageView>
+      <TextField fx:id="selectedElement" editable="false" layoutX="607.0" layoutY="323.0" prefHeight="36.0" prefWidth="300.0" promptText="Sélectionnez un ensemble" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </TextField>
+      <MenuButton fx:id="elementButton" contentDisplay="CENTER" layoutX="158.0" layoutY="323.0" maxHeight="50.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="243.0" text="Ensemble / Sous-ensemble" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </MenuButton>
+      <Button layoutX="951.0" layoutY="25.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="100.0" text="Aide">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="logsButton" layoutX="486.0" layoutY="653.0" mnemonicParsing="false" onAction="#openLogs" text="Mots de passe">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+   </children>
+</Pane>
