@@ -58,7 +58,7 @@ public class Logs implements Serializable{
 	 * Stocke les éléments dans un fichier .ser
 	 * @param allElements ArrayList de l'ensemble des éléments
 	 */
-    public static void serializeElementLogs(ArrayList<Logs> elementLogs){
+    public void serializeElementLogs(ArrayList<Logs> elementLogs){
         try {
 			FileOutputStream fichier = new FileOutputStream("data/logs.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fichier);
@@ -77,7 +77,7 @@ public class Logs implements Serializable{
 	 * Récupère les ensembles stockés dans le fichier element.ser
 	 * @return arraylist contentant l'ensemble des éléments lu dans le fichier
 	 */
-    public static ArrayList<Logs> unserializeLogs(){
+    public ArrayList<Logs> unserializeLogs(){
         ArrayList<Logs> list = new ArrayList<Logs>();
         try (ObjectInputStream ois = 
 				new ObjectInputStream(

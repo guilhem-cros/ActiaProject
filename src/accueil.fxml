@@ -3,7 +3,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -48,7 +50,7 @@
             <Font size="16.0" />
          </font>
       </MenuButton>
-      <Button layoutX="951.0" layoutY="25.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="100.0" text="Aide">
+      <Button fx:id="helpButton" layoutX="951.0" layoutY="25.0" mnemonicParsing="false" onAction="#displayHelp" prefHeight="36.0" prefWidth="100.0" text="Aide">
          <font>
             <Font size="16.0" />
          </font>
@@ -56,6 +58,56 @@
       <Button fx:id="logsButton" layoutX="486.0" layoutY="653.0" mnemonicParsing="false" onAction="#openLogs" text="Mots de passe">
          <font>
             <Font size="14.0" />
+         </font>
+      </Button>
+      <TextField fx:id="login" layoutX="440.0" layoutY="286.0" prefHeight="36.0" prefWidth="200.0" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </TextField>
+      <Label fx:id="id" layoutX="258.0" layoutY="292.0" text="Identifiant : " visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="mdp" layoutX="258.0" layoutY="357.0" text="Mot de passe : " visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Button fx:id="backButton" layoutX="104.0" layoutY="618.0" mnemonicParsing="false" onAction="#backToMenu" text="Retour" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="confirmButton" layoutX="490.0" layoutY="539.0" mnemonicParsing="false" onAction="#confirmToConfig" prefWidth="100.0" text="Confirmer" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Label fx:id="infoConnect" layoutX="210.0" layoutY="186.0" maxWidth="660.0" prefWidth="660.0" text="Entrez les identifiants de connexion afin de pouvoir configurer le logiciel : " textAlignment="CENTER" visible="false" wrapText="true">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <PasswordField fx:id="password" layoutX="440.0" layoutY="351.0" prefHeight="36.0" prefWidth="200.0" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </PasswordField>
+      <Label fx:id="confirmMdp" layoutX="258.0" layoutY="421.0" text="Mot de passe : " visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <PasswordField fx:id="password2" layoutX="440.0" layoutY="415.0" prefHeight="36.0" prefWidth="200.0" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </PasswordField>
+      <Button fx:id="adminQuitButton" layoutX="870.0" layoutY="25.0" mnemonicParsing="false" onAction="#exitAdminMode" text="Quitter le mode Admin" visible="false">
+         <font>
+            <Font size="16.0" />
          </font>
       </Button>
    </children>

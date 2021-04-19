@@ -7,6 +7,7 @@ public class Main{
 
     public static void main(String[] args) {
         
+        /*
         Element elmt= new Element("test", "9555");
         Element elt2= new Element("test2", "9545");
         Element elt3= new Element("test3", "9355");
@@ -37,6 +38,10 @@ public class Main{
         MoyenGenerique.removeMoyen("Logiciel2");
         System.out.println(MoyenGenerique.addMoyen("Bande passante"));
         System.out.println(MoyenGenerique.unserializeMoyenGene());
-        
+        */
+
+        Config.serializeConfig("admin1", "login");
+        Config.unserializeConfig();
+        System.out.println(Config.getLogin() + Config.getPassword());
     }
 }

@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import javax.swing.Action;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,9 +19,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
@@ -29,6 +33,9 @@ import javafx.scene.image.ImageView;
 public class Controller implements Initializable{
 
     private static ArrayList<Element> allElements;
+
+    /*Mode admin du logiciel*/
+    private static boolean isAdmin = false;
 
     /*liste des items sélectionnables du menu*/
     private ArrayList<RadioMenuItem> usableMenuItems;
@@ -74,7 +81,41 @@ public class Controller implements Initializable{
     private TextField selectedElement;
 
     @FXML
+    private Button helpButton;
+
+    @FXML
     private Button logsButton;
+
+    @FXML
+    private Label infoConnect;
+
+    @FXML
+    private Label id;
+
+    @FXML
+    private Label mdp;
+
+    @FXML
+    private Label confirmMdp;
+
+    @FXML
+    private TextField login;
+
+    @FXML
+    private PasswordField password;
+
+    @FXML
+    private PasswordField password2;
+
+    @FXML
+    private Button confirmButton;
+
+    @FXML
+    private Button backButton;
+
+    @FXML
+    private Button adminQuitButton;
+
 
 
     /**
@@ -85,6 +126,7 @@ public class Controller implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
         productList.getItems().clear();
         productList.getItems().addAll(createComboBox().getItems());
+        Config.unserializeConfig(); //initilisation de la config (mdp + log) actuelle
         
     }
 
@@ -102,11 +144,13 @@ public class Controller implements Initializable{
     public void validate(ActionEvent action){
         /*dans le cas ou aucun élément/produit n'a été sélectionné*/
         if(currentElement == null){
-            setWarningAlert("Erreur : aucun élément sélectionné", "Veuillez sélectionner un produit et un ensemble avant de valider la recherche.");
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : aucun élément sélectionné", "Veuillez sélectionner un produit et un ensemble avant de valider la recherche.", "Erreur", alert);
         }
         /*dans le cas ou aucun mode d'utilisation n'a été sélectionné*/
         else if(auto==false && manuel==false){
-            setWarningAlert("Erreur : aucun mode sélectionné", "Veuillez sélectionner au minimun un mode d'utilisation avant de valider la recherche.");
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : aucun mode sélectionné", "Veuillez sélectionner au minimun un mode d'utilisation avant de valider la recherche.","Erreur", alert);
         }
         /*Si aucune erreur décectée, création et ouverture de la nouvelle fenetre*/
         else{
@@ -119,12 +163,39 @@ public class Controller implements Initializable{
 
     /**
      * Fonction appelée lors d'un appuie sur le bouton "Configurer" du menu principal
-     * Redirige vers un onglet de connexion pour l'administrateur
+     * Affiche les items permettant la connexion de l'administrateur et le passage en 
+     * mode admin s'il n'est pas déjà activé.
+     * Affiche les items permettant la modification de l'identifiant et mot de passe
+     * si le mode admin est actif.
+     * Masque le menu principal
      * @param action
     */
     @FXML
     public void openConfig(ActionEvent action){
-        //
+        if(isAdmin){
+            infoConnect.setText("Entrez le nouvel identifiant et le nouveau mot de passe que vous souhaitez utiliser : ");
+            password2.setVisible(true);
+            confirmMdp.setVisible(true);
+            login.setText("");
+            password.setText("");
+            adminQuitButton.setVisible(true);
+        }
+        else{
+            infoConnect.setText("Entrez les identifiants de connexion afin de pouvoir configurer le logiciel");
+            password2.setVisible(false);
+            confirmMdp.setVisible(false);
+            adminQuitButton.setVisible(false);
+        }
+        /*Affichage de la page d'identification*/
+        infoConnect.setVisible(true);
+        id.setVisible(true);
+        mdp.setVisible(true);
+        login.setVisible(true);
+        password.setVisible(true);
+        confirmButton.setVisible(true);
+        backButton.setVisible(true);
+        /*Invisibilité de la page d'accueil*/
+        setMenuDisplay(false);
     }
 
     /**
@@ -157,12 +228,14 @@ public class Controller implements Initializable{
      */
     @FXML
     public void selectProduct(ActionEvent action){
-        resetElt();
-        selectedProd = getElementByCode(sliceCode(productList.getValue().toString()));
-        selectedElement.setVisible(true);
-        elementButton.setVisible(true);
-        createElementMenu(); //création du menu de sélection d'élément
-        initUsableEvent(); //instanciation des events sur les items du menu
+        if(productList.getValue()!=null){
+            resetElt();
+            selectedProd = getElementByCode(sliceCode(productList.getValue().toString()));
+            selectedElement.setVisible(true);
+            elementButton.setVisible(true);
+            createElementMenu(); //création du menu de sélection d'élément
+            initUsableEvent(); //instanciation des events sur les items du menu
+        }
     }
 
     /**
@@ -175,41 +248,123 @@ public class Controller implements Initializable{
     public void openLogs(ActionEvent action){
         /*dans le cas ou aucun élément/produit n'a été sélectionné*/
         if(currentElement == null){
-            setWarningAlert("Erreur : aucun élément sélectionné", "Veuillez sélectionner un produit et un ensemble avant de valider la recherche.");
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : aucun élément sélectionné", "Veuillez sélectionner un produit et un ensemble avant de valider la recherche.", "Erreur",  alert);
         }
         /*Si aucune erreur décectée, création et ouverture de la nouvelle fenetre*/
         else{
             /*Déclaration de la nouvelle fenetre*/
             Stage stage = setNewStage("logs.fxml");
-            System.out.println(stage);
             stage.setTitle("Mots de passe : " + currentElement.getCodeElt() + " " + currentElement.getNom());
             stage.showAndWait();
         }
     }
+     
+    /**
+     * Fonction appelé lors du l'appuie sur le bouton "confirmer" du 
+     * mer Configurer.
+     * Si le mode admin n'est pas actif, vérifie la validité du login 
+     * et du mot de passe saisi et Ppasse le logiciel en mode 
+     * administrateur si ceux-ci sont valides, ouvre une fenêtre d'erreur sinon
+     * Si le mode admin est actif, modifie le login et le mdp par ceux saisis
+     * en vérifiant si les deux mot de passes saisis sont les mêmes
+     * @param action
+     */
+    @FXML
+    public void confirmToConfig(ActionEvent action){
+        /*Si le logiciel n'est pas en mode admin*/
+        if(!isAdmin){
+            /*Si l'un des deux champs n'a pas été rempli*/
+            if(login.getText().equals("") || password.getText().equals("")){
+                Alert alert = new Alert(AlertType.WARNING);
+                setAlert("Erreur : certains champs sont vides", "Veuillez saisir un identifiant et un mot de passe afin de passer le logiciel en mode administrateur.", "Erreur", alert);
+            }
+            /*Si l'identifiant est valide*/
+            else if(login.getText().equals(Config.getLogin())){
+                /*Si le mot de passe est valide */
+                if(password.getText().equals(Config.getPassword())){
+                    isAdmin = true;  //passage en mode administrateur
+                    backToMenu(action); //retour à la page d'accueil
+                    /*Ouverture d'une alerte informative quant au succès de l'action*/
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    setAlert("Logiciel en mode administrateur", "Vous avez désormais accès à l'ajout, la modification et la suppression d'éléments.", "Confirmation", alert);
+                    alert.setTitle("Confirmation");
+                }
+                /*Si le mot de passe est incorrect */
+                else{
+                    /*Onglet d'erreur de mot de passe*/
+                    Alert alert = new Alert(AlertType.WARNING);
+                    setAlert("Erreur : le mot de passe ne correspond pas", "Veuillez vérifier que le mot de passe saisi correspond bien au mot de passe enregistré.", "Erreur", alert);
+                }
+            }
+            /*Si l'identifiant est invalide*/
+            else{
+                /*Ongle d'erreur d'identifiant*/
+                Alert alert = new Alert(AlertType.WARNING);
+                setAlert("Erreur : identifiant inconnu", "Veuillez vérifier que le l'identifiant saisi correspond bien à l'identifiant enregistré.", "Erreur",  alert);
+            }
+        }
+        /*Si le logiciel est en mode admin*/
+        else{
+            if(login.getText().length()<4 || password.getText().length()<4){
+                Alert alert = new Alert(AlertType.WARNING);
+                setAlert("Erreur : un des champs saisi est trop court", "Veuillez entrer un login et un mot de passe d'au minimum 4 caractères", "Erreur", alert);
+            }
+            else if(password.getText().equals(password2.getText())){
+                Config.serializeConfig(password.getText(), login.getText());
+                backToMenu(action);
+                /*Ouverture d'une alerte informative quant au succès de l'action*/
+                Alert alert = new Alert(AlertType.INFORMATION);
+                setAlert("Modifications enregistréees", "Les modifications apportées ont bien été enregistrées", "Confirmation", alert);
+                alert.setTitle("Confirmation");
+            }
+            else{
+                Alert alert = new Alert(AlertType.WARNING);
+                setAlert("Erreur : les mots de passe ne correspondent pas", "Les deux mots de passes saisis sont différents.", "Erreur",alert);
+            }
+        }
+    }
 
     /**
-     * Initialise un Stage dans l'optique d'un ouverture de nouvelle fenêtre
-     * et met en place les paramètres de base de ce stage
-     * @param fxmlLink le lien du fichier fxml parent du stage crée
-     * @return le stage crée et préparé à l'utilisation
-     */ 
-    public Stage setNewStage(String fxmlLink){
-        System.out.println("set");
-        /*Déclaration de la nouvelle fenetre*/
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlLink));
-            Scene scene  = new Scene(root);
-            Stage stage = new Stage();
-            stage.setScene(scene);
-            stage = new Stage();
-            stage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("media/logoActiaPetit.png")));;
-            stage.setScene(scene);
-            stage.setResizable(false);
-            return stage;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+     * Fonction appelé lors d'un appuie sur le bouton "Retour"
+     * Masque la page actuellement affichée et affiche le menu
+     * @param action
+     */
+    @FXML
+    public void backToMenu(ActionEvent action){
+        /*Invisibilité de la page d'identification*/
+        infoConnect.setVisible(false);
+        id.setVisible(false);
+        mdp.setVisible(false);
+        login.setVisible(false);
+        password.setVisible(false);
+        confirmButton.setVisible(false);
+        backButton.setVisible(false);
+        password2.setVisible(false);
+        confirmMdp.setVisible(false);
+        adminQuitButton.setVisible(false);
+        /*Affichage de la page d'accueil*/
+        setMenuDisplay(true);
+    }
+
+    /**
+     * Fonction appelée lors de l'appuie sur le bouton "Quitter le mode Admin".
+     * Désacive le mode administrateur du logiciel et retourne sur le menu d'accueil
+     * du logiciel.
+     * Ouvre un onglet d'alerte confirmant la réalisation de l'action
+     * @param action
+     */
+    @FXML
+    public void exitAdminMode(ActionEvent action){
+        isAdmin = false;
+        backToMenu(action);
+        Alert alert = new Alert(AlertType.INFORMATION);
+        setAlert("Fin du mode Administrateur", "Le logiciel n'est plus en mode administrateur, seuls les affichages de données sont disponibles", "Confirmation", alert);
+    }
+
+    @FXML
+    public void displayHelp(ActionEvent action){
+
     }
 
 
@@ -254,6 +409,12 @@ public class Controller implements Initializable{
         return sliceCode(item.getText());
     }
 
+    /**
+     * Récupère uniquement le code d'un élèment depuis
+     * une chaine de caractère
+     * @param chain une chaine de caractère de type : "codeElement Nom de l'élèment"
+     * @return le code contenu dans la chaine de caractère
+     */
     public static String sliceCode(String chain){
         String code = new String();
         int i =0;
@@ -301,7 +462,7 @@ public class Controller implements Initializable{
 
     /**
      * Fonction appelé lors de la sélection d'un produit
-     * Crée un sous menu d'éléments pour l'élément sélectionné
+     * Crée récursivement un sous menu d'éléments pour l'élément sélectionné
      * @param item l'item auquel on crée un sous menu
      */
     public void setSubMenu(Menu item){    
@@ -425,15 +586,18 @@ public class Controller implements Initializable{
         selectedElement.setText("");
     }
 
+
+    /*Affichage */
+
     /**
      * Fonction instanciant et ouvrant un onglet de type alerte
-     * @param header le texe du header de l'onglet retourné
+     * @param header le tetxe du header de l'onglet retourné
      * @param content le texte explicatif dans l'onglet retourné
-     * @return l'alerte crée à partir des 2 paramètres
+     * @param title le titre de l'onglet
+     * @param alert l'alerte instanciée
      */ 
-    public Alert setWarningAlert(String header, String content){
-        Alert alert = new Alert(AlertType.WARNING);
-        alert.setTitle("Erreur");
+    public void setAlert(String header, String content, String title, Alert alert){
+        alert.setTitle(title);
         TilePane alertpane = new TilePane();
         Scene scene = new Scene(alertpane, 320, 240);
         Stage stage = new Stage();
@@ -446,7 +610,59 @@ public class Controller implements Initializable{
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return alert;
+    }
+
+    /**
+     * Affiche ou rend invisible le menu d'accueil de l'application
+     * et réinitialise les valeurs sélectionnées dans les menus :
+     * produit, ensemble, chackbox,...
+     * @param visible true pour afficher, false pour masquer
+     */
+    public void setMenuDisplay(boolean visible){
+        /*Affichage du menu */
+        if(visible){
+            helpButton.setVisible(true);
+            configButton.setVisible(true);
+            productList.setVisible(true);
+            valideButton.setVisible(true);
+            logsButton.setVisible(true);
+        }
+        /*Invisibilité du menu */
+        else{
+            helpButton.setVisible(false);
+            configButton.setVisible(false);
+            productList.setVisible(false);
+            elementButton.setVisible(false);
+            valideButton.setVisible(false);
+            logsButton.setVisible(false);
+            selectedElement.setVisible(false);
+            productList.getSelectionModel().clearSelection(); //réinitialisation de la liste des produits
+            resetElt(); //réinisialisation de l'ensemble des variables qui aurait pu être sélectionnées
+        }
+    }
+
+    /**
+     * Initialise un Stage dans l'optique d'une ouverture de nouvelle fenêtre
+     * et met en place les paramètres de base de ce stage
+     * @param fxmlLink le lien du fichier fxml parent du stage crée
+     * @return le stage crée et préparé à l'utilisation
+     */ 
+    public Stage setNewStage(String fxmlLink){
+        /*Déclaration de la nouvelle fenetre*/
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlLink));
+            Scene scene  = new Scene(root);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage = new Stage();
+            stage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("media/logoActiaPetit.png")));;
+            stage.setScene(scene);
+            stage.setResizable(false);
+            return stage;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
 }
