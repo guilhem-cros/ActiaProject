@@ -1,6 +1,7 @@
 
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -8,16 +9,20 @@ import java.util.ResourceBundle;
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -43,10 +48,11 @@ public class ControllerAffichage implements Initializable{
     private  ArrayList<MoyenGenerique> moyensGene = MoyenGenerique.unserializeMoyenGene();
 
     /*La liste des titres des colonnes*/
-    private static ArrayList<String> paramTitles = Test.getParamTitle();
-    
+    private static ArrayList<String> paramTitles;
+
     private HostServices hostServices;
 
+    
     /*Initialisation des objets XML utilisés*/
 
     @FXML
@@ -69,19 +75,34 @@ public class ControllerAffichage implements Initializable{
 
     @FXML
     private ComboBox<String> listMoyenGene;
-    
-    
+
+    @FXML
+    private Button newColumnButt;
+
+    @FXML
+    private Button setRawButt;
+
+
     /**
      * Fonction appelée à l'ouverture de la fenêtre
      * Initialise les champs et variables
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        paramTitles = Test.getParamTitle();
         setParamOfElt();
         listMoyenGene.getItems().clear();
         setComboBoxMoyenGene();
         setTable(null);
+        setVisibility();
     }
+
+    public static ArrayList<String> getParamTitles() {
+        return paramTitles;
+    }
+
+    
+    /*Fonctions FXML de la fenêtre d'affichage*/
 
     /**
      * récupère la valeur de la comboBox et met à jour
@@ -94,6 +115,44 @@ public class ControllerAffichage implements Initializable{
         setTable(value);
     }
 
+    /**
+     * Appelée lors d'un appuie sur le bouton "Nouvelle colonne"
+     * Ouvre un formulaire de création de nouvelle colonne si 
+     * aucun autre formulaire n'est déjà ouvert
+     * @param action
+     */
+    @FXML
+    public void openColumnSetUp(ActionEvent action){
+        /*Si un formulaire est déjà ouvert*/
+        if(Controller.getCountOpenedForm()>0){
+            Alert alert = new Alert(AlertType.WARNING); //message d'erreur
+            Controller.setAlert("Erreur formulaire", "Un autre formulaire est déjà ouvert, veuillez le fermer afin d'en ouvrir un nouveau", "Erreur", alert);
+        }
+        else{
+            ControllerFormulaire.setOriginControl(this); //mise à jour du controller parent
+            try {
+                /*Création du nouvel onglet*/
+                Parent root = FXMLLoader.load(getClass().getResource("ajoutCol.fxml"));
+                Scene scene  = new Scene(root);
+                Stage stage = new Stage();
+                stage.setScene(scene);
+                stage.setTitle("Ajout colonne");
+                stage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("media/logoActiaPetit.png")));;
+                stage.setScene(scene);
+                stage.setResizable(false);
+                /*Ajout d'une action lors de la fermeture de l'onglet depuis la croix rouge*/
+                stage.setOnCloseRequest(event ->{
+                    Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1); //décrémentation du compteur de formulaires ouverts
+                });
+                Controller.setCountOpenedForm(Controller.getCountOpenedForm()+1);//incrémentation du compteur de formulaires ouverts
+                stage.showAndWait();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     /*Permet d'utiliser les hostsservices depuis le controller*/
     public void setGetHostController(HostServices hostServices){
         this.hostServices = hostServices;
@@ -101,8 +160,8 @@ public class ControllerAffichage implements Initializable{
     
     /**
      * Récupère l'élément sélectionné depuis la page accueil
-     * Récupère les tests correspondants à cet élément en
-     * fonction du mode de test (auto / manuel)
+     * Récupère les moyens de tests correspondants à cet élément
+     * en fonction du mode de test (auto / manuel)
      * Crée le titre de la page
      */
     public void setParamOfElt(){
@@ -297,7 +356,18 @@ public class ControllerAffichage implements Initializable{
         text.setPrefHeight(100);
         text.maxWidth(160);
         text.setPrefWidth(160);
+        text.setStyle("-fx-border-color: grey;");
         return text;
+    }
+
+    /**
+     * Initilialise la visibilité des élèments de la page 
+     * en fonction de l'activation du mode Admin du logiciel
+     */
+    public void setVisibility(){
+        boolean admin = Controller.isAdmin();
+        newColumnButt.setVisible(admin);
+        
     }
 
     

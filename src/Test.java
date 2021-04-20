@@ -36,7 +36,9 @@ public class Test implements Serializable{
 	private ArrayList<String> listParam;
 
 	/*Liste des "titres" des paramètres des outils de test*/
-	private static ArrayList<String> listParamTitle = new ArrayList<String>();
+	private static ArrayList<String> listParamTitle;
+
+	private ArrayList<String> addedParam;
 
 	/*Constructeurs*/
     public Test(String moyenGenerique, String detailMoyen){
@@ -45,6 +47,7 @@ public class Test implements Serializable{
 		this.utilisationAuto = false;
 		this.maintenance = "N/A";
 		this.listParam = new ArrayList<String>();
+		this.addedParam = new ArrayList<String>();
     }
 
 
@@ -211,10 +214,15 @@ public class Test implements Serializable{
 		listParam.add(this.refPlanOuLogiciel);
 		listParam.add("" + this.versionPlanOuLogiciel);
 		listParam.add(this.nomLogiciel);
-		listParam.add(raccourciEmplacement);
+		listParam.add(this.raccourciEmplacement);
 		listParam.add(this.maintenance);
 		listParam.add(this.refCalibration);
 		listParam.add(this.lienPhoto);
+		/*Mise en place et ajout des paramètres correspondant à des titres ajoutés manuellements*/
+		setAddedParams();
+		for(int i=0; i<unserializeTitles().size();i++){
+			listParam.add(addedParam.get(i));
+		}
 	}
 
 	/**
@@ -231,6 +239,7 @@ public class Test implements Serializable{
 	 * de Test qui sont utilisés dans l'affichage
 	 */
 	public static void setListParamTitle(){
+		listParamTitle = new ArrayList<String>();
 		listParamTitle.add("Moyens Génériques");
 		listParamTitle.add("Quantité");
 		listParamTitle.add("Utilisation pour test Manuel ou Auto (déverminage)");
@@ -247,6 +256,10 @@ public class Test implements Serializable{
 		listParamTitle.add("Maintenance / Calibration");
 		listParamTitle.add("Doc de référence pour calibration");
 		listParamTitle.add("Raccourci vers photo");
+		/*Ajout des titres de colonnes créees manuellement et stockées dans titles.ser*/
+		for(String title: unserializeTitles()){
+			listParamTitle.add(title);
+		}
 	}
 
 	/**
@@ -256,6 +269,31 @@ public class Test implements Serializable{
 	public static ArrayList<String> getParamTitle(){
 		Test.setListParamTitle(); //initialisation de la liste
 		return listParamTitle;
+	}
+
+	/**
+	 * Initialise ou complète la liste addedParam
+	 * en fonction du nombre de titres d'attributs 
+	 * crées manuellement et enregistrés
+	 */
+	public void setAddedParams(){
+		for(int i=addedParam.size(); i<unserializeTitles().size();i++){
+			addedParam.add("");
+		}
+	}
+
+	/**
+	 * Modifie la valeur d'un paramètre ajouté manuellement
+	 * @param title le titre du paramètre
+	 * @param value la nouvelle valeur du paramètre
+	 */
+	public void setParam(String title, String value){
+		ArrayList<String> listTitles = unserializeTitles();
+		for(int i=0; i<listTitles.size();i++){
+			if(listTitles.get(i).equals(title)){
+				addedParam.set(i, value);
+			}
+		}
 	}
 
 
@@ -296,6 +334,61 @@ public class Test implements Serializable{
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}   
+    }
+
+
+
+
+	/**
+	 * Ajout d'une nouvelle variable en tant que titre 
+	 * dans la base de données
+	 * @param title le nom du titre du paramètre
+	 */
+	public static void addTitle(String title){
+        ArrayList<String> titles = unserializeTitles();
+		titles.add(title);
+        serializeAllTitles(titles);
+    }
+
+	/**
+	 * Lis le fichier contenant l'ensemble des titres de paramètres 
+	 * ajoutés manuellement par l'utilisateur
+	 * @return la liste des titres contenus dans le fichier
+	 */
+    public static ArrayList<String> unserializeTitles(){
+        ArrayList<String> listTitles = new ArrayList<String>();
+        try (ObjectInputStream ois = 
+				new ObjectInputStream(
+						new FileInputStream("data/titles.ser"))) {
+			/* Lecture du fichier*/
+			while (true) {
+				listTitles.add((String) ois.readObject());
+			}
+		} catch (IOException e) {
+			//Exception lorsqu'on atteint la fin du fichier
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}   
+        return listTitles;
+
+    }
+
+	/**
+	 * Eregistre dans le fichier correpondant, les titres de 
+	 * paramètres entrés manuellement
+	 * @param allTitles la liste des titres à enregistrer
+	 */
+    public static void serializeAllTitles(ArrayList<String> allTitles){
+        try {
+			FileOutputStream fichier = new FileOutputStream("data/titles.ser");
+			ObjectOutputStream oos = new ObjectOutputStream(fichier);
+			for(String title: allTitles){
+                oos.writeObject(title);
+            }
+            oos.close();
+		} catch (IOException e) {
+			System.out.println(e.toString());
+		}
     }
 
 }

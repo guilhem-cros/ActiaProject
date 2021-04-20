@@ -110,5 +110,10 @@
             <Font size="16.0" />
          </font>
       </Button>
+      <Button fx:id="reInitButton" layoutX="475.0" layoutY="600.0" mnemonicParsing="false" onAction="#reInitConfig" prefWidth="130.0" text="Réinitialiser login" visible="false">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
    </children>
 </Pane>

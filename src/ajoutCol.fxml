@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="277.0" prefWidth="390.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerFormulaire">
+   <children>
+      <Button fx:id="createColButt" layoutX="120.0" layoutY="204.0" mnemonicParsing="false" onAction="#newColumn" text="Ajouter la colonne">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <TextField fx:id="columnTitle" layoutX="141.0" layoutY="85.0" prefHeight="36.0" prefWidth="190.0">
+         <font>
+            <Font size="16.0" />
+         </font></TextField>
+      <Label layoutX="26.0" layoutY="91.0" text="Titre colonne : ">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>

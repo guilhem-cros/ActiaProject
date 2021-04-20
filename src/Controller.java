@@ -4,8 +4,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import javax.swing.Action;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,10 +30,14 @@ import javafx.scene.image.ImageView;
 
 public class Controller implements Initializable{
 
-    private static ArrayList<Element> allElements;
+    /*Compteur du nombre de formulaires actuellement ouverts*/
+    private static int countOpenedForm = 0;
 
     /*Mode admin du logiciel*/
     private static boolean isAdmin = false;
+
+    /*Liste de tous les objets Element stockés*/
+    private static ArrayList<Element> allElements;
 
     /*liste des items sélectionnables du menu*/
     private ArrayList<RadioMenuItem> usableMenuItems;
@@ -116,7 +118,8 @@ public class Controller implements Initializable{
     @FXML
     private Button adminQuitButton;
 
-
+    @FXML 
+    private Button reInitButton;
 
     /**
      * Fonction appelée à l'ouverture de la fenêtre
@@ -176,17 +179,20 @@ public class Controller implements Initializable{
             infoConnect.setText("Entrez le nouvel identifiant et le nouveau mot de passe que vous souhaitez utiliser : ");
             password2.setVisible(true);
             confirmMdp.setVisible(true);
-            login.setText("");
-            password.setText("");
             adminQuitButton.setVisible(true);
+            reInitButton.setVisible(false);
         }
         else{
             infoConnect.setText("Entrez les identifiants de connexion afin de pouvoir configurer le logiciel");
             password2.setVisible(false);
             confirmMdp.setVisible(false);
             adminQuitButton.setVisible(false);
+            reInitButton.setVisible(true);
         }
         /*Affichage de la page d'identification*/
+        login.setText("");
+        password.setText("");
+        password2.setText("");
         infoConnect.setVisible(true);
         id.setVisible(true);
         mdp.setVisible(true);
@@ -343,6 +349,7 @@ public class Controller implements Initializable{
         password2.setVisible(false);
         confirmMdp.setVisible(false);
         adminQuitButton.setVisible(false);
+        reInitButton.setVisible(false);
         /*Affichage de la page d'accueil*/
         setMenuDisplay(true);
     }
@@ -361,6 +368,18 @@ public class Controller implements Initializable{
         Alert alert = new Alert(AlertType.INFORMATION);
         setAlert("Fin du mode Administrateur", "Le logiciel n'est plus en mode administrateur, seuls les affichages de données sont disponibles", "Confirmation", alert);
     }
+    /**
+     * Fonction appelée lors de l'appuie sur le bouton "Réinitialiser identifiants"
+     * Supprime les identifiants de connexion admin actuels et les remplace
+     * par les identifiants de base
+     * @param action
+     */
+    @FXML
+    public void reInitConfig(ActionEvent action){
+        Config.serializeConfig("actia", "admin");
+        Alert alert = new Alert(AlertType.INFORMATION);
+        setAlert("Login réinitisalisé", "L'identifiant et le mot de passe de connexion ont bien été réinitialisés.", "Confirmation", alert);
+    }
 
     @FXML
     public void displayHelp(ActionEvent action){
@@ -368,7 +387,7 @@ public class Controller implements Initializable{
     }
 
 
-    /*Getter des éléments static*/
+    /*Getter et setter des éléments static*/
 
     public static Element getCurrentElement() {
         return currentElement;
@@ -380,6 +399,18 @@ public class Controller implements Initializable{
 
     public static boolean isManuel() {
         return manuel;
+    }
+
+    public static boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public static int getCountOpenedForm() {
+        return countOpenedForm;
+    }
+
+    public static void setCountOpenedForm(int countOpenedForm) {
+        Controller.countOpenedForm = countOpenedForm;
     }
 
 
@@ -596,7 +627,7 @@ public class Controller implements Initializable{
      * @param title le titre de l'onglet
      * @param alert l'alerte instanciée
      */ 
-    public void setAlert(String header, String content, String title, Alert alert){
+    public static void setAlert(String header, String content, String title, Alert alert){
         alert.setTitle(title);
         TilePane alertpane = new TilePane();
         Scene scene = new Scene(alertpane, 320, 240);

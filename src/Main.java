@@ -7,7 +7,6 @@ public class Main{
 
     public static void main(String[] args) {
         
-        /*
         Element elmt= new Element("test", "9555");
         Element elt2= new Element("test2", "9545");
         Element elt3= new Element("test3", "9355");
@@ -19,6 +18,10 @@ public class Main{
         elt4.addElement(elt5); 
         Test t1 = new Test("Logiciel", "il faut tester");
         Test t2 = new Test("Bande passante", "splitter vidéo composite 1 voie vers 16 voies encore encore core");
+        t2.setAddedParams();
+        t2.setParam("nouveau", "nice");
+        t2.setParam("zerz", "non");
+        System.out.println(t2.getListParam());
         t2.setLienPhoto("C:/Users/g.cros/Documents/Projet/media/logoActia.png");
         elt3.addTest(t1);
         elt3.addTest(t2);
@@ -34,14 +37,9 @@ public class Main{
         list.add(elt5);
         list.add(elt6);
         Element.serializeAllElements(list);
-        System.out.println(MoyenGenerique.addMoyen("Logiciel"));
-        MoyenGenerique.removeMoyen("Logiciel2");
-        System.out.println(MoyenGenerique.addMoyen("Bande passante"));
-        System.out.println(MoyenGenerique.unserializeMoyenGene());
-        */
+        System.out.println(MoyenGenerique.addMoyen("Tous"));
+        
+        
 
-        Config.serializeConfig("admin1", "login");
-        Config.unserializeConfig();
-        System.out.println(Config.getLogin() + Config.getPassword());
     }
 }
