@@ -41,8 +41,8 @@ public class ControllerAffichage implements Initializable{
     /*L'élément sélectionné depuis l'accueil*/
     private Element selectedElt;
 
-    /*La liste des test de selectedElt*/
-    private ArrayList<Test> listTest;
+    /*La liste des outils de selectedElt*/
+    private ArrayList<Outil> listOutils;
 
     /*La liste de tous les Moyens génériques*/
     private  ArrayList<MoyenGenerique> moyensGene = MoyenGenerique.unserializeMoyenGene();
@@ -89,7 +89,7 @@ public class ControllerAffichage implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        paramTitles = Test.getParamTitle();
+        paramTitles = Outil.getParamTitle();
         setParamOfElt();
         listMoyenGene.getItems().clear();
         setComboBoxMoyenGene();
@@ -167,28 +167,28 @@ public class ControllerAffichage implements Initializable{
     public void setParamOfElt(){
         selectedElt = Controller.getCurrentElement();
         if(Controller.isAuto() && Controller.isManuel()){ //si les 2 checkboxs ont été cochées
-            listTest = selectedElt.getTests();
+            listOutils = selectedElt.getOutils();
         }   
         else { //si une seule des checkbox a été cochée
-            listTest = selectedElt.getTestsByMode(Controller.isAuto());
+            listOutils = selectedElt.getOutilsByMode(Controller.isAuto());
         }
         title.setText(selectedElt.getCodeElt() + " " + selectedElt.getNom());
     }
 
 
     /**
-     * Si la liste Test est vide : renvoie un message 
+     * Si la liste Outil est vide : renvoie un message 
      * indiquant qu'aucun moyen de test n'est diponible
      * Sinon : Rempli la grille avec les attributs 
      * correspondant à chaque moyens de test de l'élément
      * en fonction du moyen générique sélectionné (renvoie
-     * le même message si l'élément ne contient aucun test 
-     * pour ce moyen générique).
+     * le même message si l'élément ne contient aucun Outil 
+     * de test pour ce moyen générique).
      */
     public void setTable(String selectedMoyenGene){
         grid.getChildren().clear();//la grille est réinitialisée
-        ArrayList<Test> toPrintTests = initPrintedTests();
-        if(toPrintTests.isEmpty()){
+        ArrayList<Outil> toPrintOutils = initPrintedOutils();
+        if(toPrintOutils.isEmpty()){
             /*invisibilité de la grille et affichage du label*/
             grid.setVisible(false);
             sp.setVisible(false);
@@ -198,11 +198,11 @@ public class ControllerAffichage implements Initializable{
         else{
             initColumnTitle(grid); //mise en place des titres
             int count = 1; //le numéro de la ligne actuelle
-            /*Parcours de tous les test de l'élément*/
-            for(Test t: toPrintTests){
+            /*Parcours de tous les outils de test de l'élément*/
+            for(Outil t: toPrintOutils){
                 ArrayList<String> listParam = t.getListParam();
                 int countP=0; //me numéro de la colonne actuelle
-                /*Parcours de tous les attributs du test courant*/
+                /*Parcours de tous les attributs de l'outil courant*/
                 for(int i=0; i<t.getListParam().size(); i++){ 
                     String param = listParam.get(i);
                     if((i==12||i==15)&& param!=null){ //s'il s'agit d'un attribut de type lien
@@ -240,30 +240,30 @@ public class ControllerAffichage implements Initializable{
      * Récupère les moyens de tests de l'élément en fonction 
      * d'un moyen générique
      * @param moyen le nom du moyen générique voulu
-     * @return l'ensemble des tests de l'élément pour lesquels
-     * le moyen générique correspond au paramètre
+     * @return l'ensemble des outils de tests de l'élément 
+     * pour lesquels le moyen générique correspond au paramètre
      */
-    public ArrayList<Test> getTestsByMoyenGene(String moyen){
-        ArrayList<Test> listTestByMoy = new ArrayList<Test>();
-        /*Parcours de l'ensemble des tests de l'élément*/
-        for(Test t: listTest){
+    public ArrayList<Outil> getOutilsByMoyenGene(String moyen){
+        ArrayList<Outil> listOutilByMoy = new ArrayList<Outil>();
+        /*Parcours de l'ensemble des outils de test de l'élément*/
+        for(Outil t: listOutils){
             if(moyen.equals(t.getMoyenGenerique())){
-                listTestByMoy.add(t);
+                listOutilByMoy.add(t);
             }
         }
-        return listTestByMoy;
+        return listOutilByMoy;
     }
 
     /**
-     * @return la liste de test correspondant à la valeur courante 
+     * @return la liste d'outils correspondant à la valeur courante 
      * de la ComboBox
      */
-    public ArrayList<Test> initPrintedTests(){
-        if(listMoyenGene.getValue()==null||listMoyenGene.getValue().equals("Tous")){ //retourne tous les tests de l'élément si la Combobox n'a pas encore de valeur
-            return listTest;
+    public ArrayList<Outil> initPrintedOutils(){
+        if(listMoyenGene.getValue()==null||listMoyenGene.getValue().equals("Tous")){ //retourne tous les outils de test de l'élément si la Combobox n'a pas encore de valeur
+            return listOutils;
         }
         else{
-            return getTestsByMoyenGene(listMoyenGene.getValue());
+            return getOutilsByMoyenGene(listMoyenGene.getValue());
         }
     }
 
@@ -274,7 +274,7 @@ public class ControllerAffichage implements Initializable{
     public void initColumnTitle(GridPane gridp){
         gridp.getChildren().clear();
         int count = 0; // la colonne courante
-        /*Parcours de la liste des "titres"(~nom des variables de Test) du tableau*/
+        /*Parcours de la liste des "titres"(~nom des variables de Outil) du tableau*/
         for(String s : paramTitles){
             Label txt = new Label(s);
             txt.setWrapText(true);

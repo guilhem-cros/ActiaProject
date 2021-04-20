@@ -138,7 +138,7 @@ public class Controller implements Initializable{
 
     /**
      * Fonction appelée lors d'un appuie sur le bouton "Valider" du menu principal
-     * Ouvre une nouvel onglet affichant les outils de tests correspondants à l'élement sélectionné
+     * Ouvre une nouvel onglet affichant les outils correspondants à l'élement sélectionné
      * Ouvre un onglet d'erreur indicatif si aucun élement/produit n'a été sélectionné
      * Ouvre un onglet d'erreur indicatif si aucun mode d'utilisation n'a été sélectionné
      * @param action
@@ -206,7 +206,7 @@ public class Controller implements Initializable{
 
     /**
      * Fonction appelée lors d'un changement de valeur (coché ou non) de la checkbox "Auto"
-     * Permettra la sélectionn des tests autos uniquement
+     * Permettra la sélectionn des outils autos uniquement
      * Peut être combiné avec la checkbox Manuel
      * @param action
     */
@@ -217,7 +217,7 @@ public class Controller implements Initializable{
 
     /**
      * Fonction appelée lors d'un changement de valeur (coché ou non) de la checkbox "Manuel"
-     * Permettra la sélectionn des tests manuels uniquement
+     * Permettra la sélectionn des outils manuels uniquement
      * Peut être combiné avec la checkbox Auto
      * @param action
     */

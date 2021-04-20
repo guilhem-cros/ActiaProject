@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class Test implements Serializable{
+public class Outil implements Serializable{
 
 
 	/*attributs*/
@@ -32,7 +32,7 @@ public class Test implements Serializable{
     private int quantite;
 	private String lienPhoto;
 
-	/*Liste des paramètres de l'outil de test*/
+	/*Liste des paramètres de l'outil*/
 	private ArrayList<String> listParam;
 
 	/*Liste des "titres" des paramètres des outils de test*/
@@ -41,7 +41,7 @@ public class Test implements Serializable{
 	private ArrayList<String> addedParam;
 
 	/*Constructeurs*/
-    public Test(String moyenGenerique, String detailMoyen){
+    public Outil(String moyenGenerique, String detailMoyen){
         this.moyenGenerique = moyenGenerique;
 		this.detailMoyen = detailMoyen;
 		this.utilisationAuto = false;
@@ -192,7 +192,7 @@ public class Test implements Serializable{
 
 	/**
 	 * Crée la liste contenant les valeurs des
-	 * attributs du Test en chaine de caractère 
+	 * attributs de l'Outil en chaine de caractère 
 	 * dans l'optique du futur affichage
 	 */
 	public void setListParam(){
@@ -227,7 +227,7 @@ public class Test implements Serializable{
 
 	/**
 	 * @return le liste contenant les valeurs des
-	 * attributs du Test en chaine de caractère
+	 * attributs de l'Outil en chaine de caractère
 	 */
 	public ArrayList<String> getListParam(){
 		setListParam();
@@ -236,7 +236,7 @@ public class Test implements Serializable{
 
 	/**
 	 * Crée la liste des "titres" de chaque attribut 
-	 * de Test qui sont utilisés dans l'affichage
+	 * de l'Outil qui sont utilisés dans l'affichage
 	 */
 	public static void setListParamTitle(){
 		listParamTitle = new ArrayList<String>();
@@ -264,10 +264,10 @@ public class Test implements Serializable{
 
 	/**
 	 * @return la liste des "titres" de chaque attribut 
-	 * de Test
+	 * de l'Outil
 	 */
 	public static ArrayList<String> getParamTitle(){
-		Test.setListParamTitle(); //initialisation de la liste
+		Outil.setListParamTitle(); //initialisation de la liste
 		return listParamTitle;
 	}
 
@@ -297,16 +297,16 @@ public class Test implements Serializable{
 	}
 
 
-	/*Sérialisation des objets Test*/
+	/*Sérialisation des objets Outil*/
 
 	/**
-	 * Sérialise des objets Test afin qu'ils 
+	 * Sérialise des objets Outil afin qu'ils 
 	 * puissent être sérailisés en même temps 
 	 * que les objets Element
 	 */
-	public void serializeTest(){
+	public void serializeOutil(){
         try {
-			FileOutputStream fichier = new FileOutputStream("data/tests.ser");
+			FileOutputStream fichier = new FileOutputStream("data/outils.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fichier);
 			oos.writeObject(this);
             oos.close();
@@ -317,14 +317,14 @@ public class Test implements Serializable{
     }
 
 	/**
-	 * Lis des objets test sérialisés afin qu'ils
+	 * Lis des objets Outil sérialisés afin qu'ils
 	 * puissent être lu et traduits en même temps 
 	 * que les objets element
 	 */
-	public void unserializeTest(){
+	public void unserializeOutil(){
         try (ObjectInputStream ois = 
 				new ObjectInputStream(
-						new FileInputStream("data/tests.ser"))) {
+						new FileInputStream("data/outils.ser"))) {
 			/* Lecture du fichier*/
 			while (true) {
 				ois.readObject();

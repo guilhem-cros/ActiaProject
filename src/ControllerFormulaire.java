@@ -33,7 +33,7 @@ public class ControllerFormulaire implements Initializable{
         columnTitle.setText("");
     }
 
-    
+
      /*Fonctions FXML de sous-onglets*/
 
      /**
@@ -55,7 +55,7 @@ public class ControllerFormulaire implements Initializable{
         } 
         /*Si le titre de colonne saisi est valide*/
         else{
-            Test.addTitle(title);
+            Outil.addTitle(title);
             (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
             Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
             originControl.initialize(null, null); //mise à jour immédiate de la page d'affichage parente du formulaire

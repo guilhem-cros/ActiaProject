@@ -20,8 +20,8 @@ public class Element implements Serializable{
     /*Le code correspondant à lélément*/
     private String codeElt;
 
-    /*La liste des outils de test enregistrés de l'élément*/
-    private ArrayList<Test> listeTests;
+    /*La liste des outils enregistrés de l'élément*/
+    private ArrayList<Outil> listeOutils;
 
     /*La liste des sous élément de l'élément*/
     private ArrayList<Element> listeSousElements;
@@ -32,7 +32,7 @@ public class Element implements Serializable{
     public Element(String nom, String codeElt){
         this.nom=nom;
         this.codeElt=codeElt;
-        listeTests = new ArrayList<Test>();
+        listeOutils = new ArrayList<Outil>();
         listeSousElements = new ArrayList<Element>();
         listLogsElement = new ArrayList<Logs>();
     }
@@ -59,8 +59,8 @@ public class Element implements Serializable{
         this.codeElt = codeElt;
     }
 
-    public ArrayList<Test> getTests() {
-        return listeTests;
+    public ArrayList<Outil> getOutils() {
+        return listeOutils;
     }
 
     public ArrayList<Element> getListeSousElements() {
@@ -72,24 +72,24 @@ public class Element implements Serializable{
     }
 
 
-    /*modifications sur la liste de tests*/
+    /*modifications sur la liste d'outils*/
 
-    public void addTest(Test t){
-       listeTests.add(t);  
+    public void addOutil(Outil t){
+       listeOutils.add(t);  
     }
 
-    public void removeTest(Test t){
-        listeTests.remove(t);
+    public void removeOutil(Outil t){
+        listeOutils.remove(t);
     }
 
     /**
      * Tri des outils de test en fct de leur mode (auto/manuel)
      * @param auto vrai pour select les outils auto, faux pour manuel
-     * @return la liste des tests vérifiant auto
+     * @return la liste des outils vérifiant auto
      */
-    public ArrayList<Test> getTestsByMode(boolean auto){
-        ArrayList<Test> sortedList = new ArrayList<Test>();
-        for(Test t: this.listeTests){
+    public ArrayList<Outil> getOutilsByMode(boolean auto){
+        ArrayList<Outil> sortedList = new ArrayList<Outil>();
+        for(Outil t: this.listeOutils){
             if(auto){
                 if(t.isUtilisationAuto()){
                     sortedList.add(t);
