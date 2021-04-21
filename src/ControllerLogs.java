@@ -48,6 +48,7 @@ public class ControllerLogs implements Initializable{
     private Label titleLabel;
     
     
+
     /**
      * Fonction appelée à l'ouverture de la fenêtre
      * Initialise les champs et variables
@@ -60,8 +61,7 @@ public class ControllerLogs implements Initializable{
 
 
     /**
-     * Initialise les variables nécessaires et 
-     * met en place les paramètres visuels de base
+     * Initialise les variables nécessaires et met en place les paramètres visuels de base
      */
     public void setParam(){
         selectedElt = Controller.getCurrentElement(); //récupération de l'élèments sélectionnés précédemment dans la page d'accueil
@@ -74,8 +74,8 @@ public class ControllerLogs implements Initializable{
 
     /**
      * Initialise le tableau de login pour l'affichage
-     * Si l'élément sélectionné ne possèe pas d'objets 
-     * Logs, affiche seulement un message informatif
+     * Si l'élément sélectionné ne possède pas d'objets Logs, 
+     * affiche seulement un message informatif
      */
     public void initGrid(){
         /*Si l'élément n'a pas de Logs*/

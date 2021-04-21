@@ -33,14 +33,14 @@ public class Controller implements Initializable{
     /*Compteur du nombre de formulaires actuellement ouverts*/
     private static int countOpenedForm = 0;
 
+    /*Nom représentatif du formulaire ouvert*/
+    private static String form;
+
     /*Mode admin du logiciel*/
     private static boolean isAdmin = false;
 
     /*Liste de tous les objets Element stockés*/
     private static ArrayList<Element> allElements;
-
-    /*liste des items sélectionnables du menu*/
-    private ArrayList<RadioMenuItem> usableMenuItems;
 
     /*L'element courant ayant été sélectionné*/
     private static Element currentElement;
@@ -51,6 +51,9 @@ public class Controller implements Initializable{
     private static boolean auto=false;
 
     private static boolean manuel=false;
+
+    /*liste des items sélectionnables du menu*/
+    private ArrayList<RadioMenuItem> usableMenuItems;
 
 
     /*Initialisation des objets XML utilisés*/
@@ -121,6 +124,8 @@ public class Controller implements Initializable{
     @FXML 
     private Button reInitButton;
 
+
+
     /**
      * Fonction appelée à l'ouverture de la fenêtre
      * Initialise les champs et variables
@@ -130,6 +135,7 @@ public class Controller implements Initializable{
         productList.getItems().clear();
         productList.getItems().addAll(createComboBox().getItems());
         Config.unserializeConfig(); //initilisation de la config (mdp + log) actuelle
+        form = "null";
         
     }
 
@@ -139,8 +145,7 @@ public class Controller implements Initializable{
     /**
      * Fonction appelée lors d'un appuie sur le bouton "Valider" du menu principal
      * Ouvre une nouvel onglet affichant les outils correspondants à l'élement sélectionné
-     * Ouvre un onglet d'erreur indicatif si aucun élement/produit n'a été sélectionné
-     * Ouvre un onglet d'erreur indicatif si aucun mode d'utilisation n'a été sélectionné
+     * ou un onglet d'erreur
      * @param action
     */
     @FXML
@@ -170,7 +175,6 @@ public class Controller implements Initializable{
      * mode admin s'il n'est pas déjà activé.
      * Affiche les items permettant la modification de l'identifiant et mot de passe
      * si le mode admin est actif.
-     * Masque le menu principal
      * @param action
     */
     @FXML
@@ -205,9 +209,8 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Fonction appelée lors d'un changement de valeur (coché ou non) de la checkbox "Auto"
-     * Permettra la sélectionn des outils autos uniquement
-     * Peut être combiné avec la checkbox Manuel
+     * Fonction appelée lors d'un changement de valeur de la checkbox "Auto"
+     * Permettra la sélection des outils autos
      * @param action
     */
     @FXML
@@ -217,8 +220,7 @@ public class Controller implements Initializable{
 
     /**
      * Fonction appelée lors d'un changement de valeur (coché ou non) de la checkbox "Manuel"
-     * Permettra la sélectionn des outils manuels uniquement
-     * Peut être combiné avec la checkbox Auto
+     * Permettra la sélection des outils manuels 
      * @param action
     */
     @FXML
@@ -227,9 +229,9 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Fonction appelé lors d'un changement de valeur saisie dans la comboBox de produits
-     * Récupère le produit sélectionné et appelle la fonction permettant la création 
-     * des menus d'éléments correspondant à ce produit
+     * Fonction appelé lors d'un changement de valeur dans la comboBox de produits
+     * Récupère le produit sélectionné et et lance la création 
+     * des menus d'éléments/sous-élèments correspondant à ce produit
      * @param action
      */
     @FXML
@@ -267,11 +269,9 @@ public class Controller implements Initializable{
     }
      
     /**
-     * Fonction appelé lors du l'appuie sur le bouton "confirmer" du 
-     * mer Configurer.
-     * Si le mode admin n'est pas actif, vérifie la validité du login 
-     * et du mot de passe saisi et Ppasse le logiciel en mode 
-     * administrateur si ceux-ci sont valides, ouvre une fenêtre d'erreur sinon
+     * Fonction appelé lors du l'appuie sur le bouton "confirmer" du menu Configurer.
+     * Si le mode admin n'est pas actif, vérifie la validité du login et mot de passe saisi 
+     * et passe le logiciel en mode administrateur
      * Si le mode admin est actif, modifie le login et le mdp par ceux saisis
      * en vérifiant si les deux mot de passes saisis sont les mêmes
      * @param action
@@ -333,7 +333,7 @@ public class Controller implements Initializable{
 
     /**
      * Fonction appelé lors d'un appuie sur le bouton "Retour"
-     * Masque la page actuellement affichée et affiche le menu
+     * Masque la sous-page actuellement affichée et affiche l'accueil
      * @param action
      */
     @FXML
@@ -357,7 +357,6 @@ public class Controller implements Initializable{
     /**
      * Fonction appelée lors de l'appuie sur le bouton "Quitter le mode Admin".
      * Désacive le mode administrateur du logiciel et retourne sur le menu d'accueil
-     * du logiciel.
      * Ouvre un onglet d'alerte confirmant la réalisation de l'action
      * @param action
      */
@@ -368,6 +367,7 @@ public class Controller implements Initializable{
         Alert alert = new Alert(AlertType.INFORMATION);
         setAlert("Fin du mode Administrateur", "Le logiciel n'est plus en mode administrateur, seuls les affichages de données sont disponibles", "Confirmation", alert);
     }
+
     /**
      * Fonction appelée lors de l'appuie sur le bouton "Réinitialiser identifiants"
      * Supprime les identifiants de connexion admin actuels et les remplace
@@ -385,6 +385,7 @@ public class Controller implements Initializable{
     public void displayHelp(ActionEvent action){
 
     }
+
 
 
     /*Getter et setter des éléments static*/
@@ -413,9 +414,18 @@ public class Controller implements Initializable{
         Controller.countOpenedForm = countOpenedForm;
     }
 
+    public static String getForm() {
+        return form;
+    }
+
+    public static void setForm(String form) {
+        Controller.form = form;
+    }
+
+
 
     /*Mise en place et affichage du menu et sous-menus*/
-    
+
     /**
      * Récupère un objet Element dans la liste à partir de son code
      * @param code de l'élément voulu
@@ -431,8 +441,7 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Récupère sous forme de chaine de caractères 
-     * le code contenu dans l'item sélectionné
+     * Récupère sous forme de chaine de caractères le code de l'item sélectionné
      * @param item l'item sélectionné
      * @return uniquement le code depuis le texte de item
      */
@@ -441,8 +450,7 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Récupère uniquement le code d'un élèment depuis
-     * une chaine de caractère
+     * Récupère uniquement le code d'un élèment depuis une chaine de caractère
      * @param chain une chaine de caractère de type : "codeElement Nom de l'élèment"
      * @return le code contenu dans la chaine de caractère
      */
@@ -457,8 +465,7 @@ public class Controller implements Initializable{
     }
  
     /**
-     * Fonction appelée lors de la sélection d'un produit
-     * Parcours la liste d'éléments 
+     * Fonction appelée lors de la sélection d'un produit 
      * Met sous la forme de menuButton les éléments issus du produit sélectionné 
      * Ajoute les sous menus correspondant à ces éléments si nécessaire
      * Ajoute ces menus aux items de la liste déroulante d'ensembles
@@ -523,11 +530,9 @@ public class Controller implements Initializable{
 
     /**
      * Fonction appelé lors de l'ouverture de la fénêtre
-     * Récupère les éléments enregistrés depuis la data
-     * et ajoute les éléments de type produit (code=95..)en 
-     * tant que chaine de caractère à une comboBox "produits"
-     * @return la ComboBox contenant l'ensemble des produits 
-     * 95... contenus dans la data
+     * Récupère les éléments enregistrés depuis la data et ajoute les éléments 
+     * de type produit (code=95..)en tant à la comboBox "produits"
+     * @return la ComboBox contenant l'ensemble des produits (95...)
      */
     public ComboBox<String> createComboBox(){
         allElements = Element.unserializeElement(); //récupération des données stockées dans le fichier .ser
@@ -546,12 +551,13 @@ public class Controller implements Initializable{
     }
 
 
+
     /*Utilisation et évènements relatifs au menu*/
 
     /**
      * Fonction appelé lors de la sélection d'un élément dans le menu
      * Met à jour l'élément selectionné courrant
-     * Affiche dans le chams de texte le nom et code de l'élément sélectionné
+     * Affiche dans le champs de texte le nom et code de l'élément sélectionné
      * Rend visible les checkBox auto et manuel
      * @param item l'item sélectionné par un clic
      */
@@ -565,7 +571,7 @@ public class Controller implements Initializable{
     /**
      * Fonction appelé lorsqu'un produit a été sélectionné
      * Parcours la liste des radiosItem du menu d'ensembles et 
-     * créee les  évènements correspondant pour tous les radioItems
+     * crée les  évènements correspondant pour tous ces radioItems
      */
     public void initUsableEvent(){
         for(RadioMenuItem item:usableMenuItems){
@@ -601,10 +607,9 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Fonction appelé lorsque la valeur de l'élément courant 
-     * doit être "supprimée"
-     * Repasse la valeur de l'élément courant à null et 
-     * réinitialise les objets liés (checkbox, textField)
+     * Fonction appelé lorsque la valeur de l'élément courant doit être "supprimée"
+     * Repasse la valeur de l'élément courant à null et réinitialise les objets 
+     * liés (checkbox, textField)
      */
     public void resetElt(){
         currentElement = null;
@@ -616,6 +621,7 @@ public class Controller implements Initializable{
         manuelBox.setVisible(false);
         selectedElement.setText("");
     }
+
 
 
     /*Affichage */
@@ -645,8 +651,6 @@ public class Controller implements Initializable{
 
     /**
      * Affiche ou rend invisible le menu d'accueil de l'application
-     * et réinitialise les valeurs sélectionnées dans les menus :
-     * produit, ensemble, chackbox,...
      * @param visible true pour afficher, false pour masquer
      */
     public void setMenuDisplay(boolean visible){

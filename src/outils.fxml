@@ -47,5 +47,10 @@
             <Font size="16.0" />
          </font>
       </Button>
+      <Button fx:id="setRawButt" layoutX="20.0" layoutY="856.0" mnemonicParsing="false" onAction="#openModifWindow" text="Modifier" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
    </children>
 </Pane>

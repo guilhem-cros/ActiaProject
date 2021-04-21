@@ -16,10 +16,12 @@ public class MoyenGenerique implements Serializable{
     /*Nom du moyen*/
     private String nom;
 
+
 	/*Constructeurs*/
     public MoyenGenerique(String nom){
         this.nom=nom;
     }
+
 
 
 	/*Getter et setter*/
@@ -31,6 +33,7 @@ public class MoyenGenerique implements Serializable{
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
+
 
 
     /*Sérialisation des moyens génériques*/
@@ -76,6 +79,10 @@ public class MoyenGenerique implements Serializable{
 		}
 		return allMoyensGene; 
     }
+
+
+
+	/*Fonctions relative à la modification de la liste de moyens génériques*/
 
 	/**
 	 * Crée et ajoute un moyen générique à partir de son nom

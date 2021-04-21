@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 public class Element implements Serializable{
 
+
     /*Attributs*/
 
     private static final long serialVersionUID = 1L;
@@ -28,6 +29,8 @@ public class Element implements Serializable{
 
     private ArrayList<Logs> listLogsElement;
     
+
+
     /*Constructeurs*/
     public Element(String nom, String codeElt){
         this.nom=nom;
@@ -38,22 +41,20 @@ public class Element implements Serializable{
     }
 
 
+
     /*Getter et setter*/
 
     public String getNom() {
         return nom;
     }
 
-
     public void setNom(String nom) {
         this.nom = nom;
     }
 
-
     public String getCodeElt() {
         return codeElt;
     }
-
 
     public void setCodeElt(String codeElt) {
         this.codeElt = codeElt;
@@ -70,6 +71,7 @@ public class Element implements Serializable{
     public ArrayList<Logs> getListLogsElement() {
         return listLogsElement;
     }
+
 
 
     /*modifications sur la liste d'outils*/
@@ -105,11 +107,12 @@ public class Element implements Serializable{
     }
 
 
+
     /*modifications sur la liste de sous élements*/
 
     /**
-	 * Ajoute un élément à la liste de sous éléments de 
-     * l'objet visé si celui-ci n'y est pas déjà présent
+	 * Ajoute un élément à la liste de sous éléments de l'objet visé 
+     * si celui-ci n'y est pas déjà présent
 	 * @param e l'élément qu'on souhaite ajouter à la liste
 	 */
     public void addElement(Element e){
@@ -134,9 +137,22 @@ public class Element implements Serializable{
     }
 
 
-    public String toString(){
-        return this.codeElt + " " + this.nom + " ";
+
+    /*Modifications sur la liste de logs de l'élément*/
+
+    public void addLogs(Logs l){
+        listLogsElement.add(l);
     }
+
+    public void removeLogs(Logs l){
+        listLogsElement.remove(l);
+    }
+
+    public boolean hasLogs(){
+        return !listLogsElement.isEmpty();
+    }
+
+
 
     /**
      * @return vrai si l'élément est un "produit" ~ codeElt commence par 95
@@ -158,21 +174,9 @@ public class Element implements Serializable{
         return this.listeSousElements.isEmpty();
     }
 
-
-    /*Modifications sur la liste de logs de l'élément*/
-
-    public void addLogs(Logs l){
-        listLogsElement.add(l);
+    public String toString(){
+        return this.codeElt + " " + this.nom + " ";
     }
-
-    public void removeLogs(Logs l){
-        listLogsElement.remove(l);
-    }
-
-    public boolean hasLogs(){
-        return !listLogsElement.isEmpty();
-    }
-
 
 
 
@@ -218,10 +222,8 @@ public class Element implements Serializable{
         return list; 
     }
 
-
     /**
-     * Fonction triant une liste d'éléments dans  
-     * l'ordre décroisant de leur code
+     * Fonction triant une liste d'éléments dans l'ordre décroisant de leur code
      * @param L la liste d'éléments à trier
      */
     public static void sortElements(ArrayList<Element> L){

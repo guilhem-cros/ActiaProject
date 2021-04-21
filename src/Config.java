@@ -7,16 +7,22 @@ import java.io.Serializable;
 
 public class Config implements Serializable{
     
+    /*Attributs*/
+
     /*L'identifiant à saisir pour passer en mode admin */
     private static String login;
 
     /*Le mot de passe corresponant à l'identifiant*/
     private static String password;
 
+
+    /*Constructeurs*/
+
     public Config(String login, String password){
         Config.login = login;
         Config.password = password;
     }
+
 
 
     /*Getter et setter*/
@@ -37,11 +43,12 @@ public class Config implements Serializable{
         Config.password = password;
     }
 
+
+
     /*Sérialisation des objets Config*/
 
     /**
-	 * Stocke la config saisi dans un fichier .ser
-     * et modifie la config actuelle
+	 * Stocke la config saisi dans un fichier .ser et modifie la config actuelle
 	 * @param passW le mot de passe de la config
      * @param log le login de la config
 	 */
@@ -81,9 +88,4 @@ public class Config implements Serializable{
 			e.printStackTrace();
 		}
     }
-
-
-    
-
-    
 }

@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class Logs implements Serializable{
     
+    /*Attributs*/
+   
     private static final long serialVersionUID = 1L;
 
     private String paragraphe;
@@ -23,6 +24,7 @@ public class Logs implements Serializable{
         this.login = login;
         this.password = password;
     }
+
 
 
     /*Getter et setter*/
@@ -52,20 +54,18 @@ public class Logs implements Serializable{
     }
     
 
+
    /*Sérialisation des objets Logs*/
 
     /**
-	 * Stocke les éléments dans un fichier .ser
-	 * @param allElements ArrayList de l'ensemble des éléments
+	 * Sérialise des objets Logs afin qu'ils puissent être sérialisés en même temps 
+	 * que l'objets Element auquels ils appartiennent
 	 */
-    public void serializeElementLogs(ArrayList<Logs> elementLogs){
+	public void serializeLogs(){
         try {
 			FileOutputStream fichier = new FileOutputStream("data/logs.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fichier);
-            //Tous les éléments de la liste sont sérializés dans le fichier précédent
-            for(Logs l: elementLogs){
-                oos.writeObject(l); //séralise tous les attributs de l'élément
-            }
+			oos.writeObject(this);
             oos.close();
 		} catch (IOException e) {
 			System.out.println(e.toString());
@@ -73,24 +73,22 @@ public class Logs implements Serializable{
 	
     }
 
-    /**
-	 * Récupère les ensembles stockés dans le fichier element.ser
-	 * @return arraylist contentant l'ensemble des éléments lu dans le fichier
+	/**
+	 * Lis des objets Logs sérialisés afin qu'ils puissent être lu et traduits en même temps 
+	 * que l'objets Element auquels ils apparatiennent
 	 */
-    public ArrayList<Logs> unserializeLogs(){
-        ArrayList<Logs> list = new ArrayList<Logs>();
+	public void unserializeLogs(){
         try (ObjectInputStream ois = 
 				new ObjectInputStream(
 						new FileInputStream("data/logs.ser"))) {
-			// Lecture complète du fichier
+			/* Lecture du fichier*/
 			while (true) {
-				list.add((Logs) ois.readObject());
+				ois.readObject();
 			}
 		} catch (IOException e) {
 			//Exception lorsqu'on atteint la fin du fichier
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-		}
-        return list; 
+		}   
     }
 }

@@ -37,6 +37,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+
 public class ControllerAffichage implements Initializable{
 
     /*L'élément sélectionné depuis l'accueil*/
@@ -46,10 +47,13 @@ public class ControllerAffichage implements Initializable{
     private ArrayList<Outil> listOutils;
 
     /*La liste de tous les Moyens génériques*/
-    private  ArrayList<MoyenGenerique> moyensGene = MoyenGenerique.unserializeMoyenGene();
+    private  static ArrayList<MoyenGenerique> moyensGene;
 
     /*La liste des titres des colonnes*/
     private static ArrayList<String> paramTitles;
+
+    /*La liste des paramètres affichés sous format lien*/
+    private static ArrayList<Boolean> listHyperlink;
     
     /*La liste des lignes (des paramètres des outils) de la grille*/
     private ArrayList<ArrayList<Labeled>> clicableItems;
@@ -57,6 +61,7 @@ public class ControllerAffichage implements Initializable{
     /*L'outil de test actuellement sélectionné pour modification/suppression*/
     private Outil currentOutil;
 
+    /*Objet nécessaire à l'ouverture de fichiers*/
     private HostServices hostServices;
 
     
@@ -96,6 +101,8 @@ public class ControllerAffichage implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        moyensGene = MoyenGenerique.unserializeMoyenGene();
+        setHyperlinkList();
         paramTitles = Outil.getParamTitle();
         setParamOfElt();
         listMoyenGene.getItems().clear();
@@ -105,16 +112,12 @@ public class ControllerAffichage implements Initializable{
         selectForModif();
     }
 
-    public static ArrayList<String> getParamTitles() {
-        return paramTitles;
-    }
 
-    
+
     /*Fonctions FXML de la fenêtre d'affichage*/
 
     /**
-     * récupère la valeur de la comboBox et met à jour
-     * l'affichage en fonction de celle-ci
+     * Récupère la valeur de la comboBox et met à jour l'affichage en fonction de celle-ci
      * @param action
      */
     @FXML
@@ -137,28 +140,43 @@ public class ControllerAffichage implements Initializable{
             Controller.setAlert("Erreur formulaire", "Un autre formulaire est déjà ouvert, veuillez le fermer afin d'en ouvrir un nouveau", "Erreur", alert);
         }
         else{
+            Controller.setForm("newColForm");
             ControllerFormulaire.setOriginControl(this); //mise à jour du controller parent
-            try {
+            /*Création du nouvel onglet*/
+            Stage stage = setNewStage("ajoutCol.fxml");
+            stage.setTitle("Ajout colonne");
+            /*Ajout d'une action lors de la fermeture de l'onglet depuis la croix rouge*/
+            addCloseEvent(stage);
+            Controller.setCountOpenedForm(Controller.getCountOpenedForm()+1);//incrémentation du compteur de formulaires ouverts
+            stage.showAndWait();
+        }
+    }
+
+    @FXML
+    public void openModifWindow(ActionEvent action){
+        if(currentOutil  == null){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur, aucune ligne sélectionnée", "Veuillez sélectionner une ligne à modifier.", "Erreur", alert);
+        }
+        else{
+            if(Controller.getCountOpenedForm()>0){
+                Alert alert = new Alert(AlertType.WARNING); //message d'erreur
+                Controller.setAlert("Erreur formulaire", "Un autre formulaire est déjà ouvert, veuillez le fermer afin d'en ouvrir un nouveau", "Erreur", alert);
+            }
+            else{
+                Controller.setForm("modifOutilForm");
+                ControllerFormulaire.setOriginControl(this); //mise à jour du controller parent
                 /*Création du nouvel onglet*/
-                Parent root = FXMLLoader.load(getClass().getResource("ajoutCol.fxml"));
-                Scene scene  = new Scene(root);
-                Stage stage = new Stage();
-                stage.setScene(scene);
-                stage.setTitle("Ajout colonne");
-                stage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("media/logoActiaPetit.png")));;
-                stage.setScene(scene);
-                stage.setResizable(false);
+                Stage stage = setNewStage("formModifOutil.fxml");
+                stage.setTitle("Modification de ligne");
                 /*Ajout d'une action lors de la fermeture de l'onglet depuis la croix rouge*/
-                stage.setOnCloseRequest(event ->{
-                    Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1); //décrémentation du compteur de formulaires ouverts
-                });
+                addCloseEvent(stage);
                 Controller.setCountOpenedForm(Controller.getCountOpenedForm()+1);//incrémentation du compteur de formulaires ouverts
                 stage.showAndWait();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
+
 
 
     /*Permet d'utiliser les hostsservices depuis le controller*/
@@ -166,6 +184,7 @@ public class ControllerAffichage implements Initializable{
         this.hostServices = hostServices;
     }       
     
+
     /**
      * Récupère l'élément sélectionné depuis la page accueil
      * Récupère les moyens de tests correspondants à cet élément
@@ -184,14 +203,14 @@ public class ControllerAffichage implements Initializable{
     }
 
 
+
+    /*Mise en place du tableau*/
+
     /**
-     * Si la liste Outil est vide : renvoie un message 
-     * indiquant qu'aucun moyen de test n'est diponible
-     * Sinon : Rempli la grille avec les attributs 
-     * correspondant à chaque moyens de test de l'élément
-     * en fonction du moyen générique sélectionné (renvoie
-     * le même message si l'élément ne contient aucun Outil 
-     * de test pour ce moyen générique).
+     * Si la liste Outil est vide : renvoie un message indiquant qu'aucun moyen de test n'est diponible
+     * Sinon : Rempli la grille avec les attributs correspondant à chaque moyens de test de l'élément
+     * en fonction du moyen générique sélectionné (renvoie le même message si l'élément ne contient 
+     * aucun Outil de test pour ce moyen générique).
      */
     public void setTable(String selectedMoyenGene){
         clicableItems = new ArrayList<ArrayList<Labeled>>();
@@ -211,11 +230,11 @@ public class ControllerAffichage implements Initializable{
             for(Outil t: toPrintOutils){
                 ArrayList<String> listParam = t.getListParam(); //la liste des cases de la ligne courante
                 ArrayList<Labeled> list = new ArrayList<Labeled>();
-                int countP=0; //me numéro de la colonne actuelle
+                int countP=0; //le numéro de la colonne actuelle
                 /*Parcours de tous les attributs de l'outil courant*/
                 for(int i=0; i<t.getListParam().size(); i++){ 
                     String param = listParam.get(i);
-                    if((i==12||i==15)&& param!=null){ //s'il s'agit d'un attribut de type lien
+                    if(listHyperlink.get(i) && param!=null){ //s'il s'agit d'un attribut de type lien
                         Hyperlink text = setLink(param);
                         list.add(text); //ajout à la liste des cases de la ligne
                         grid.add(text, countP, count); //ajout / remplissage de la case courante de grid
@@ -223,7 +242,6 @@ public class ControllerAffichage implements Initializable{
                     else{
                         Label text = new Label(param);
                         /*Les paramètres visuels de text*/
-                        //text.setBorder(new Border());
                         text.setWrapText(true); 
                         text.setAlignment(Pos.CENTER);
                         text.setTextAlignment(TextAlignment.CENTER);
@@ -251,39 +269,7 @@ public class ControllerAffichage implements Initializable{
     }
 
     /**
-     * Récupère les moyens de tests de l'élément en fonction 
-     * d'un moyen générique
-     * @param moyen le nom du moyen générique voulu
-     * @return l'ensemble des outils de tests de l'élément 
-     * pour lesquels le moyen générique correspond au paramètre
-     */
-    public ArrayList<Outil> getOutilsByMoyenGene(String moyen){
-        ArrayList<Outil> listOutilByMoy = new ArrayList<Outil>();
-        /*Parcours de l'ensemble des outils de test de l'élément*/
-        for(Outil t: listOutils){
-            if(moyen.equals(t.getMoyenGenerique())){
-                listOutilByMoy.add(t);
-            }
-        }
-        return listOutilByMoy;
-    }
-
-    /**
-     * @return la liste d'outils correspondant à la valeur courante 
-     * de la ComboBox
-     */
-    public ArrayList<Outil> initPrintedOutils(){
-        if(listMoyenGene.getValue()==null||listMoyenGene.getValue().equals("Tous")){ //retourne tous les outils de test de l'élément si la Combobox n'a pas encore de valeur
-            return listOutils;
-        }
-        else{
-            return getOutilsByMoyenGene(listMoyenGene.getValue());
-        }
-    }
-
-    /**
-     * Met en place les "titres" des colonnes du tableau 
-     * sur la premiere ligne de grid
+     * Met en place les "titres" des colonnes du tableau sur la premiere ligne de grid
      */
     public void initColumnTitle(GridPane gridp){
         gridp.getChildren().clear();
@@ -308,6 +294,35 @@ public class ControllerAffichage implements Initializable{
     }
 
     /**
+     * Récupère les moyens de tests de l'élément en fonction d'un moyen générique
+     * @param moyen le nom du moyen générique voulu
+     * @return l'ensemble des outils de tests de l'élément 
+     * pour lesquels le moyen générique correspond au paramètre
+     */
+    public ArrayList<Outil> getOutilsByMoyenGene(String moyen){
+        ArrayList<Outil> listOutilByMoy = new ArrayList<Outil>();
+        /*Parcours de l'ensemble des outils de test de l'élément*/
+        for(Outil t: listOutils){
+            if(moyen.equals(t.getMoyenGenerique())){
+                listOutilByMoy.add(t);
+            }
+        }
+        return listOutilByMoy;
+    }
+
+    /**
+     * @return la liste d'outils correspondant à la valeur courante de la ComboBox
+     */
+    public ArrayList<Outil> initPrintedOutils(){
+        if(listMoyenGene.getValue()==null||listMoyenGene.getValue().equals("Tous")){ //retourne tous les outils de test de l'élément si la Combobox n'a pas encore de valeur
+            return listOutils;
+        }
+        else{
+            return getOutilsByMoyenGene(listMoyenGene.getValue());
+        }
+    }
+
+    /**
      * Crée une comboBox contenant la liste des Moyens génériques enregistrés
      * @return la combo box contenant tous les moyens génériques
      */
@@ -322,9 +337,11 @@ public class ControllerAffichage implements Initializable{
         
     }
 
+
+    /*Fonctions relatives aux liens hypertextes*/
+
     /**
-     * Création d'un lien hypertexte
-     * Ouvre une fenêtre vers le fichier pointé
+     * Création d'un lien hypertexte ouvrant une fenêtre vers le fichier pointé
      * @param link chaine de caractère correspondant au 
      * lien absolu vers le fichier visé
      * @return le lien hypextexte ouvrant le fichier visé
@@ -375,47 +392,69 @@ public class ControllerAffichage implements Initializable{
     }
 
     /**
+     * Instancie la liste de paramètres affichés sous forme
+     * d'hyperlien à partir des 16 paramètres de base
+     */
+    public void setHyperlinkList(){
+        if(listHyperlink==null){ //si la liste n'a pas encore été instanciée
+            listHyperlink = new ArrayList<Boolean>();
+            for(int i=0; i<16;i++){
+                if(i==12||i==15){ //la position des deux paramètres de base affichés sous format lien
+                    listHyperlink.add(true);
+                }
+                else{
+                    listHyperlink.add(false);
+                }
+            }
+        }
+    }
+
+
+
+    /*Fonction nécessaires au mode administrateur*/
+
+    /**
      * Initilialise la visibilité des élèments de la page 
      * en fonction de l'activation du mode Admin du logiciel
      */
     public void setVisibility(){
         boolean admin = Controller.isAdmin();
         newColumnButt.setVisible(admin);
+        setRawButt.setVisible(admin);
         
     }
 
     /**
-     * Instancie l'évènement de type clic sur toutes les lignes de 
-     * la grille. 
-     * L'Outil courant sélectionné prend la valeur de 
-     * l'outil de la ligne cliqué et le fond de la ligne
-     * change de couleur.
+     * Instancie l'évènement de type clic sur toutes les lignes de la grille. 
+     * L'Outil courant sélectionné prend la valeur de l'outil de la ligne 
+     * cliqué et le fond de la ligne change de couleur.
      */
     public void selectForModif(){
-        BackgroundFill bf = new BackgroundFill(Color.rgb(204, 255, 179), CornerRadii.EMPTY , Insets.EMPTY); //la couleur de la ligne cliqué
-        /*parcours de toutes les lignes de la grille*/
-        for(ArrayList<Labeled> l: clicableItems){
-            /*Parcours de chaque case de la grille*/
-            for(Labeled lab : l){
-                lab.setOnMouseClicked(event -> { //ajout de l'évènement à chaque case
-                resetLabels();
-                    /*Changement de couleur sur toute la ligne sélectionnée*/
-                    for(Labeled label: l){
-                        label.setBackground(new Background(bf));
-                    }
-                    for(Outil ot: listOutils){
-                        if(ot.getDetailMoyen().equals(l.get(3).getText())){
-                            currentOutil = ot; //mise à jour de l'outil courrant en fonction du "Détail du moyen" relevé dans la ligne sélectionné
+        if(Controller.isAdmin()){ //ne fonctionne que dans le cas ou le logiciel est en mode admin
+            BackgroundFill bf = new BackgroundFill(Color.rgb(204, 255, 179), CornerRadii.EMPTY , Insets.EMPTY); //la couleur de la ligne cliqué
+            /*parcours de toutes les lignes de la grille*/
+            for(ArrayList<Labeled> l: clicableItems){
+                /*Parcours de chaque case de la grille*/
+                for(Labeled lab : l){
+                    lab.setOnMouseClicked(event -> { //ajout de l'évènement à chaque case
+                    resetLabels();
+                        /*Changement de couleur sur toute la ligne sélectionnée*/
+                        for(Labeled label: l){
+                            label.setBackground(new Background(bf));
                         }
-                    }
-                });
+                        for(Outil ot: listOutils){
+                            if(ot.getDetailMoyen().equals(l.get(3).getText())){
+                                currentOutil = ot; //mise à jour de l'outil courrant en fonction du "Détail du moyen" relevé dans la ligne sélectionné
+                            }
+                        }
+                    });
+                }
             }
         }
     }
 
     /**
-     * Passe la couleur de background de tous les éléments de la grille
-     * (sauf titres) en blanc.
+     * Passe la couleur de background de tous les éléments de la grille (sauf titres) en blanc.
      */
     public void resetLabels(){
         BackgroundFill bf = new BackgroundFill(Color.WHITE, CornerRadii.EMPTY , Insets.EMPTY);
@@ -424,6 +463,82 @@ public class ControllerAffichage implements Initializable{
                 lab.setBackground(new Background(bf));
             }
         }    
+    }
+
+
+    /**
+     * Initialise un Stage dans l'optique d'une ouverture de nouvelle fenêtre
+     * et met en place les paramètres de base de ce stage
+     * @param fxmlLink le lien du fichier fxml parent du stage crée
+     * @return le stage crée et préparé à l'utilisation
+     */ 
+    public Stage setNewStage(String fxmlLink){
+        /*Déclaration de la nouvelle fenetre*/
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlLink));
+            Scene scene  = new Scene(root);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage = new Stage();
+            stage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("media/logoActiaPetit.png")));;
+            stage.setScene(scene);
+            stage.setResizable(false);
+            return stage;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /** 
+     * Ajoute une action sur la fermeture d'une fenêtre formulaire qui décrémente 
+     * le nb de formulaire ouvert et change en null le nom du form courant
+     * @param stage la fenêtre à qui l'action est ajoutée
+     */
+    public void addCloseEvent(Stage stage){
+        stage.setOnCloseRequest(event ->{
+            Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1); //décrémentation du compteur de formulaires ouverts
+            Controller.setForm("null");             
+        });
+    }
+
+    
+    /*Getter et setter*/
+
+    public Outil getCurrentOutil() {
+        return currentOutil;
+    }
+
+    public void setCurrentOutil(Outil currentOutil) {
+        this.currentOutil = currentOutil;
+    }
+    
+    public static ArrayList<Boolean> getListHyperlink() {
+        return listHyperlink;
+    }
+
+    public static void setListHyperlink(ArrayList<Boolean> listHyperlink) {
+        ControllerAffichage.listHyperlink = listHyperlink;
+    }
+
+    public static ArrayList<String> getParamTitles() {
+        return paramTitles;
+    }
+
+    public static ArrayList<MoyenGenerique> getMoyensGene() {
+        return moyensGene;
+    }
+
+    public static void setMoyensGene(ArrayList<MoyenGenerique> moyensGene) {
+        ControllerAffichage.moyensGene = moyensGene;
+    }
+
+    public Element getSelectedElt() {
+        return selectedElt;
+    }
+
+    public void setSelectedElt(Element selectedElt) {
+        this.selectedElt = selectedElt;
     }
     
 }

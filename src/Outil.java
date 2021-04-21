@@ -38,8 +38,10 @@ public class Outil implements Serializable{
 	/*Liste des "titres" des paramètres des outils de test*/
 	private static ArrayList<String> listParamTitle;
 
+	/*Liste des paramètres ajoutés manuellement et stockées*/
 	private ArrayList<String> addedParam;
 
+	
 	/*Constructeurs*/
     public Outil(String moyenGenerique, String detailMoyen){
         this.moyenGenerique = moyenGenerique;
@@ -49,6 +51,7 @@ public class Outil implements Serializable{
 		this.listParam = new ArrayList<String>();
 		this.addedParam = new ArrayList<String>();
     }
+
 
 
 	/*Getter et setter*/
@@ -188,12 +191,12 @@ public class Outil implements Serializable{
 	}
 
 
-	/*Les listes de paramètres (utiles au ControllerAffichage)*/
+
+	/*Fonctions relatives à la liste de paramètres*/
 
 	/**
-	 * Crée la liste contenant les valeurs des
-	 * attributs de l'Outil en chaine de caractère 
-	 * dans l'optique du futur affichage
+	 * Crée la liste contenant les valeurs des attributs de l'Outil 
+	 * en chaine de caractère dans l'optique du futur affichage
 	 */
 	public void setListParam(){
 		this.listParam = new ArrayList<String>();
@@ -226,8 +229,7 @@ public class Outil implements Serializable{
 	}
 
 	/**
-	 * @return le liste contenant les valeurs des
-	 * attributs de l'Outil en chaine de caractère
+	 * @return le liste contenant les valeurs des attributs de l'Outil en chaine de caractère
 	 */
 	public ArrayList<String> getListParam(){
 		setListParam();
@@ -235,10 +237,10 @@ public class Outil implements Serializable{
 	}
 
 	/**
-	 * Crée la liste des "titres" de chaque attribut 
-	 * de l'Outil qui sont utilisés dans l'affichage
+	 * Crée la liste des "titres" de chaque attribut de l'Outil qui sont utilisés dans l'affichage
 	 */
 	public static void setListParamTitle(){
+		/*Attributs de base*/
 		listParamTitle = new ArrayList<String>();
 		listParamTitle.add("Moyens Génériques");
 		listParamTitle.add("Quantité");
@@ -263,17 +265,19 @@ public class Outil implements Serializable{
 	}
 
 	/**
-	 * @return la liste des "titres" de chaque attribut 
-	 * de l'Outil
+	 * @return la liste des "titres" de chaque attribut de l'Outil
 	 */
 	public static ArrayList<String> getParamTitle(){
 		Outil.setListParamTitle(); //initialisation de la liste
 		return listParamTitle;
 	}
 
+
+
+	/*Fonctions sur les paramètres ajoutées*/
+
 	/**
-	 * Initialise ou complète la liste addedParam
-	 * en fonction du nombre de titres d'attributs 
+	 * Initialise ou complète la liste addedParam en fonction du nombre de titres d'attributs 
 	 * crées manuellement et enregistrés
 	 */
 	public void setAddedParams(){
@@ -283,8 +287,8 @@ public class Outil implements Serializable{
 	}
 
 	/**
-	 * Modifie la valeur d'un paramètre ajouté manuellement
-	 * @param title le titre du paramètre
+	 * Modifie la valeur d'un paramètre corrspondant à un attribut ajouté manuellement
+	 * @param title le titre du paramètre (l'attribut)
 	 * @param value la nouvelle valeur du paramètre
 	 */
 	public void setParam(String title, String value){
@@ -297,11 +301,11 @@ public class Outil implements Serializable{
 	}
 
 
+
 	/*Sérialisation des objets Outil*/
 
 	/**
-	 * Sérialise des objets Outil afin qu'ils 
-	 * puissent être sérailisés en même temps 
+	 * Sérialise des objets Outil afin qu'ils puissent être sérailisés en même temps 
 	 * que les objets Element
 	 */
 	public void serializeOutil(){
@@ -317,8 +321,7 @@ public class Outil implements Serializable{
     }
 
 	/**
-	 * Lis des objets Outil sérialisés afin qu'ils
-	 * puissent être lu et traduits en même temps 
+	 * Lis des objets Outil sérialisés afin qu'ils puissent être lu et traduits en même temps 
 	 * que les objets element
 	 */
 	public void unserializeOutil(){
@@ -338,10 +341,8 @@ public class Outil implements Serializable{
 
 
 
-
 	/**
-	 * Ajout d'une nouvelle variable en tant que titre 
-	 * dans la base de données
+	 * Ajout d'une nouvelle variable en tant que titre (attribut) dans la base de données
 	 * @param title le nom du titre du paramètre
 	 */
 	public static void addTitle(String title){
@@ -351,9 +352,9 @@ public class Outil implements Serializable{
     }
 
 	/**
-	 * Lis le fichier contenant l'ensemble des titres de paramètres 
+	 * Lis le fichier contenant l'ensemble des attributs 
 	 * ajoutés manuellement par l'utilisateur
-	 * @return la liste des titres contenus dans le fichier
+	 * @return la liste des attributs contenus dans le fichier
 	 */
     public static ArrayList<String> unserializeTitles(){
         ArrayList<String> listTitles = new ArrayList<String>();
@@ -374,8 +375,7 @@ public class Outil implements Serializable{
     }
 
 	/**
-	 * Eregistre dans le fichier correpondant, les titres de 
-	 * paramètres entrés manuellement
+	 * Eregistre dans le fichier correpondant, les attributs entrés manuellement
 	 * @param allTitles la liste des titres à enregistrer
 	 */
     public static void serializeAllTitles(ArrayList<String> allTitles){
@@ -390,5 +390,4 @@ public class Outil implements Serializable{
 			System.out.println(e.toString());
 		}
     }
-
 }
