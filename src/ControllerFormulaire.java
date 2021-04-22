@@ -28,7 +28,8 @@ public class ControllerFormulaire implements Initializable{
     /*Le controller parent du formulaire actuellement ouvert*/
     private static ControllerAffichage originControl;
 
-    private ArrayList<TextField> listParam;
+    /*Liste des champs complétables des paramètres de l'outils*/
+    private ArrayList<TextField> listParamField;
     
     
     /*Attributs FXML des fomulaires*/
@@ -44,7 +45,7 @@ public class ControllerFormulaire implements Initializable{
 
 
     @FXML
-    private Label titleLable;
+    private Label titleLabel;
 
     @FXML
     private Button saveButton;
@@ -116,7 +117,7 @@ public class ControllerFormulaire implements Initializable{
             (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
             Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
             originControl.initialize(null, null); //mise à jour immédiate de la page d'affichage parente du formulaire
-            Alert alert = new Alert(AlertType.INFORMATION); //mise en place d'un message de confirmation
+            Alert alert = new Alert(AlertType.CONFIRMATION); //mise en place d'un message de confirmation
             Controller.setAlert("Mise à jour effectuée", "La colonne a bien été ajoutée", "Confirmation", alert);
         }
     }
@@ -130,18 +131,27 @@ public class ControllerFormulaire implements Initializable{
      */
     @FXML
     public void setOutil(ActionEvent action){
-        if(doOutilByForm()!=null){
-            Element e = originControl.getSelectedElt();
-            for(int i=0; i<e.getOutils().size(); i++){
-                if(e.getOutils().get(i).equals(originControl.getCurrentOutil())){
-                    e.getOutils().set(i, doOutilByForm());
+        if(listMoyensGene.getValue()!=null && detailMoyen.getText().length()!=0 && testMode.getValue()!=null){
+            if(doOutilByForm()!=null){
+                Element e = originControl.getSelectedElt();
+                for(int i=0; i<e.getOutils().size(); i++){
+                    if(e.getOutils().get(i).equals(originControl.getCurrentOutil())){
+                        e.getOutils().set(i, doOutilByForm());
+                        i = e.getOutils().size(); //sortie de la boucle
+                    }
                 }
+                titleLabel.setText("Formulaire de modification");
+                Element.serializeAllElements(Controller.getAllElements());
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
+                originControl.initialize(null, null);
+                Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
+                (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
             }
-            Alert alert = new Alert(AlertType.INFORMATION);
-            Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
-            originControl.initialize(null, null);
-            Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
-            (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
+        }
+        else{
+            Alert alert = new Alert(AlertType.ERROR);
+            Controller.setAlert("Erreur : formulaire incomplet", "Veuillez remplir tous les champs précédés d'un * .", "Erreur", alert);
         }
     }
     
@@ -177,6 +187,9 @@ public class ControllerFormulaire implements Initializable{
 
     /*Fonctions relative à l'ajout/modification de lignes*/
 
+    /**
+     * Instancie la ComboBox testMode avec les choix Auto et Manuel
+     */
     public void setCbMode(){
         testMode.getItems().clear();
         testMode.getItems().add("Auto");
@@ -189,14 +202,14 @@ public class ControllerFormulaire implements Initializable{
     */
     public void setForm(){
         RowConstraints row = new RowConstraints(65);
-        listParam = new ArrayList<TextField>();
+        listParamField = new ArrayList<TextField>();
         /*Pour toutes les colonnes du tableau, un champs de saisi et de description ajoutés au form*/
         for(int i=4; i<Outil.getParamTitle().size(); i++){
             Label title = new Label(Outil.getParamTitle().get(i));
             setLabelParam(title);
             TextField tf = new TextField();
             setTextFParam(tf);
-            listParam.add(tf);
+            listParamField.add(tf);
             grid.getRowConstraints().add(row);
             grid.add(title,0, i);
             grid.add(tf, 1, i);
@@ -204,7 +217,7 @@ public class ControllerFormulaire implements Initializable{
             if(ControllerAffichage.getListHyperlink().get(i)){
                 FileChooser fl = new FileChooser();
                 fl.setTitle("Sélection de fichier");
-                Button selectFileButton = new Button("..."); //ajout d'un bouton
+                Button selectFileButton = new Button("...");
                 /*Evenenement du bouton : sélection d'un fichier et conservation de son chemin absolu*/
                 selectFileButton.setOnAction(event -> {
                     File file = fl.showOpenDialog(new Stage());
@@ -212,10 +225,31 @@ public class ControllerFormulaire implements Initializable{
                         tf.setText(file.getAbsolutePath());
                     }
                 });
-                grid.add(selectFileButton, 2, i); //ajout du bouton dans la grille
+                grid.add(selectFileButton, 2, i);
             }
         }
+        fillFields();
+    }
 
+    /**
+     * Pré-rempli les champs du formulaire avec les données de l'Outil
+     * courrament sélectionné.
+     */
+    public void fillFields(){
+        Outil outil = originControl.getCurrentOutil();
+        ArrayList<String> param = outil.getListParam();
+        listMoyensGene.setValue(outil.getMoyenGenerique());
+        quantite.setText("" + outil.getQuantite());
+        if(outil.isUtilisationAuto()){
+            testMode.setValue("Auto");
+        }
+        else{
+            testMode.setValue("Manuel");
+        }
+        detailMoyen.setText(outil.getDetailMoyen());
+        for(int i=4; i<param.size();i++){
+            listParamField.get(i-4).setText(param.get(i));
+        }
     }
 
     /**
@@ -253,16 +287,21 @@ public class ControllerFormulaire implements Initializable{
         listMoyensGene.getItems().clear();
         listMoyensGene.setStyle("-fx-font-f: 16px;");
         ArrayList<MoyenGenerique> moyens = ControllerAffichage.getMoyensGene();
-        MoyenGenerique.sortMoyenGen(moyens); //tri de la liste de moyens
+        MoyenGenerique.sortMoyenGen(moyens);
         for(MoyenGenerique m : moyens){
-            String chaine = m.getNom();
-            listMoyensGene.getItems().add(chaine);
+            if(!m.getNom().equals("Tous")){
+                String chaine = m.getNom();
+                listMoyensGene.getItems().add(chaine);
+            }
         } 
     }
 
+    /**
+     * Récupère l'ensemble des données saisies dans le formulaire et crée
+     * un Outil à partir de celles-ci
+     * @return l'outil crée possédant toutes les informations saisies
+     */
     public Outil doOutilByForm(){
-        System.out.println(listMoyensGene.getValue());
-        System.out.println(detailMoyen.getText());
         Outil outil = new Outil(listMoyensGene.getValue(), detailMoyen.getText());
         outil.setUtilisationAuto(testMode.getValue().equals("Auto"));
         if(!isInteger(quantite.getText())){
@@ -276,6 +315,11 @@ public class ControllerFormulaire implements Initializable{
         return outil;
     }
 
+    /**
+     * Vérifie si une chaine de caractère est un entier
+     * @param str la caine de caractère testée
+     * @return vrai s'il s'agit d'un entier, faux sinon
+     */
     public boolean isInteger(String str) {
         int size = str.length();
         for (int i = 0; i < str.length(); i++) {

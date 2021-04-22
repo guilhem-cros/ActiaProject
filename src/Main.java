@@ -7,6 +7,7 @@ public class Main{
 
     public static void main(String[] args) {
         
+        /*
         Element elmt= new Element("test", "9555");
         Element elt2= new Element("test2", "9545");
         Element elt3= new Element("test3", "9355");
@@ -18,6 +19,7 @@ public class Main{
         elt4.addElement(elt5); 
         Outil t1 = new Outil("Logiciel", "il faut tester");
         Outil t2 = new Outil("Bande passante", "splitter vidéo composite 1 voie vers 16 voies encore encore core");
+        Outil t3 = new Outil("Bande passante", "test num 2");
         t2.setAddedParams();
         t2.setParam("nouveau", "nice");
         t2.setParam("zerz", "non");
@@ -25,6 +27,7 @@ public class Main{
         t2.setLienPhoto("C:/Users/g.cros/Documents/Projet/media/logoActia.png");
         elt3.addOutil(t1);
         elt3.addOutil(t2);
+        elt3.addOutil(t3);
         Logs l1 = new Logs("1.2", "admin", "admin");
         Logs l2 = new Logs("1.2.8", "admin", "admin");
         elt3.addLogs(l1);
@@ -38,8 +41,9 @@ public class Main{
         list.add(elt6);
         Element.serializeAllElements(list);
         System.out.println(MoyenGenerique.addMoyen("Tous"));
-        
-        
+        */
+        Outil o = new Outil("test", "test");
+        o.setListParam();
 
     }
 }

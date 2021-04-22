@@ -109,7 +109,6 @@ public class ControllerAffichage implements Initializable{
         setComboBoxMoyenGene();
         setTable(null);
         setVisibility();
-        selectForModif();
     }
 
 
@@ -193,13 +192,17 @@ public class ControllerAffichage implements Initializable{
      */
     public void setParamOfElt(){
         selectedElt = Controller.getCurrentElement();
-        if(Controller.isAuto() && Controller.isManuel()){ //si les 2 checkboxs ont été cochées
+        /*si les 2 checkboxs ont été cochées*/
+        if(Controller.isAuto() && Controller.isManuel()){ 
             listOutils = selectedElt.getOutils();
-        }   
-        else { //si une seule des checkbox a été cochée
+        } 
+        /*si une seule des checkbox a été cochée*/
+        else { 
             listOutils = selectedElt.getOutilsByMode(Controller.isAuto());
+            
         }
         title.setText(selectedElt.getCodeElt() + " " + selectedElt.getNom());
+        Outil.sortOutilsByMoyen(listOutils);
     }
 
 
@@ -224,20 +227,21 @@ public class ControllerAffichage implements Initializable{
             emptyLabel.setVisible(true);
         }
         else{
-            initColumnTitle(grid); //mise en place des titres
-            int count = 1; //le numéro de la ligne actuelle
+            initColumnTitle(grid);
+            int count = 1; //numéro de la ligne actuelle
             /*Parcours de tous les outils de test de l'élément*/
             for(Outil t: toPrintOutils){
-                ArrayList<String> listParam = t.getListParam(); //la liste des cases de la ligne courante
+                ArrayList<String> listParam = t.getListParam(); //liste des cases de la ligne courante
                 ArrayList<Labeled> list = new ArrayList<Labeled>();
-                int countP=0; //le numéro de la colonne actuelle
+                int countP=0; //numéro de la colonne actuelle
                 /*Parcours de tous les attributs de l'outil courant*/
                 for(int i=0; i<t.getListParam().size(); i++){ 
                     String param = listParam.get(i);
-                    if(listHyperlink.get(i) && param!=null){ //s'il s'agit d'un attribut de type lien
+                    /*s'il s'agit d'un attribut de type lien*/
+                    if(listHyperlink.get(i) && param!=null){ 
                         Hyperlink text = setLink(param);
                         list.add(text); //ajout à la liste des cases de la ligne
-                        grid.add(text, countP, count); //ajout / remplissage de la case courante de grid
+                        grid.add(text, countP, count); //remplissage de la case courante de grid
                     }
                     else{
                         Label text = new Label(param);
@@ -252,11 +256,10 @@ public class ControllerAffichage implements Initializable{
                         text.setPrefWidth(160);
                         text.setStyle("-fx-border-color: grey;");
                         list.add(text); //ajout à la liste des cases de la ligne
-                        grid.add(text, countP, count); //ajout / remplissage de la case courante de grid
+                        grid.add(text, countP, count); //remplissage de la case courante de grid
                     }    
                     countP++;
                 }
-                /*ajustement de la taille du scrollpane en fct de la taille du gridPane*/
                 sp.setPrefHeight(100*(count+1)+20); //incrémentation de la hauteur du scrollpane en fct du nb de lignes de grid
                 clicableItems.add(list); //ajout de la liste de case de la ligne courante à la liste de lignes de la grille
                 count++;
@@ -266,6 +269,7 @@ public class ControllerAffichage implements Initializable{
             sp.setVisible(true);
             emptyLabel.setVisible(false);
         }
+        selectForModif();
     }
 
     /**
@@ -273,7 +277,7 @@ public class ControllerAffichage implements Initializable{
      */
     public void initColumnTitle(GridPane gridp){
         gridp.getChildren().clear();
-        int count = 0; // la colonne courante
+        int count = 0; //colonne courante
         /*Parcours de la liste des "titres"(~nom des variables de Outil) du tableau*/
         for(String s : paramTitles){
             Label txt = new Label(s);
@@ -288,7 +292,7 @@ public class ControllerAffichage implements Initializable{
             txt.setStyle("-fx-border-color: grey;");
             BackgroundFill bf = new BackgroundFill(Color.rgb(171, 171, 171), CornerRadii.EMPTY , Insets.EMPTY);
             txt.setBackground(new Background(bf));
-            gridp.add(txt, count, 0); //ajout de la case courante remplie à grid
+            gridp.add(txt, count, 0);
             count++;
         }
     }
@@ -314,7 +318,7 @@ public class ControllerAffichage implements Initializable{
      * @return la liste d'outils correspondant à la valeur courante de la ComboBox
      */
     public ArrayList<Outil> initPrintedOutils(){
-        if(listMoyenGene.getValue()==null||listMoyenGene.getValue().equals("Tous")){ //retourne tous les outils de test de l'élément si la Combobox n'a pas encore de valeur
+        if(listMoyenGene.getValue()==null||listMoyenGene.getValue().equals("Tous")){
             return listOutils;
         }
         else{
@@ -425,7 +429,8 @@ public class ControllerAffichage implements Initializable{
     }
 
     /**
-     * Instancie l'évènement de type clic sur toutes les lignes de la grille. 
+     * Instancie l'évènement de type clic sur toutes les lignes de la grille 
+     * si le logiciel est en mode admin. 
      * L'Outil courant sélectionné prend la valeur de l'outil de la ligne 
      * cliqué et le fond de la ligne change de couleur.
      */
@@ -433,20 +438,18 @@ public class ControllerAffichage implements Initializable{
         if(Controller.isAdmin()){ //ne fonctionne que dans le cas ou le logiciel est en mode admin
             BackgroundFill bf = new BackgroundFill(Color.rgb(204, 255, 179), CornerRadii.EMPTY , Insets.EMPTY); //la couleur de la ligne cliqué
             /*parcours de toutes les lignes de la grille*/
-            for(ArrayList<Labeled> l: clicableItems){
+            for(int i=0; i<clicableItems.size(); i++){
+                int idOutil = i;
                 /*Parcours de chaque case de la grille*/
-                for(Labeled lab : l){
+                ArrayList<Labeled> listAux = clicableItems.get(i);
+                for(Labeled lab : listAux){
                     lab.setOnMouseClicked(event -> { //ajout de l'évènement à chaque case
                     resetLabels();
                         /*Changement de couleur sur toute la ligne sélectionnée*/
-                        for(Labeled label: l){
+                        for(Labeled label: listAux){
                             label.setBackground(new Background(bf));
                         }
-                        for(Outil ot: listOutils){
-                            if(ot.getDetailMoyen().equals(l.get(3).getText())){
-                                currentOutil = ot; //mise à jour de l'outil courrant en fonction du "Détail du moyen" relevé dans la ligne sélectionné
-                            }
-                        }
+                        currentOutil = initPrintedOutils().get(idOutil);
                     });
                 }
             }

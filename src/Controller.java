@@ -422,9 +422,18 @@ public class Controller implements Initializable{
         Controller.form = form;
     }
 
+    public static ArrayList<Element> getAllElements() {
+        return allElements;
+    }
+
+    public static void setAllElements(ArrayList<Element> allElements) {
+        Controller.allElements = allElements;
+    }
+
 
 
     /*Mise en place et affichage du menu et sous-menus*/
+
 
     /**
      * Récupère un objet Element dans la liste à partir de son code

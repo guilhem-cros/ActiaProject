@@ -190,6 +190,13 @@ public class Outil implements Serializable{
 		return this.moyenGenerique + " " + this.detailMoyen;
 	}
 
+	public ArrayList<String> getAddedParam() {
+		return addedParam;
+	}
+
+	public void setAddedParam(ArrayList<String> addedParam) {
+		this.addedParam = addedParam;
+	}
 
 
 	/*Fonctions relatives à la liste de paramètres*/
@@ -268,7 +275,7 @@ public class Outil implements Serializable{
 	 * @return la liste des "titres" de chaque attribut de l'Outil
 	 */
 	public static ArrayList<String> getParamTitle(){
-		Outil.setListParamTitle(); //initialisation de la liste
+		Outil.setListParamTitle();
 		return listParamTitle;
 	}
 
@@ -300,6 +307,22 @@ public class Outil implements Serializable{
 		}
 	}
 
+
+	/**
+	 * Trie une liste d'objets Outil par ordre alphabétique des moyens génériques
+	 * @param list la liste à trier
+	 */
+	public static void sortOutilsByMoyen(ArrayList<Outil> list){
+		for(int i=0; i<list.size()-1; i++){
+            for(int j=i+1;j<list.size(); j++){
+                if(list.get(i).moyenGenerique.compareTo(list.get(j).moyenGenerique) > 0){
+                    Outil aux = list.get(i);
+                    list.set(i, list.get(j));
+                    list.set(j, aux);
+                }
+            }
+        }
+	}
 
 
 	/*Sérialisation des objets Outil*/
