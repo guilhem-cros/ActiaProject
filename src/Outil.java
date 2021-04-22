@@ -22,14 +22,14 @@ public class Outil implements Serializable{
     private String refFabricant;
     private String numSerie;
     private String outilsAssocies;
-    private int indiceOutil;
+    private String indiceOutil;
     private String refPlanOuLogiciel;
-    private int versionPlanOuLogiciel;
+    private String versionPlanOuLogiciel;
     private String nomLogiciel;
     private String raccourciEmplacement;
     private String maintenance;
     private String refCalibration;
-    private int quantite;
+    private String quantite;
 	private String lienPhoto;
 
 	/*Liste des paramètres de l'outil*/
@@ -59,7 +59,6 @@ public class Outil implements Serializable{
 	public String getMoyenGenerique() {
 		return moyenGenerique;
 	}
-
 
 	public void setMoyenGenerique(String moyenGenerique) {
 		this.moyenGenerique = moyenGenerique;
@@ -113,11 +112,11 @@ public class Outil implements Serializable{
 		this.outilsAssocies = outilsAssocies;
 	}
 
-	public int getIndiceOutil() {
+	public String getIndiceOutil() {
 		return indiceOutil;
 	}
 
-	public void setIndiceOutil(int indiceOutil) {
+	public void setIndiceOutil(String indiceOutil) {
 		this.indiceOutil = indiceOutil;
 	}
 
@@ -129,11 +128,11 @@ public class Outil implements Serializable{
 		this.refPlanOuLogiciel = refPlanOuLogiciel;
 	}
 
-	public int getVersionPlanOuLogiciel() {
+	public String getVersionPlanOuLogiciel() {
 		return versionPlanOuLogiciel;
 	}
 
-	public void setVersionPlanOuLogiciel(int versionPlanOuLogiciel) {
+	public void setVersionPlanOuLogiciel(String versionPlanOuLogiciel) {
 		this.versionPlanOuLogiciel = versionPlanOuLogiciel;
 	}
 
@@ -169,11 +168,11 @@ public class Outil implements Serializable{
 		this.refCalibration = refCalibration;
 	}
 
-	public int getQuantite() {
+	public String getQuantite() {
 		return quantite;
 	}
 
-	public void setQuantite(int quantite) {
+	public void setQuantite(String quantite) {
 		this.quantite = quantite;
 	}
 
@@ -208,7 +207,7 @@ public class Outil implements Serializable{
 	public void setListParam(){
 		this.listParam = new ArrayList<String>();
 		listParam.add(this.moyenGenerique);
-		listParam.add("" + this.quantite);
+		listParam.add(this.quantite);
 		if(this.isUtilisationAuto()){
 			listParam.add("AUTO");
 		}
@@ -220,18 +219,17 @@ public class Outil implements Serializable{
 		listParam.add(this.refFabricant);
 		listParam.add(this.numSerie);
 		listParam.add(this.outilsAssocies);
-		listParam.add("" + this.indiceOutil);
+		listParam.add(this.indiceOutil);
 		listParam.add(this.refPlanOuLogiciel);
-		listParam.add("" + this.versionPlanOuLogiciel);
+		listParam.add(this.versionPlanOuLogiciel);
 		listParam.add(this.nomLogiciel);
 		listParam.add(this.raccourciEmplacement);
 		listParam.add(this.maintenance);
 		listParam.add(this.refCalibration);
 		listParam.add(this.lienPhoto);
 		/*Mise en place et ajout des paramètres correspondant à des titres ajoutés manuellements*/
-		setAddedParams();
-		for(int i=0; i<unserializeTitles().size();i++){
-			listParam.add(addedParam.get(i));
+		for(int i=16; i<unserializeTitles().size(); i++){
+			listParam.add("");
 		}
 	}
 
@@ -247,25 +245,9 @@ public class Outil implements Serializable{
 	 * Crée la liste des "titres" de chaque attribut de l'Outil qui sont utilisés dans l'affichage
 	 */
 	public static void setListParamTitle(){
-		/*Attributs de base*/
 		listParamTitle = new ArrayList<String>();
-		listParamTitle.add("Moyens Génériques");
-		listParamTitle.add("Quantité");
-		listParamTitle.add("Utilisation pour test Manuel ou Auto (déverminage)");
-		listParamTitle.add("Détail du moyen");
-		listParamTitle.add("Fabricant");
-		listParamTitle.add("Référence Fabricant");
-		listParamTitle.add("Numéro de série");
-		listParamTitle.add("Outils associés");
-		listParamTitle.add("Indice outils");
-		listParamTitle.add("Référence plan / logiciel");
-		listParamTitle.add("Versions plan ou logiciel");
-		listParamTitle.add("Nom du logiciel");
-		listParamTitle.add("Raccourci vers emplacement");
-		listParamTitle.add("Maintenance / Calibration");
-		listParamTitle.add("Doc de référence pour calibration");
-		listParamTitle.add("Raccourci vers photo");
-		/*Ajout des titres de colonnes créees manuellement et stockées dans titles.ser*/
+		listParamTitle.clear();
+		/*Ajout des titres stockées dans titles.ser*/
 		for(String title: unserializeTitles()){
 			listParamTitle.add(title);
 		}
@@ -288,7 +270,7 @@ public class Outil implements Serializable{
 	 * crées manuellement et enregistrés
 	 */
 	public void setAddedParams(){
-		for(int i=addedParam.size(); i<unserializeTitles().size();i++){
+		for(int i=16; i<unserializeTitles().size();i++){
 			addedParam.add("");
 		}
 	}
@@ -366,13 +348,33 @@ public class Outil implements Serializable{
 
 	/**
 	 * Ajout d'une nouvelle variable en tant que titre (attribut) dans la base de données
+	 * s'il n'est pas déjà présent
 	 * @param title le nom du titre du paramètre
 	 */
 	public static void addTitle(String title){
         ArrayList<String> titles = unserializeTitles();
-		titles.add(title);
+		//vérifier présence titre
+		int i=0;
+		for(String t: titles){
+			if(t.equals(title)){
+				i++;
+			}
+		}
+		if(i==0){
+			titles.add(title);
+		}
         serializeAllTitles(titles);
     }
+
+	/**
+	 * Suppression d'un variable dans la base de données
+	 * @param title le nom de la variable à supprimer
+	 */
+	public static void removeTitle(String title){
+		ArrayList<String> titles = unserializeTitles();
+		titles.remove(title);
+		serializeAllTitles(titles);
+	}
 
 	/**
 	 * Lis le fichier contenant l'ensemble des attributs 
@@ -413,4 +415,20 @@ public class Outil implements Serializable{
 			System.out.println(e.toString());
 		}
     }
+
+	/**
+	 * Supprime une valeur de la liste de param pour tous les 
+	 * objets Outil enregistrés
+	 * @param index l'index du param dans les listes des Outils
+	 */
+	public static void removeFromAllOutil(int index){
+		ArrayList<Element> allElt = Element.unserializeElement();
+		for(Element e: allElt){
+			for(Outil o: e.getOutils()){
+				o.setListParam();
+				o.getListParam().remove(index);
+			}
+		}
+		Element.serializeAllElements(allElt);
+	}
 }

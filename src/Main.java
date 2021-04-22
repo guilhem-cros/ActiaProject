@@ -42,8 +42,28 @@ public class Main{
         Element.serializeAllElements(list);
         System.out.println(MoyenGenerique.addMoyen("Tous"));
         */
-        Outil o = new Outil("test", "test");
-        o.setListParam();
+
+        Outil.addTitle("Moyens Génériques");
+       Outil.addTitle("Quantité");
+       Outil.addTitle("Utilisation pour test Manuel ou Auto (déverminage)");
+       Outil.addTitle("Détail du moyen");
+       Outil.addTitle("Fabricant");
+       Outil.addTitle("Référence Fabricant");
+       Outil.addTitle("Numéro de série");
+       Outil.addTitle("Outils associés");
+       Outil.addTitle("Indice outils");
+       Outil.addTitle("Référence plan / logiciel");
+       Outil.addTitle("Version plan ou logiciel");
+       Outil.addTitle("Nom du logiciel");
+       Outil.addTitle("Raccourci vers emplacement");
+       Outil.addTitle("Maintenance / Calibration");
+       Outil.addTitle("Doc de référence pour calibration");
+       Outil.addTitle("Raccourci vers photo");
+
+        System.out.println(Outil.unserializeTitles().size());
+       
+
+       
 
     }
 }

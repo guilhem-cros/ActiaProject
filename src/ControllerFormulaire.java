@@ -117,7 +117,7 @@ public class ControllerFormulaire implements Initializable{
             (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
             Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
             originControl.initialize(null, null); //mise à jour immédiate de la page d'affichage parente du formulaire
-            Alert alert = new Alert(AlertType.CONFIRMATION); //mise en place d'un message de confirmation
+            Alert alert = new Alert(AlertType.INFORMATION);
             Controller.setAlert("Mise à jour effectuée", "La colonne a bien été ajoutée", "Confirmation", alert);
         }
     }
@@ -142,7 +142,7 @@ public class ControllerFormulaire implements Initializable{
                 }
                 titleLabel.setText("Formulaire de modification");
                 Element.serializeAllElements(Controller.getAllElements());
-                Alert alert = new Alert(AlertType.CONFIRMATION);
+                Alert alert = new Alert(AlertType.INFORMATION);
                 Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
                 originControl.initialize(null, null);
                 Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
@@ -304,31 +304,10 @@ public class ControllerFormulaire implements Initializable{
     public Outil doOutilByForm(){
         Outil outil = new Outil(listMoyensGene.getValue(), detailMoyen.getText());
         outil.setUtilisationAuto(testMode.getValue().equals("Auto"));
-        if(!isInteger(quantite.getText())){
-            Alert alert = new Alert(AlertType.WARNING);
-            Controller.setAlert("Erreur de saisie", "La valeur saisi pour \"Quantité\" n'est pas un entier.", "Erreur", alert);
-            return null;
-        }
-        else{
-            outil.setQuantite(Integer.parseInt(quantite.getText()));
-        }
+        outil.setQuantite(quantite.getText());
         return outil;
     }
 
-    /**
-     * Vérifie si une chaine de caractère est un entier
-     * @param str la caine de caractère testée
-     * @return vrai s'il s'agit d'un entier, faux sinon
-     */
-    public boolean isInteger(String str) {
-        int size = str.length();
-        for (int i = 0; i < str.length(); i++) {
-            if (!Character.isDigit(str.charAt(i))) {
-                return false;
-            }
-        }
-        return size>0;
-    }
 
 
     /*Getter et setter */

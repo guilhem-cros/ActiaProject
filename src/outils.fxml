@@ -47,7 +47,17 @@
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="setRawButt" layoutX="20.0" layoutY="856.0" mnemonicParsing="false" onAction="#openModifWindow" text="Modifier" visible="false">
+      <Button fx:id="setRawButt" layoutX="20.0" layoutY="856.0" mnemonicParsing="false" onAction="#openModifWindow" text="Modifier ligne" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="setColButton" layoutX="20.0" layoutY="156.0" mnemonicParsing="false" onAction="#setColumn" text="Modifier colonne">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="deleteColButton" layoutX="202.0" layoutY="156.0" mnemonicParsing="false" onAction="#deleteColumn" text="Supprimer colonne">
          <font>
             <Font size="16.0" />
          </font>

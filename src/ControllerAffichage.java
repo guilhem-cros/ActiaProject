@@ -17,6 +17,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -58,8 +59,14 @@ public class ControllerAffichage implements Initializable{
     /*La liste des lignes (des paramètres des outils) de la grille*/
     private ArrayList<ArrayList<Labeled>> clicableItems;
 
+    /*La liste des titres de colonnes de la grille sour forme de labels*/
+    private ArrayList<Label> clicableTitles;
+
     /*L'outil de test actuellement sélectionné pour modification/suppression*/
     private Outil currentOutil;
+
+    /*Le titre de colonne courrament sélectionné*/
+    private String currentTitle;
 
     /*Objet nécessaire à l'ouverture de fichiers*/
     private HostServices hostServices;
@@ -93,6 +100,12 @@ public class ControllerAffichage implements Initializable{
 
     @FXML
     private Button setRawButt;
+
+    @FXML
+    private Button setColButton;
+
+    @FXML
+    private Button deleteColButton;
 
 
     /**
@@ -151,9 +164,15 @@ public class ControllerAffichage implements Initializable{
         }
     }
 
+    /**
+     * Fonction appelée lors de l'appuie sur le bouton "Modifier ligne"
+     * Ouvre la fenêtre du formulaire de modification pré-rempli si une
+     * ligne a été sélectionné et si aucun autre formulaire n'est ouvert
+     * @param action
+     */
     @FXML
     public void openModifWindow(ActionEvent action){
-        if(currentOutil  == null){
+        if(currentOutil == null){
             Alert alert = new Alert(AlertType.WARNING);
             Controller.setAlert("Erreur, aucune ligne sélectionnée", "Veuillez sélectionner une ligne à modifier.", "Erreur", alert);
         }
@@ -176,9 +195,68 @@ public class ControllerAffichage implements Initializable{
         }
     }
 
+    /**
+     * Appelée lors d'un appuie sur le bouton "Modifier colonne"
+     * Ouvre la fenêtre du formulaire de modification de colonne
+     * si une colonne a été saisie et qu'aucun autre form n'est ouvert
+     * @param action
+     */
+    @FXML
+    public void setColumn(ActionEvent action){
+        if(currentTitle == null){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur, aucune colonne sélectionnée", "Veuillez sélectionner une colonne à modifier.", "Erreur", alert);
+        }
+        else{
+            if(Controller.getCountOpenedForm()>0){
+                Alert alert = new Alert(AlertType.WARNING); //message d'erreur
+                Controller.setAlert("Erreur formulaire", "Un autre formulaire est déjà ouvert, veuillez le fermer afin d'en ouvrir un nouveau", "Erreur", alert);
+            }
+            else{
+                Controller.setForm("modifOutilForm");
+                ControllerFormulaire.setOriginControl(this); //mise à jour du controller parent
+                /*Création du nouvel onglet*/
+                Stage stage = setNewStage("formModifCol.fxml");
+                stage.setTitle("Modification de colonne");
+                /*Ajout d'une action lors de la fermeture de l'onglet depuis la croix rouge*/
+                addCloseEvent(stage);
+                Controller.setCountOpenedForm(Controller.getCountOpenedForm()+1);//incrémentation du compteur de formulaires ouverts
+                stage.showAndWait();
+            }
+        }
+    }
+
+    /**
+     * Appelée lors de l'appuie sur le bouton "Supprimer colonne"
+     * Ouvre une alerte de confirmation qui confirme ou non la
+     * suppression de la colonne. 
+     * Supprime la colonne des données et actualise la fenêtre
+     */
+    @FXML 
+    public void deleteColumn(){
+        if(currentTitle == null){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur, aucune colonne sélectionnée", "Veuillez sélectionner une colonne à modifier.", "Erreur", alert);
+        }
+        else{
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la colonne  " + currentTitle + " ?", ButtonType.YES, ButtonType.CANCEL);
+            alert.showAndWait();
+            if(alert.getResult()==ButtonType.YES){
+                int i = Outil.unserializeTitles().indexOf(currentTitle);
+                Outil.removeFromAllOutil(i);
+                Outil.removeTitle(currentTitle);
+                listHyperlink.remove(i);
+                Alert alert2 = new Alert(AlertType.INFORMATION);
+                Controller.setAlert("Modifications enregistrées", "La colonne a bien été supprimée", "Confirmation", alert2);
+                this.initialize(null, null);
+                currentTitle = null;
+            } 
+        }
+    }
 
 
-    /*Permet d'utiliser les hostsservices depuis le controller*/
+
+    /*Permet d'utiliser les hostsServices depuis le controller*/
     public void setGetHostController(HostServices hostServices){
         this.hostServices = hostServices;
     }       
@@ -225,6 +303,9 @@ public class ControllerAffichage implements Initializable{
             sp.setVisible(false);
             emptyLabel.setText("Aucun outil de test correspondant à la recherche pour l'élément " + selectedElt.getCodeElt());
             emptyLabel.setVisible(true);
+            setColButton.setVisible(false);
+            setRawButt.setVisible(false);
+            newColumnButt.setVisible(false);
         }
         else{
             initColumnTitle(grid);
@@ -276,6 +357,8 @@ public class ControllerAffichage implements Initializable{
      * Met en place les "titres" des colonnes du tableau sur la premiere ligne de grid
      */
     public void initColumnTitle(GridPane gridp){
+        clicableTitles = new ArrayList<Label>();
+        BackgroundFill bf = new BackgroundFill(Color.rgb(255, 248, 186), CornerRadii.EMPTY , Insets.EMPTY);
         gridp.getChildren().clear();
         int count = 0; //colonne courante
         /*Parcours de la liste des "titres"(~nom des variables de Outil) du tableau*/
@@ -290,8 +373,9 @@ public class ControllerAffichage implements Initializable{
             txt.maxWidth(160);
             txt.setPrefWidth(160);
             txt.setStyle("-fx-border-color: grey;");
-            BackgroundFill bf = new BackgroundFill(Color.rgb(171, 171, 171), CornerRadii.EMPTY , Insets.EMPTY);
             txt.setBackground(new Background(bf));
+            setClicEvent(txt);
+            clicableTitles.add(txt);
             gridp.add(txt, count, 0);
             count++;
         }
@@ -402,8 +486,8 @@ public class ControllerAffichage implements Initializable{
     public void setHyperlinkList(){
         if(listHyperlink==null){ //si la liste n'a pas encore été instanciée
             listHyperlink = new ArrayList<Boolean>();
-            for(int i=0; i<16;i++){
-                if(i==12||i==15){ //la position des deux paramètres de base affichés sous format lien
+            for(int i=0; i<Outil.getParamTitle().size();i++){
+                if(Outil.getParamTitle().get(i).equals("Raccourci vers emplacement") || Outil.getParamTitle().get(i).equals("Raccourci vers photo")){ //la position des deux paramètres de base affichés sous format lien
                     listHyperlink.add(true);
                 }
                 else{
@@ -425,7 +509,8 @@ public class ControllerAffichage implements Initializable{
         boolean admin = Controller.isAdmin();
         newColumnButt.setVisible(admin);
         setRawButt.setVisible(admin);
-        
+        setColButton.setVisible(admin);
+        deleteColButton.setVisible(admin);
     }
 
     /**
@@ -444,15 +529,34 @@ public class ControllerAffichage implements Initializable{
                 ArrayList<Labeled> listAux = clicableItems.get(i);
                 for(Labeled lab : listAux){
                     lab.setOnMouseClicked(event -> { //ajout de l'évènement à chaque case
-                    resetLabels();
+                        resetLabels();
+                        resetTitles();
                         /*Changement de couleur sur toute la ligne sélectionnée*/
                         for(Labeled label: listAux){
                             label.setBackground(new Background(bf));
                         }
                         currentOutil = initPrintedOutils().get(idOutil);
+                        currentTitle = null;
                     });
                 }
             }
+        }
+    }
+
+    /**
+     * Instancie un event activé lors d'un clic
+     * Sélectionne une colonne et change sa couleur de fond
+     * @param l le titre de colonne sélectionnable
+     */
+    public void setClicEvent(Label l){
+        if(Controller.isAdmin()){
+            l.setOnMouseClicked(event -> {
+                resetLabels();
+                resetTitles();
+                l.setBackground(new Background(new BackgroundFill(Color.TURQUOISE, CornerRadii.EMPTY , Insets.EMPTY)));
+                currentTitle = l.getText();
+                currentOutil = null;
+            });
         }
     }
 
@@ -466,6 +570,16 @@ public class ControllerAffichage implements Initializable{
                 lab.setBackground(new Background(bf));
             }
         }    
+    }
+
+    /**
+     * Passe la couleur de background de tous les titres en une même couleur
+     */
+    public void resetTitles(){
+        BackgroundFill bf = new BackgroundFill(Color.rgb(255, 248, 186), CornerRadii.EMPTY , Insets.EMPTY);
+        for(Label l: clicableTitles){
+            l.setBackground(new Background(bf));
+        }
     }
 
 
@@ -542,6 +656,14 @@ public class ControllerAffichage implements Initializable{
 
     public void setSelectedElt(Element selectedElt) {
         this.selectedElt = selectedElt;
+    }
+
+    public String getCurrentTitle() {
+        return currentTitle;
+    }
+
+    public void setCurrentTitle(String currentTitle) {
+        this.currentTitle = currentTitle;
     }
     
 }
