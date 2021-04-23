@@ -18,19 +18,7 @@ public class Outil implements Serializable{
 	private String moyenGenerique; 
     private String detailMoyen;
     private boolean utilisationAuto;
-    private String fabricant;
-    private String refFabricant;
-    private String numSerie;
-    private String outilsAssocies;
-    private String indiceOutil;
-    private String refPlanOuLogiciel;
-    private String versionPlanOuLogiciel;
-    private String nomLogiciel;
-    private String raccourciEmplacement;
-    private String maintenance;
-    private String refCalibration;
     private String quantite;
-	private String lienPhoto;
 
 	/*Liste des paramètres de l'outil*/
 	private ArrayList<String> listParam;
@@ -47,7 +35,6 @@ public class Outil implements Serializable{
         this.moyenGenerique = moyenGenerique;
 		this.detailMoyen = detailMoyen;
 		this.utilisationAuto = false;
-		this.maintenance = "N/A";
 		this.listParam = new ArrayList<String>();
 		this.addedParam = new ArrayList<String>();
     }
@@ -80,94 +67,6 @@ public class Outil implements Serializable{
 		this.utilisationAuto = utilisationAuto;
 	}
 
-	public String getFabricant() {
-		return fabricant;
-	}
-
-	public void setFabricant(String fabricant) {
-		this.fabricant = fabricant;
-	}
-
-	public String getRefFabricant() {
-		return refFabricant;
-	}
-
-	public void setRefFabricant(String refFabricant) {
-		this.refFabricant = refFabricant;
-	}
-
-	public String getNumSerie() {
-		return numSerie;
-	}
-
-	public void setNumSerie(String numSerie) {
-		this.numSerie = numSerie;
-	}
-
-	public String getOutilsAssocies() {
-		return outilsAssocies;
-	}
-
-	public void setOutilsAssocies(String outilsAssocies) {
-		this.outilsAssocies = outilsAssocies;
-	}
-
-	public String getIndiceOutil() {
-		return indiceOutil;
-	}
-
-	public void setIndiceOutil(String indiceOutil) {
-		this.indiceOutil = indiceOutil;
-	}
-
-	public String getRefPlanOuLogiciel() {
-		return refPlanOuLogiciel;
-	}
-
-	public void setRefPlanOuLogiciel(String refPlanOuLogiciel) {
-		this.refPlanOuLogiciel = refPlanOuLogiciel;
-	}
-
-	public String getVersionPlanOuLogiciel() {
-		return versionPlanOuLogiciel;
-	}
-
-	public void setVersionPlanOuLogiciel(String versionPlanOuLogiciel) {
-		this.versionPlanOuLogiciel = versionPlanOuLogiciel;
-	}
-
-	public String getNomLogiciel() {
-		return nomLogiciel;
-	}
-
-	public void setNomLogiciel(String nomLogiciel) {
-		this.nomLogiciel = nomLogiciel;
-	}
-
-	public String getRaccourciEmplacement() {
-		return raccourciEmplacement;
-	}
-
-	public void setRaccourciEmplacement(String raccourciEmplacement) {
-		this.raccourciEmplacement = raccourciEmplacement;
-	}
-
-	public String getMaintenance() {
-		return maintenance;
-	}
-
-	public void setMaintenance(String maintenance) {
-		this.maintenance = maintenance;
-	}
-
-	public String getRefCalibration() {
-		return refCalibration;
-	}
-
-	public void setRefCalibration(String refCalibration) {
-		this.refCalibration = refCalibration;
-	}
-
 	public String getQuantite() {
 		return quantite;
 	}
@@ -176,26 +75,10 @@ public class Outil implements Serializable{
 		this.quantite = quantite;
 	}
 
-	public String getLienPhoto() {
-		return lienPhoto;
-	}
-
-	public void setLienPhoto(String lienPhoto) {
-		this.lienPhoto = lienPhoto;
-	}
-
-
 	public String toString(){
 		return this.moyenGenerique + " " + this.detailMoyen;
 	}
 
-	public ArrayList<String> getAddedParam() {
-		return addedParam;
-	}
-
-	public void setAddedParam(ArrayList<String> addedParam) {
-		this.addedParam = addedParam;
-	}
 
 
 	/*Fonctions relatives à la liste de paramètres*/
@@ -205,30 +88,20 @@ public class Outil implements Serializable{
 	 * en chaine de caractère dans l'optique du futur affichage
 	 */
 	public void setListParam(){
-		this.listParam = new ArrayList<String>();
-		listParam.add(this.moyenGenerique);
-		listParam.add(this.quantite);
-		if(this.isUtilisationAuto()){
-			listParam.add("AUTO");
+		if(listParam.isEmpty()){
+			this.listParam = new ArrayList<String>();
+			listParam.add(this.moyenGenerique);
+			listParam.add(this.quantite);
+			if(this.isUtilisationAuto()){
+				listParam.add("AUTO");
+			}
+			else{
+				listParam.add("MANUEL");
+			}
+			listParam.add(this.detailMoyen);
 		}
-		else{
-			listParam.add("MANUEL");
-		}
-		listParam.add(this.detailMoyen);
-		listParam.add(this.fabricant);
-		listParam.add(this.refFabricant);
-		listParam.add(this.numSerie);
-		listParam.add(this.outilsAssocies);
-		listParam.add(this.indiceOutil);
-		listParam.add(this.refPlanOuLogiciel);
-		listParam.add(this.versionPlanOuLogiciel);
-		listParam.add(this.nomLogiciel);
-		listParam.add(this.raccourciEmplacement);
-		listParam.add(this.maintenance);
-		listParam.add(this.refCalibration);
-		listParam.add(this.lienPhoto);
 		/*Mise en place et ajout des paramètres correspondant à des titres ajoutés manuellements*/
-		for(int i=16; i<unserializeTitles().size(); i++){
+		for(int i=listParam.size(); i<unserializeTitles().size(); i++){
 			listParam.add("");
 		}
 	}
@@ -276,7 +149,7 @@ public class Outil implements Serializable{
 	}
 
 	/**
-	 * Modifie la valeur d'un paramètre corrspondant à un attribut ajouté manuellement
+	 * Modifie la valeur d'un paramètre correspondant à un attribut ajouté manuellement
 	 * @param title le titre du paramètre (l'attribut)
 	 * @param value la nouvelle valeur du paramètre
 	 */
@@ -348,11 +221,12 @@ public class Outil implements Serializable{
 
 	/**
 	 * Ajout d'une nouvelle variable en tant que titre (attribut) dans la base de données
-	 * s'il n'est pas déjà présent
+	 * s'il n'est pas déjà présent et modification de la liste de position des paramètres
 	 * @param title le nom du titre du paramètre
 	 */
 	public static void addTitle(String title){
         ArrayList<String> titles = unserializeTitles();
+		ArrayList<Integer> ordre = unserializeOrdre();
 		//vérifier présence titre
 		int i=0;
 		for(String t: titles){
@@ -362,23 +236,35 @@ public class Outil implements Serializable{
 		}
 		if(i==0){
 			titles.add(title);
+			ordre.add(ordre.size());
 		}
         serializeAllTitles(titles);
+		serializeOrdre(ordre);
     }
 
 	/**
-	 * Suppression d'un variable dans la base de données
+	 * Suppression d'un variable dans la base de données et modification de la liste
+	 * de position des paramètres à l'affichage en fonction
 	 * @param title le nom de la variable à supprimer
 	 */
 	public static void removeTitle(String title){
+		ArrayList<Integer> ordre = unserializeOrdre();
 		ArrayList<String> titles = unserializeTitles();
+		int index = titles.indexOf(title);
 		titles.remove(title);
+		int val = ordre.indexOf(index);
+		ordre.remove(index);
+		for(int i = 4; i<ordre.size(); i++){
+			if(ordre.get(i)>val){
+				ordre.set(i, ordre.get(i)-1);
+			}
+		}
 		serializeAllTitles(titles);
+		serializeOrdre(ordre);
 	}
 
 	/**
-	 * Lis le fichier contenant l'ensemble des attributs 
-	 * ajoutés manuellement par l'utilisateur
+	 * Lis le fichier contenant l'ensemble des attributs de l'Outil
 	 * @return la liste des attributs contenus dans le fichier
 	 */
     public static ArrayList<String> unserializeTitles(){
@@ -395,12 +281,25 @@ public class Outil implements Serializable{
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}   
+		/*Si aucun attribut enregistrées, ajout des 4 colonnes de bases*/
+		if(listTitles.isEmpty()){
+			ArrayList<Integer> ordre = unserializeOrdre();
+			listTitles.add("Moyens Génériques");
+			listTitles.add("Quantité");
+			listTitles.add("Utilisation pour test Manuel ou Auto (déverminage)");
+			listTitles.add("Détail du moyen");
+			for(int i=0; i<4; i++){
+				ordre.add(i);
+			}
+			serializeAllTitles(listTitles);
+			serializeOrdre(ordre);
+		}
         return listTitles;
 
     }
 
 	/**
-	 * Eregistre dans le fichier correpondant, les attributs entrés manuellement
+	 * Eregistre dans le fichier correpondant, les attributs de l'Outil
 	 * @param allTitles la liste des titres à enregistrer
 	 */
     public static void serializeAllTitles(ArrayList<String> allTitles){
@@ -422,7 +321,7 @@ public class Outil implements Serializable{
 	 * @param index l'index du param dans les listes des Outils
 	 */
 	public static void removeFromAllOutil(int index){
-		ArrayList<Element> allElt = Element.unserializeElement();
+		ArrayList<Element> allElt = Controller.getAllElements();
 		for(Element e: allElt){
 			for(Outil o: e.getOutils()){
 				o.setListParam();
@@ -430,5 +329,45 @@ public class Outil implements Serializable{
 			}
 		}
 		Element.serializeAllElements(allElt);
+	}
+
+	/**
+	 * Eregistre dans le fichier correpondant, l'ordre d'affichage 
+	 * des paramètres
+	 * @param allTitles la liste de positions d'affichage de chaque paramètre
+	 */
+	public static void serializeOrdre(ArrayList<Integer> ordre){
+		try {
+			FileOutputStream fichier = new FileOutputStream("data/ordre.ser");
+			ObjectOutputStream oos = new ObjectOutputStream(fichier);
+			for(Integer index: ordre){
+                oos.writeObject(index);
+            }
+            oos.close();
+		} catch (IOException e) {
+			System.out.println(e.toString());
+		}
+	}
+
+	/**
+	 * Lis le fichier contenant l'ordre de lecture des paramètres 
+	 * dans le cadre de l'affichage
+	 * @return la liste de la position à afficher de chaque paramètre 
+	 */
+	public static ArrayList<Integer> unserializeOrdre(){
+		ArrayList<Integer> ordre = new ArrayList<Integer>();
+        try (ObjectInputStream ois = 
+				new ObjectInputStream(
+						new FileInputStream("data/ordre.ser"))) {
+			/* Lecture du fichier*/
+			while (true) {
+				ordre.add((Integer) ois.readObject());
+			}
+		} catch (IOException e) {
+			//Exception lorsqu'on atteint la fin du fichier
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}   
+        return ordre;
 	}
 }

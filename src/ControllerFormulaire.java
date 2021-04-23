@@ -69,6 +69,25 @@ public class ControllerFormulaire implements Initializable{
     private TextArea detailMoyen;
 
 
+    @FXML
+    private TextField colTitle;
+
+    @FXML
+    private ComboBox<Integer> colPosition;
+
+    @FXML
+    private CheckBox linkBox;
+
+    @FXML
+    private Label title;
+
+    @FXML
+    private Button saveChangeButton;
+
+    @FXML
+    private Button cancelChangeButton;
+
+
     /**
      * Fonction appelée à l'ouverture de la fenêtre
      * Initialise les champs et variables en fonction du formulaire ouvert
@@ -111,9 +130,9 @@ public class ControllerFormulaire implements Initializable{
         /*Si le titre de colonne saisi est valide*/
         else{
             Outil.addTitle(title);
-            ArrayList<Boolean> hyperlinks = ControllerAffichage.getListHyperlink();
+            ArrayList<Boolean> hyperlinks = ControllerAffichage.unserializeLinks();
             hyperlinks.add(hyperlinkBox.isSelected());
-            ControllerAffichage.setListHyperlink(hyperlinks);
+            ControllerAffichage.serialHyperlink(hyperlinks);
             (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
             Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
             originControl.initialize(null, null); //mise à jour immédiate de la page d'affichage parente du formulaire
@@ -166,6 +185,11 @@ public class ControllerFormulaire implements Initializable{
         (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
     }
 
+    @FXML
+    public void setColumn(ActionEvent action){
+        //
+    }
+
 
     /*Fonctions relatives à la création de colonne*/
 
@@ -214,7 +238,7 @@ public class ControllerFormulaire implements Initializable{
             grid.add(title,0, i);
             grid.add(tf, 1, i);
             /*Si la colonne correspondant au champs courrant est une colonne de liens hypertexte*/
-            if(ControllerAffichage.getListHyperlink().get(i)){
+            if(ControllerAffichage.unserializeLinks().get(i)){
                 FileChooser fl = new FileChooser();
                 fl.setTitle("Sélection de fichier");
                 Button selectFileButton = new Button("...");

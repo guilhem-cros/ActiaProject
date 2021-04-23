@@ -1,7 +1,11 @@
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -234,18 +238,20 @@ public class ControllerAffichage implements Initializable{
      */
     @FXML 
     public void deleteColumn(){
-        if(currentTitle == null){
+        if(currentTitle == null || Outil.unserializeTitles().indexOf(currentTitle) < 4){
             Alert alert = new Alert(AlertType.WARNING);
-            Controller.setAlert("Erreur, aucune colonne sélectionnée", "Veuillez sélectionner une colonne à modifier.", "Erreur", alert);
+            Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une colonne à supprimer.", "Erreur", alert);
         }
         else{
             Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la colonne  " + currentTitle + " ?", ButtonType.YES, ButtonType.CANCEL);
             alert.showAndWait();
             if(alert.getResult()==ButtonType.YES){
                 int i = Outil.unserializeTitles().indexOf(currentTitle);
-                Outil.removeFromAllOutil(i);
+                int index = Outil.unserializeOrdre().indexOf(i);
+                Outil.removeFromAllOutil(index);
                 Outil.removeTitle(currentTitle);
                 listHyperlink.remove(i);
+                serialHyperlink(listHyperlink);
                 Alert alert2 = new Alert(AlertType.INFORMATION);
                 Controller.setAlert("Modifications enregistrées", "La colonne a bien été supprimée", "Confirmation", alert2);
                 this.initialize(null, null);
@@ -316,10 +322,10 @@ public class ControllerAffichage implements Initializable{
                 ArrayList<Labeled> list = new ArrayList<Labeled>();
                 int countP=0; //numéro de la colonne actuelle
                 /*Parcours de tous les attributs de l'outil courant*/
-                for(int i=0; i<t.getListParam().size(); i++){ 
-                    String param = listParam.get(i);
+                for(int i=0; i<Outil.unserializeTitles().size(); i++){ 
+                    String param = listParam.get(Outil.unserializeOrdre().indexOf(i));
                     /*s'il s'agit d'un attribut de type lien*/
-                    if(listHyperlink.get(i) && param!=null){ 
+                    if(unserializeLinks().get(Outil.unserializeOrdre().get(i)) && param!=null){ 
                         Hyperlink text = setLink(param);
                         list.add(text); //ajout à la liste des cases de la ligne
                         grid.add(text, countP, count); //remplissage de la case courante de grid
@@ -481,10 +487,11 @@ public class ControllerAffichage implements Initializable{
 
     /**
      * Instancie la liste de paramètres affichés sous forme
-     * d'hyperlien à partir des 16 paramètres de base
+     * d'hyperlien à partir des paramètres enregistrés
      */
-    public void setHyperlinkList(){
-        if(listHyperlink==null){ //si la liste n'a pas encore été instanciée
+    public static void setHyperlinkList(){
+        listHyperlink = unserializeLinks();
+        if(listHyperlink==null || listHyperlink.isEmpty()){ //si la liste n'a pas encore été instanciée ou est vide
             listHyperlink = new ArrayList<Boolean>();
             for(int i=0; i<Outil.getParamTitle().size();i++){
                 if(Outil.getParamTitle().get(i).equals("Raccourci vers emplacement") || Outil.getParamTitle().get(i).equals("Raccourci vers photo")){ //la position des deux paramètres de base affichés sous format lien
@@ -495,6 +502,47 @@ public class ControllerAffichage implements Initializable{
                 }
             }
         }
+        serialHyperlink(listHyperlink); //enregistrement des bouléens de lien de base
+    }
+
+    /**
+	 * Eregistre dans le fichier correpondant, les valeurs des liens du bouléens hypertexte 
+     * pour chaque colonne
+	 * @param allTitles la liste des bouléens de lien hypertexte de chaque colonne
+	 */
+    public static void serialHyperlink(ArrayList<Boolean> links){
+        try {
+			FileOutputStream fichier = new FileOutputStream("data/links.ser");
+			ObjectOutputStream oos = new ObjectOutputStream(fichier);
+			for(Boolean link: links){
+                oos.writeObject(link);
+            }
+            oos.close();
+		} catch (IOException e) {
+			System.out.println(e.toString());
+		}
+    }
+
+    /**
+	 * Lis le fichier contenant l'ensemble des bouléens de lien hypertexte
+	 * @return la liste des boléens de lien hypertexte contenus dans le fichier
+	 */
+    public static ArrayList<Boolean> unserializeLinks(){
+        ArrayList<Boolean> links = new ArrayList<Boolean>();
+        try (ObjectInputStream ois = 
+				new ObjectInputStream(
+						new FileInputStream("data/links.ser"))) {
+			/* Lecture du fichier*/
+			while (true) {
+				links.add((Boolean) ois.readObject());
+			}
+		} catch (IOException e) {
+			//Exception lorsqu'on atteint la fin du fichier
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}   
+        return links;
+
     }
 
 
@@ -628,14 +676,6 @@ public class ControllerAffichage implements Initializable{
 
     public void setCurrentOutil(Outil currentOutil) {
         this.currentOutil = currentOutil;
-    }
-    
-    public static ArrayList<Boolean> getListHyperlink() {
-        return listHyperlink;
-    }
-
-    public static void setListHyperlink(ArrayList<Boolean> listHyperlink) {
-        ControllerAffichage.listHyperlink = listHyperlink;
     }
 
     public static ArrayList<String> getParamTitles() {

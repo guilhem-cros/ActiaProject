@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerFormulaire">
    <children>
       <Label layoutX="90.0" layoutY="96.0" text="Titre de la colonne : ">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <TextField layoutX="287.0" layoutY="90.0" prefWidth="250.0">
+      <TextField fx:id="colTitle" layoutX="287.0" layoutY="90.0" prefWidth="250.0">
          <font>
             <Font size="16.0" />
          </font>
@@ -24,15 +25,31 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <CheckBox layoutX="289.0" layoutY="175.0" mnemonicParsing="false">
+      <CheckBox fx:id="linkBox" layoutX="289.0" layoutY="248.0" mnemonicParsing="false">
          <font>
             <Font size="16.0" />
          </font>
       </CheckBox>
-      <Label layoutX="90.0" layoutY="175.0" text="Lien hypertexte : ">
+      <Label layoutX="90.0" layoutY="248.0" text="Lien hypertexte : ">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
+      <Label layoutX="90.0" layoutY="175.0" text="Position : ">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="colPosition" layoutX="289.0" layoutY="175.0" prefWidth="150.0" />
+      <Button fx:id="saveChangeButton" layoutX="250.0" layoutY="339.0" mnemonicParsing="false" onAction="#setColumn" prefWidth="100.0" text="Enregistrer">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="cancelChangeButton" layoutX="14.0" layoutY="339.0" mnemonicParsing="false" onAction="#closeForm" prefWidth="100.0" text="Annuler">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
    </children>
 </Pane>
