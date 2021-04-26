@@ -217,7 +217,7 @@ public class ControllerAffichage implements Initializable{
                 Controller.setAlert("Erreur formulaire", "Un autre formulaire est déjà ouvert, veuillez le fermer afin d'en ouvrir un nouveau", "Erreur", alert);
             }
             else{
-                Controller.setForm("modifOutilForm");
+                Controller.setForm("modifColForm");
                 ControllerFormulaire.setOriginControl(this); //mise à jour du controller parent
                 /*Création du nouvel onglet*/
                 Stage stage = setNewStage("formModifCol.fxml");
@@ -245,9 +245,9 @@ public class ControllerAffichage implements Initializable{
         else{
             Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la colonne  " + currentTitle + " ?", ButtonType.YES, ButtonType.CANCEL);
             alert.showAndWait();
-            if(alert.getResult()==ButtonType.YES){
+            if(alert.getResult()==ButtonType.YES){    
                 int i = Outil.unserializeTitles().indexOf(currentTitle);
-                int index = Outil.unserializeOrdre().indexOf(i);
+                int index = Outil.unserializeOrdre().get(i);
                 Outil.removeFromAllOutil(index);
                 Outil.removeTitle(currentTitle);
                 listHyperlink.remove(i);
@@ -298,6 +298,8 @@ public class ControllerAffichage implements Initializable{
      * Sinon : Rempli la grille avec les attributs correspondant à chaque moyens de test de l'élément
      * en fonction du moyen générique sélectionné (renvoie le même message si l'élément ne contient 
      * aucun Outil de test pour ce moyen générique).
+     * Rempli la grille selon l'ordre enregistré
+     * Met en place les liens hypertextes
      */
     public void setTable(String selectedMoyenGene){
         clicableItems = new ArrayList<ArrayList<Labeled>>();
@@ -323,9 +325,9 @@ public class ControllerAffichage implements Initializable{
                 int countP=0; //numéro de la colonne actuelle
                 /*Parcours de tous les attributs de l'outil courant*/
                 for(int i=0; i<Outil.unserializeTitles().size(); i++){ 
-                    String param = listParam.get(Outil.unserializeOrdre().indexOf(i));
+                    String param = listParam.get(Outil.unserializeOrdre().get(i));
                     /*s'il s'agit d'un attribut de type lien*/
-                    if(unserializeLinks().get(Outil.unserializeOrdre().get(i)) && param!=null){ 
+                    if(unserializeLinks().get(i) && param!="" && param!=null){ 
                         Hyperlink text = setLink(param);
                         list.add(text); //ajout à la liste des cases de la ligne
                         grid.add(text, countP, count); //remplissage de la case courante de grid
@@ -487,22 +489,17 @@ public class ControllerAffichage implements Initializable{
 
     /**
      * Instancie la liste de paramètres affichés sous forme
-     * d'hyperlien à partir des paramètres enregistrés
+     * d'hyperlien à false pour tous
      */
     public static void setHyperlinkList(){
         listHyperlink = unserializeLinks();
-        if(listHyperlink==null || listHyperlink.isEmpty()){ //si la liste n'a pas encore été instanciée ou est vide
+        if(listHyperlink==null || listHyperlink.isEmpty()){
             listHyperlink = new ArrayList<Boolean>();
             for(int i=0; i<Outil.getParamTitle().size();i++){
-                if(Outil.getParamTitle().get(i).equals("Raccourci vers emplacement") || Outil.getParamTitle().get(i).equals("Raccourci vers photo")){ //la position des deux paramètres de base affichés sous format lien
-                    listHyperlink.add(true);
-                }
-                else{
-                    listHyperlink.add(false);
-                }
+                listHyperlink.add(false);
             }
         }
-        serialHyperlink(listHyperlink); //enregistrement des bouléens de lien de base
+        serialHyperlink(listHyperlink);
     }
 
     /**

@@ -240,6 +240,7 @@ public class Outil implements Serializable{
 		}
         serializeAllTitles(titles);
 		serializeOrdre(ordre);
+		System.out.println(ordre);
     }
 
 	/**
@@ -252,7 +253,7 @@ public class Outil implements Serializable{
 		ArrayList<String> titles = unserializeTitles();
 		int index = titles.indexOf(title);
 		titles.remove(title);
-		int val = ordre.indexOf(index);
+		int val = ordre.get(index);
 		ordre.remove(index);
 		for(int i = 4; i<ordre.size(); i++){
 			if(ordre.get(i)>val){
@@ -261,6 +262,7 @@ public class Outil implements Serializable{
 		}
 		serializeAllTitles(titles);
 		serializeOrdre(ordre);
+		System.out.println(ordre);
 	}
 
 	/**

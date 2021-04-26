@@ -1,8 +1,10 @@
 import java.io.File;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import javafx.beans.binding.BooleanExpression;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -87,6 +89,8 @@ public class ControllerFormulaire implements Initializable{
     @FXML
     private Button cancelChangeButton;
 
+    @FXML 
+    private Label position;
 
     /**
      * Fonction appelée à l'ouverture de la fenêtre
@@ -102,6 +106,11 @@ public class ControllerFormulaire implements Initializable{
             setComboBoxMoyenGene();
             setForm();
             setCbMode();
+        }
+        else if(Controller.getForm().equals("modifColForm")){
+            setComboBoxPosition();
+            fillColForm();
+            title.setText("Modification de colonne");
         }
         
     }
@@ -185,9 +194,27 @@ public class ControllerFormulaire implements Initializable{
         (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
     }
 
+    /**
+     * Appelée lors de l'appuie sur le bouton "enregistrer" du fomulaire de 
+     * modification de colonne
+     * Met à jour la colonne en fonction du formulaire rempli et envoie un message de confirmation
+     * Si le formulaire n'est pas correctement rempli : message d'erreur
+     * @param action
+     */
     @FXML
     public void setColumn(ActionEvent action){
-        //
+        if(colTitle.getText().length()<4){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur de saisi", "Veuillez saisir au moins 4 caractères pour le titre de la colonne", "Erreur", alert);
+        }
+        else{
+            SetCol();
+            Alert alert = new Alert(AlertType.INFORMATION);
+                Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
+                originControl.initialize(null, null);
+                Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
+                (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
+        }
     }
 
 
@@ -330,6 +357,111 @@ public class ControllerFormulaire implements Initializable{
         outil.setUtilisationAuto(testMode.getValue().equals("Auto"));
         outil.setQuantite(quantite.getText());
         return outil;
+    }
+
+
+    /*Fonctions relative à la modifications de colonnes*/
+
+    /**
+     * Intilialise la comboBox de permettant de sélectionner une position
+     * pour la colonne courante avec des valeurs allant de 4 à la taille du tableau
+     * Les 4 premieres colonnes du tableau ne peuvent pas être déplacées
+     */
+    public void setComboBoxPosition(){
+        colPosition.getItems().clear();
+        colPosition.setStyle("-fx-font-f: 16px;");
+        for(int i=4; i<Outil.unserializeTitles().size(); i++){
+            colPosition.getItems().add(i+1); 
+        }
+        setVisibilityForUpdates();
+    }
+
+    /**
+     * Adapte la visibilité de la combobox de sélection de position en fonction
+     * de la colonne sélectionné : inivisible pour les 4 premières colonnes
+     */
+    public void setVisibilityForUpdates(){
+        for(int i=0; i<Outil.unserializeTitles().size(); i++){
+            if(originControl.getCurrentTitle().equals(Outil.unserializeTitles().get(i))){
+                if(i<4){
+                    colPosition.setVisible(false);
+                    position.setVisible(false);
+                }
+                else{
+                    colPosition.setVisible(true);
+                    position.setVisible(true);
+                }
+            }
+        }
+    }
+
+    /**
+     * pré rempli les champs du formulaire de modification avec les valeurs
+     * actuelles de la colonne sélectionnée
+     */
+    public void fillColForm(){
+        String title = originControl.getCurrentTitle();
+        int pos = Outil.unserializeTitles().indexOf(title);
+        colTitle.setText(title);
+        colPosition.setValue(pos+1);
+        if(ControllerAffichage.unserializeLinks().get(pos)){
+            linkBox.setSelected(true);
+        }
+        else{
+            linkBox.setSelected(false);
+        }
+    }
+
+    /**
+     * Modifie les valeurs de la colonne par les valeurs entrées dans le formulaire
+     * et les enregistre
+     * Met à jour le tableau en fonction du changement de position de la colonne
+     */
+    public void SetCol(){
+        ArrayList<String> titles = Outil.unserializeTitles();
+        ArrayList<Boolean> links = ControllerAffichage.unserializeLinks();
+        String title = originControl.getCurrentTitle();
+        int pos = titles.indexOf(title);
+        titles.set(pos, colTitle.getText());
+        links.set(pos, linkBox.isSelected());
+        Outil.serializeAllTitles(titles);
+        ControllerAffichage.serialHyperlink(links);
+        /*Mise à jour de l'affichage, la colonne est déplacée et toutes les autres également*/
+        if(colPosition.getValue() != pos+1 && colPosition.getValue()>4){
+            if(colPosition.getValue()-1 > pos){
+                for(int i=pos; i!=colPosition.getValue()-1; i++){
+                    swapCols(i, i+1);
+                }
+            }
+            else{
+                for(int i=pos; i!=colPosition.getValue()-1; i--){
+                    swapCols(i, i-1);
+                }
+            }
+        }
+    }
+
+    /**
+     * Echange les valeurs de deux colonnes entres elles
+     * @param pos1 la position de la première colonne
+     * @param pos2 la position de la deuxième colonne
+     */
+    public void swapCols(int pos1, int pos2){
+        ArrayList<String> titles = Outil.unserializeTitles();
+        ArrayList<Boolean> links = ControllerAffichage.unserializeLinks();
+        ArrayList<Integer> ordre = Outil.unserializeOrdre();
+        String auxTitle = titles.get(pos1);
+        Boolean auxLink = links.get(pos1);
+        int auxPos = ordre.get(pos1);
+        titles.set(pos1, titles.get(pos2));
+        titles.set(pos2, auxTitle);
+        links.set(pos1, links.get(pos2));
+        links.set(pos2, auxLink);
+        ordre.set(pos1, ordre.get(pos2));
+        ordre.set(pos2, auxPos);
+        Outil.serializeAllTitles(titles);
+        ControllerAffichage.serialHyperlink(links);
+        Outil.serializeOrdre(ordre);
     }
 
 
