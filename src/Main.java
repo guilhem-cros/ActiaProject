@@ -65,14 +65,14 @@ public class Main{
         Element.serializeAllElements(list);
         System.out.println(MoyenGenerique.addMoyen("Tous"));
     
-
+        /*
         ArrayList<Integer> ordre = new ArrayList<Integer>();
         for(int i=0; i<Outil.unserializeTitles().size(); i++){
             ordre.add(i);
         }
         Outil.serializeOrdre(ordre);
         System.out.println(ordre);
-
+        */
 
     }
 }

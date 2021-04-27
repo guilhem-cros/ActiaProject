@@ -90,6 +90,13 @@ public class ControllerFormulaire implements Initializable{
     @FXML 
     private Label position;
 
+
+    @FXML
+    private TextField moyenGene;
+
+    @FXML
+    private Button saveMoyenGene;
+
     /**
      * Fonction appelée à l'ouverture de la fenêtre
      * Initialise les champs et variables en fonction du formulaire ouvert
@@ -117,6 +124,9 @@ public class ControllerFormulaire implements Initializable{
             title.setText("Modification de colonne");
             setComboBoxPosition();
             fillColForm();
+        }
+        else if(Controller.getForm().equals("modifMoyenFor")){
+            fillFieldMoyenGene();
         }
         
     }
@@ -216,6 +226,30 @@ public class ControllerFormulaire implements Initializable{
             SetCol();
             finalize(action);
         }
+    }
+
+    /**
+     * Appelée lors d'un appuie sur le bouton "Enregistrer" du formulaire de modification
+     * de moyen générique. Modifie le Moyen générique avec la valeur saisi et remplace
+     * l'ancienne valeur par la nouvelle dans tous les outils concernés.
+     * @param action
+     */
+    @FXML
+    public void updateMoyenGene(ActionEvent action){
+        if(moyenGene.getText().length()<4){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur de saisi", "Veuillez saisir au moins 4 caractères", "Erreur", alert);
+        }
+        ArrayList<MoyenGenerique> allMoyen = MoyenGenerique.unserializeMoyenGene();
+        for(MoyenGenerique m: allMoyen){
+            if(m.getNom().equals(originControl.getListMoyenGene().getValue())){
+                m.setNom(moyenGene.getText());
+            }
+        }
+        updateOutilByMoyen(originControl.getListMoyenGene().getValue(), moyenGene.getText());
+        MoyenGenerique.sortMoyenGen(allMoyen);
+        MoyenGenerique.serializeMoyenGene(allMoyen);
+        finalize(action);
     }
 
 
@@ -474,6 +508,39 @@ public class ControllerFormulaire implements Initializable{
         Outil.serializeOrdre(ordre);
     }
 
+
+
+    /*Fonctions relative à la modifications de Moyen générique*/
+
+    /**
+     * Pré-remplissage du formulaire de modification de moyen générique avec la valeur courante
+     */
+    public void fillFieldMoyenGene(){
+        moyenGene.setText(originControl.getListMoyenGene().getValue());
+    }
+
+    /**
+     * Modifie la totalité des Outils concernés par une modification sur un moyen 
+     * générique en changeant la valeur leur attribut moyenGenerique par la nouvelle valeur
+     * @param oldMoyen l'ancien nom du moyen générique
+     * @param newMoyen le nouveau nom du moyen générique
+     */
+    public void updateOutilByMoyen(String oldMoyen, String newMoyen){
+        for(Element e: Controller.getAllElements()){
+            for(int i=0; i<e.getOutils().size(); i++){
+                if(e.getOutils().get(i).getMoyenGenerique().equals(oldMoyen)){
+                    Outil outil = new Outil(newMoyen, e.getOutils().get(i).getDetailMoyen());
+                    outil.setUtilisationAuto(e.getOutils().get(i).isUtilisationAuto());
+                    outil.setQuantite(e.getOutils().get(i).getQuantite());
+                    for(int n=4; n<Outil.unserializeTitles().size(); n++){
+                        outil.getListParam().set(n, e.getOutils().get(i).getListParam().get(n));
+                    }
+                    e.getOutils().set(i, outil);
+                }
+            }
+        }
+        Element.serializeAllElements(Controller.getAllElements());
+    }
 
     /*Fonctions diverses*/
 

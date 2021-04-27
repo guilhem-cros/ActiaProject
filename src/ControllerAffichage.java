@@ -113,6 +113,12 @@ public class ControllerAffichage implements Initializable{
     @FXML
     private Button deleteColButton;
 
+    @FXML
+    private Button deleteLineButton;
+
+    @FXML
+    private Button updateMoyenButton;
+
 
     /**
      * Fonction appelée à l'ouverture de la fenêtre
@@ -128,6 +134,7 @@ public class ControllerAffichage implements Initializable{
         setComboBoxMoyenGene();
         setTable(null);
         setVisibility();
+        System.out.println(listOutils);
     }
 
 
@@ -142,6 +149,7 @@ public class ControllerAffichage implements Initializable{
     public void selectMoyenGene(ActionEvent action){
         String value = listMoyenGene.getValue();
         setTable(value);
+        currentOutil = null;
     }
 
     /**
@@ -256,6 +264,65 @@ public class ControllerAffichage implements Initializable{
         }
     }
 
+    /**
+     * Appelée lors d'un appuie sur le bouton "Supprimer ligne"
+     * Ouvre un onglet de confirmation afin de valider ou non
+     * la suppression de la ligne
+     * Actualise la fenêtre et supprime des données l'Outil 
+     * associé à la ligne sélectionnée
+     * @param action
+     */
+    @FXML
+    public void deleteLine(ActionEvent action){
+        if(currentOutil==null){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une ligne à supprimer.", "Erreur", alert);
+        }
+        else{
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la ligne ?\nL'outil associé sera définitivement supprimé des données.", ButtonType.YES, ButtonType.CANCEL);
+            alert.showAndWait();
+            if(alert.getResult()==ButtonType.YES){ 
+                ArrayList<Element> allElt = Element.unserializeElement();
+                /*Recherche de l'élément sélectionné dans les données*/   
+                for(int i=0; i<allElt.size();i++){
+                    if(allElt.get(i).getCodeElt().equals(selectedElt.getCodeElt())){
+                        selectedElt.removeOutil(currentOutil);
+                        allElt.set(i, selectedElt); //suppression de l'outil
+                        i=allElt.size();//sortie de la boucle
+                    }
+                }
+                Element.serializeAllElements(allElt);
+                Alert alert2 = new Alert(AlertType.INFORMATION);
+                Controller.setAlert("Modifications enregistrées", "La ligne a bien été supprimée, l'outil a été supprimé des données", "Confirmation", alert2);
+                this.initialize(null, null);
+                currentOutil = null;
+            } 
+        }
+    }
+
+    /**
+     * Appelée lors d'un appuie sur le bouton "Modifier moyen"
+     * Ouvre la fenêtre du formulaire de modification de moyen générique
+     * si un moyen valide a été saisi et qu'aucun autre form n'est ouvert
+     * @param action
+     */
+    @FXML
+    public void updateMoyen(ActionEvent action){
+        if(listMoyenGene.getValue() == null || listMoyenGene.getValue().equals("Tous")){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur : sélection invalide", "Veuillez sélectionner un moyen générique valide à modifier", "Erreur", alert);
+        }
+        else{
+            if(Controller.getCountOpenedForm()>0){
+                openFormError();
+            }
+            else{
+                Controller.setForm("modifMoyenForm");
+                setStage("formModifMoyen.fxml", "Modification de Moyen Générique");
+            }
+        }
+    }
+
 
 
     /*Permet d'utiliser les hostsServices depuis le controller*/
@@ -270,7 +337,7 @@ public class ControllerAffichage implements Initializable{
      * en fonction du mode de test (auto / manuel)
      * Crée le titre de la page
      */
-    public void setParamOfElt(){
+    public void setParamOfElt(){ //PROBLEME ICI -> La liste est réinstancié à chaque appel depuis l'accueil
         selectedElt = Controller.getCurrentElement();
         /*si les 2 checkboxs ont été cochées*/
         if(Controller.isAuto() && Controller.isManuel()){ 
@@ -311,6 +378,7 @@ public class ControllerAffichage implements Initializable{
             setRawButt.setVisible(false);
             newColumnButt.setVisible(false);
             deleteColButton.setVisible(false);
+            updateMoyenButton.setVisible(false);
         }
         else{
             setVisibility();
@@ -404,15 +472,24 @@ public class ControllerAffichage implements Initializable{
 
     /**
      * Crée une comboBox contenant la liste des Moyens génériques enregistrés
-     * @return la combo box contenant tous les moyens génériques
+     * et pour lesquels au moins un des Outils affichés correspond
+     * @return la combo box contenant les moyens génériques correspondant à l'affichage courant
      */
     public void setComboBoxMoyenGene(){
         listMoyenGene.getItems().clear();
         listMoyenGene.setStyle("-fx-font-f: 16px;");
         MoyenGenerique.sortMoyenGen(moyensGene);
+        /*Sélection des moyens présents dans les outils affichés*/
         for(MoyenGenerique m : moyensGene){
-            String chaine = m.getNom();
-            listMoyenGene.getItems().add(chaine);
+            for(Outil o: listOutils){
+                if(o.getMoyenGenerique().equals(m.getNom()) && !listMoyenGene.getItems().contains(m.getNom())){
+                    String chaine = m.getNom(); 
+                    listMoyenGene.getItems().add(chaine);
+                }
+            }
+            if(m.getNom().equals("Tous")){
+                listMoyenGene.getItems().add(m.getNom());
+            }
         }
         
     }
@@ -521,6 +598,8 @@ public class ControllerAffichage implements Initializable{
         setColButton.setVisible(admin);
         deleteColButton.setVisible(admin);
         newLineButton.setVisible(admin);
+        deleteLineButton.setVisible(admin);
+        updateMoyenButton.setVisible(admin);
     }
 
     /**
@@ -711,6 +790,10 @@ public class ControllerAffichage implements Initializable{
 
     public void setCurrentTitle(String currentTitle) {
         this.currentTitle = currentTitle;
+    }
+
+    public ComboBox<String> getListMoyenGene() {
+        return listMoyenGene;
     }
     
 }

@@ -42,27 +42,37 @@
             </GridPane>
          </content>
       </ScrollPane>
-      <Button fx:id="newColumnButt" layoutX="1087.0" layoutY="856.0" maxWidth="150.0" mnemonicParsing="false" onAction="#openColumnSetUp" prefWidth="150.0" text="Nouvelle colonne" visible="false">
+      <Button fx:id="newColumnButt" layoutX="1087.0" layoutY="856.0" maxWidth="150.0" mnemonicParsing="false" onAction="#openColumnSetUp" prefWidth="150.0" text="Nouvelle colonne">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="newLineButton" layoutX="1270.0" layoutY="856.0" mnemonicParsing="false" onAction="#openAddLineWindow" prefWidth="150.0" text="Nouvelle ligne" visible="false">
+      <Button fx:id="newLineButton" layoutX="1270.0" layoutY="856.0" mnemonicParsing="false" onAction="#openAddLineWindow" prefWidth="150.0" text="Nouvelle ligne">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="setRawButt" layoutX="20.0" layoutY="856.0" mnemonicParsing="false" onAction="#openModifWindow" text="Modifier ligne" visible="false">
+      <Button fx:id="setRawButt" layoutX="20.0" layoutY="856.0" mnemonicParsing="false" onAction="#openModifWindow" prefWidth="150.0" text="Modifier ligne">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="setColButton" layoutX="20.0" layoutY="156.0" mnemonicParsing="false" onAction="#setColumn" text="Modifier colonne" visible="false">
+      <Button fx:id="setColButton" layoutX="20.0" layoutY="156.0" mnemonicParsing="false" onAction="#setColumn" prefWidth="160.0" text="Modifier colonne">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="deleteColButton" layoutX="202.0" layoutY="156.0" mnemonicParsing="false" onAction="#deleteColumn" text="Supprimer colonne" visible="false">
+      <Button fx:id="deleteColButton" layoutX="216.0" layoutY="156.0" mnemonicParsing="false" onAction="#deleteColumn" prefWidth="160.0" text="Supprimer colonne">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="deleteLineButton" layoutX="202.0" layoutY="856.0" mnemonicParsing="false" onAction="#deleteLine" prefWidth="150.0" text="Supprimer ligne">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="updateMoyenButton" layoutX="1055.0" layoutY="78.0" mnemonicParsing="false" onAction="#updateMoyen" text="Modifier moyen">
          <font>
             <Font size="16.0" />
          </font>
