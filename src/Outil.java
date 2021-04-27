@@ -26,17 +26,13 @@ public class Outil implements Serializable{
 	/*Liste des "titres" des paramètres des outils de test*/
 	private static ArrayList<String> listParamTitle;
 
-	/*Liste des paramètres ajoutés manuellement et stockées*/
-	private ArrayList<String> addedParam;
 
-	
 	/*Constructeurs*/
     public Outil(String moyenGenerique, String detailMoyen){
         this.moyenGenerique = moyenGenerique;
 		this.detailMoyen = detailMoyen;
 		this.utilisationAuto = false;
 		this.listParam = new ArrayList<String>();
-		this.addedParam = new ArrayList<String>();
     }
 
 
@@ -132,34 +128,6 @@ public class Outil implements Serializable{
 	public static ArrayList<String> getParamTitle(){
 		Outil.setListParamTitle();
 		return listParamTitle;
-	}
-
-
-
-	/*Fonctions sur les paramètres ajoutées*/
-
-	/**
-	 * Initialise ou complète la liste addedParam en fonction du nombre de titres d'attributs 
-	 * crées manuellement et enregistrés
-	 */
-	public void setAddedParams(){
-		for(int i=16; i<unserializeTitles().size();i++){
-			addedParam.add("");
-		}
-	}
-
-	/**
-	 * Modifie la valeur d'un paramètre correspondant à un attribut ajouté manuellement
-	 * @param title le titre du paramètre (l'attribut)
-	 * @param value la nouvelle valeur du paramètre
-	 */
-	public void setParam(String title, String value){
-		ArrayList<String> listTitles = unserializeTitles();
-		for(int i=0; i<listTitles.size();i++){
-			if(listTitles.get(i).equals(title)){
-				addedParam.set(i, value);
-			}
-		}
 	}
 
 

@@ -1,10 +1,8 @@
 import java.io.File;
-import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import javafx.beans.binding.BooleanExpression;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -279,7 +277,10 @@ public class ControllerFormulaire implements Initializable{
                 grid.add(selectFileButton, 2, i);
             }
         }
-        fillFields();
+        /*pré-remplissage des champs s'il s'agit d'une modification d'Outil existant*/
+        if(Controller.getForm().equals("modifOutilForm")){
+            fillFields(); 
+        }
     }
 
     /**
@@ -299,7 +300,7 @@ public class ControllerFormulaire implements Initializable{
         }
         detailMoyen.setText(outil.getDetailMoyen());
         for(int i=4; i<param.size();i++){
-            listParamField.get(i-4).setText(param.get(i));
+            listParamField.get(i-4).setText(param.get(Outil.unserializeOrdre().get(i)));
         }
     }
 
@@ -353,9 +354,15 @@ public class ControllerFormulaire implements Initializable{
      * @return l'outil crée possédant toutes les informations saisies
      */
     public Outil doOutilByForm(){
+        if(!MoyenGenerique.isAlrdyInList(MoyenGenerique.unserializeMoyenGene(), listMoyensGene.getValue())){
+            MoyenGenerique.addMoyen(listMoyensGene.getValue());
+        }
         Outil outil = new Outil(listMoyensGene.getValue(), detailMoyen.getText());
         outil.setUtilisationAuto(testMode.getValue().equals("Auto"));
         outil.setQuantite(quantite.getText());
+        for(int i=0; i<Outil.unserializeTitles().size()-4; i++){
+            outil.getListParam().set(i+4, listParamField.get(Outil.unserializeOrdre().indexOf(i+4)-4).getText());
+        }
         return outil;
     }
 

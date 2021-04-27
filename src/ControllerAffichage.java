@@ -314,8 +314,10 @@ public class ControllerAffichage implements Initializable{
             setColButton.setVisible(false);
             setRawButt.setVisible(false);
             newColumnButt.setVisible(false);
+            deleteColButton.setVisible(false);
         }
         else{
+            setVisibility();
             initColumnTitle(grid);
             int count = 1; //numéro de la ligne actuelle
             /*Parcours de tous les outils de test de l'élément*/

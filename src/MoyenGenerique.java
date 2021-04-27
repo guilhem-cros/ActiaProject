@@ -100,6 +100,7 @@ public class MoyenGenerique implements Serializable{
 		}
 		else{
 			allMoyens.add(moyen);
+			sortMoyenGen(allMoyens);
 			serializeMoyenGene(allMoyens); //réécriture du fichier de stockage avec ajout
 			return true; //l'ajout a  été effectué
 		}
@@ -115,6 +116,7 @@ public class MoyenGenerique implements Serializable{
 		for(MoyenGenerique m: allMoyens){
 			if(m.nom.equals(name)){
 				allMoyens.remove(m); //si le nom correspond à un moyen
+				sortMoyenGen(allMoyens);
 				serializeMoyenGene(allMoyens); //réecriture du fichier avec suppression
 				return true; //la suppresion a été effectuée
 			}
