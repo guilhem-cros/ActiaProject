@@ -35,7 +35,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -102,6 +101,9 @@ public class ControllerAffichage implements Initializable{
     @FXML
     private Button newColumnButt;
 
+    @FXML 
+    private Button newLineButton;
+
     @FXML
     private Button setRawButt;
 
@@ -152,19 +154,11 @@ public class ControllerAffichage implements Initializable{
     public void openColumnSetUp(ActionEvent action){
         /*Si un formulaire est déjà ouvert*/
         if(Controller.getCountOpenedForm()>0){
-            Alert alert = new Alert(AlertType.WARNING); //message d'erreur
-            Controller.setAlert("Erreur formulaire", "Un autre formulaire est déjà ouvert, veuillez le fermer afin d'en ouvrir un nouveau", "Erreur", alert);
+            openFormError();
         }
         else{
             Controller.setForm("newColForm");
-            ControllerFormulaire.setOriginControl(this); //mise à jour du controller parent
-            /*Création du nouvel onglet*/
-            Stage stage = setNewStage("ajoutCol.fxml");
-            stage.setTitle("Ajout colonne");
-            /*Ajout d'une action lors de la fermeture de l'onglet depuis la croix rouge*/
-            addCloseEvent(stage);
-            Controller.setCountOpenedForm(Controller.getCountOpenedForm()+1);//incrémentation du compteur de formulaires ouverts
-            stage.showAndWait();
+            setStage("ajoutCol.fxml", "Ajout colonne");
         }
     }
 
@@ -182,21 +176,31 @@ public class ControllerAffichage implements Initializable{
         }
         else{
             if(Controller.getCountOpenedForm()>0){
-                Alert alert = new Alert(AlertType.WARNING); //message d'erreur
-                Controller.setAlert("Erreur formulaire", "Un autre formulaire est déjà ouvert, veuillez le fermer afin d'en ouvrir un nouveau", "Erreur", alert);
+                openFormError();
             }
             else{
                 Controller.setForm("modifOutilForm");
-                ControllerFormulaire.setOriginControl(this); //mise à jour du controller parent
-                /*Création du nouvel onglet*/
-                Stage stage = setNewStage("formModifOutil.fxml");
-                stage.setTitle("Modification de ligne");
-                /*Ajout d'une action lors de la fermeture de l'onglet depuis la croix rouge*/
-                addCloseEvent(stage);
-                Controller.setCountOpenedForm(Controller.getCountOpenedForm()+1);//incrémentation du compteur de formulaires ouverts
-                stage.showAndWait();
+                setStage("formModifOutil.fxml", "Modification de ligne");
             }
         }
+    }
+
+    /**
+     * Appelée lors d'un appuie sur le bouton "Nouvelle ligne"
+     * Ouvre la fenêtre du formulaire de création de ligne / Outil
+     * Ouvre un onglet d'erreur si un autre formulaire est déjà ouvert
+     * @param action
+     */
+    @FXML
+    public void openAddLineWindow(ActionEvent action){
+        if(Controller.getCountOpenedForm()>0){
+            openFormError();
+        }
+        else{
+            Controller.setForm("addOutilForm");
+            setStage("formModifOutil.fxml", "Ajout de ligne");
+        }
+
     }
 
     /**
@@ -213,19 +217,11 @@ public class ControllerAffichage implements Initializable{
         }
         else{
             if(Controller.getCountOpenedForm()>0){
-                Alert alert = new Alert(AlertType.WARNING); //message d'erreur
-                Controller.setAlert("Erreur formulaire", "Un autre formulaire est déjà ouvert, veuillez le fermer afin d'en ouvrir un nouveau", "Erreur", alert);
+                openFormError();
             }
             else{
                 Controller.setForm("modifColForm");
-                ControllerFormulaire.setOriginControl(this); //mise à jour du controller parent
-                /*Création du nouvel onglet*/
-                Stage stage = setNewStage("formModifCol.fxml");
-                stage.setTitle("Modification de colonne");
-                /*Ajout d'une action lors de la fermeture de l'onglet depuis la croix rouge*/
-                addCloseEvent(stage);
-                Controller.setCountOpenedForm(Controller.getCountOpenedForm()+1);//incrémentation du compteur de formulaires ouverts
-                stage.showAndWait();
+                setStage("formModifCol.fxml", "Modification de colonne");
             }
         }
     }
@@ -304,7 +300,7 @@ public class ControllerAffichage implements Initializable{
     public void setTable(String selectedMoyenGene){
         clicableItems = new ArrayList<ArrayList<Labeled>>();
         grid.getChildren().clear();//la grille est réinitialisée
-        ArrayList<Outil> toPrintOutils = initPrintedOutils();
+        ArrayList<Outil> toPrintOutils = initDisplayedOutils();
         if(toPrintOutils.isEmpty()){
             /*invisibilité de la grille et affichage du label*/
             grid.setVisible(false);
@@ -337,21 +333,14 @@ public class ControllerAffichage implements Initializable{
                     else{
                         Label text = new Label(param);
                         /*Les paramètres visuels de text*/
-                        text.setWrapText(true); 
-                        text.setAlignment(Pos.CENTER);
-                        text.setTextAlignment(TextAlignment.CENTER);
+                        setLabelParam(text);
                         text.setFont(Font.font(16));
-                        text.maxHeight(100);
-                        text.setPrefHeight(100);
-                        text.maxWidth(160);
-                        text.setPrefWidth(160);
-                        text.setStyle("-fx-border-color: grey;");
                         list.add(text); //ajout à la liste des cases de la ligne
                         grid.add(text, countP, count); //remplissage de la case courante de grid
                     }    
                     countP++;
                 }
-                sp.setPrefHeight(100*(count+1)+20); //incrémentation de la hauteur du scrollpane en fct du nb de lignes de grid
+                sp.setPrefHeight(100*(count+1)+20); //ajustement de la hauteur du scrollpane en fct du nb de lignes de grid
                 clicableItems.add(list); //ajout de la liste de case de la ligne courante à la liste de lignes de la grille
                 count++;
             }
@@ -374,15 +363,8 @@ public class ControllerAffichage implements Initializable{
         /*Parcours de la liste des "titres"(~nom des variables de Outil) du tableau*/
         for(String s : paramTitles){
             Label txt = new Label(s);
-            txt.setWrapText(true);
-            txt.setAlignment(Pos.CENTER);
-            txt.setTextAlignment(TextAlignment.CENTER);
+            setLabelParam(txt);
             txt.setFont(Font.font(18));
-            txt.maxHeight(100);
-            txt.setPrefHeight(100);
-            txt.maxWidth(160);
-            txt.setPrefWidth(160);
-            txt.setStyle("-fx-border-color: grey;");
             txt.setBackground(new Background(bf));
             setClicEvent(txt);
             clicableTitles.add(txt);
@@ -411,7 +393,7 @@ public class ControllerAffichage implements Initializable{
     /**
      * @return la liste d'outils correspondant à la valeur courante de la ComboBox
      */
-    public ArrayList<Outil> initPrintedOutils(){
+    public ArrayList<Outil> initDisplayedOutils(){
         if(listMoyenGene.getValue()==null||listMoyenGene.getValue().equals("Tous")){
             return listOutils;
         }
@@ -427,7 +409,7 @@ public class ControllerAffichage implements Initializable{
     public void setComboBoxMoyenGene(){
         listMoyenGene.getItems().clear();
         listMoyenGene.setStyle("-fx-font-f: 16px;");
-        MoyenGenerique.sortMoyenGen(moyensGene);//tri par ordre alphabétique
+        MoyenGenerique.sortMoyenGen(moyensGene);
         for(MoyenGenerique m : moyensGene){
             String chaine = m.getNom();
             listMoyenGene.getItems().add(chaine);
@@ -456,19 +438,7 @@ public class ControllerAffichage implements Initializable{
             if(!selectedFile.isFile()){
                 /*instanciation de l'alerte*/
                 Alert alert = new Alert(AlertType.WARNING);
-                alert.setTitle("Erreur");
-                TilePane alertpane = new TilePane();
-                Scene scene = new Scene(alertpane, 320, 240);
-                Stage stage = new Stage();
-                stage.setScene(scene);
-                try {
-                    alert.setHeaderText("Erreur : fichier introuvable");
-                    alert.setContentText("Le fichier recherché semble avoir été renommé ou déplacé. Veuillez contacter un administrateur afin de mettre à jour son emplacement.");
-                    alert.showAndWait(); //ouverture de l'onglet d'erreur
-                    /*L'onglet d'affichage reste ouvert mais innaccessible tant que l'onglet erreur n'a pas été fermé*/
-                } catch (Exception exp) {
-                    exp.printStackTrace();
-                }
+                Controller.setAlert("Erreur : fichier introuvable", "Le fichier recherché semble avoir été renommé ou déplacé. Veuillez contacter un administrateur afin de mettre à jour son emplacement.", "Erreur", alert);
             }
             /*si le fichier selectionné existe il est ouvert*/
             else{
@@ -476,16 +446,8 @@ public class ControllerAffichage implements Initializable{
             } 
         }); 
         /*paramètres visuels du lien*/
-        text.setWrapText(true);
-        text.setWrapText(true); 
-        text.setAlignment(Pos.CENTER);
-        text.setTextAlignment(TextAlignment.CENTER);
+        setLabelParam(text);
         text.setFont(Font.font(16));
-        text.maxHeight(100);
-        text.setPrefHeight(100);
-        text.maxWidth(160);
-        text.setPrefWidth(160);
-        text.setStyle("-fx-border-color: grey;");
         return text;
     }
 
@@ -558,6 +520,7 @@ public class ControllerAffichage implements Initializable{
         setRawButt.setVisible(admin);
         setColButton.setVisible(admin);
         deleteColButton.setVisible(admin);
+        newLineButton.setVisible(admin);
     }
 
     /**
@@ -582,7 +545,7 @@ public class ControllerAffichage implements Initializable{
                         for(Labeled label: listAux){
                             label.setBackground(new Background(bf));
                         }
-                        currentOutil = initPrintedOutils().get(idOutil);
+                        currentOutil = initDisplayedOutils().get(idOutil);
                         currentTitle = null;
                     });
                 }
@@ -630,6 +593,9 @@ public class ControllerAffichage implements Initializable{
     }
 
 
+
+    /*Fonctions "diverses"*/
+
     /**
      * Initialise un Stage dans l'optique d'une ouverture de nouvelle fenêtre
      * et met en place les paramètres de base de ce stage
@@ -654,6 +620,23 @@ public class ControllerAffichage implements Initializable{
         }
     }
 
+    /**
+     * Initialise et ouvre un nouvel onglet
+     * Incrémente le nombre de formulaires ouverts
+     * @param xml le lien du fichier fxml correspondant à l'onglet
+     * @param title le titre de l'onglet
+     */
+    public void setStage(String xml, String title){
+        ControllerFormulaire.setOriginControl(this); //mise à jour du controller parent
+        /*Création du nouvel onglet*/
+        Stage stage = setNewStage(xml);
+        stage.setTitle(title);
+        /*Ajout d'une action lors de la fermeture de l'onglet depuis la croix rouge*/
+        addCloseEvent(stage);
+        Controller.setCountOpenedForm(Controller.getCountOpenedForm()+1);//incrémentation du compteur de formulaires ouverts
+        stage.showAndWait();
+    }
+
     /** 
      * Ajoute une action sur la fermeture d'une fenêtre formulaire qui décrémente 
      * le nb de formulaire ouvert et change en null le nom du form courant
@@ -665,6 +648,31 @@ public class ControllerAffichage implements Initializable{
             Controller.setForm("null");             
         });
     }
+
+    /**
+     * Instancie et ouvre l'onglet d'erreur lié au trop grand nombre de formulaires ouverts
+     */
+    public void openFormError(){
+        Alert alert = new Alert(AlertType.WARNING); //message d'erreur
+        Controller.setAlert("Erreur formulaire", "Un autre formulaire est déjà ouvert, veuillez le fermer afin d'en ouvrir un nouveau", "Erreur", alert);
+    }
+
+    /**
+     * Met en place les paramètres visuels d'un Labeled pour son insertion et so
+     * affichage correct dans la grille
+     * @param l le Labeled à paramétrer
+     */
+    public void setLabelParam(Labeled l){
+        l.setWrapText(true);
+        l.setAlignment(Pos.CENTER);
+        l.setTextAlignment(TextAlignment.CENTER);
+        l.maxHeight(100);
+        l.setPrefHeight(100);
+        l.maxWidth(160);
+        l.setPrefWidth(160);
+        l.setStyle("-fx-border-color: grey;");
+    }
+
 
     
     /*Getter et setter*/

@@ -162,10 +162,10 @@ public class Controller implements Initializable{
         }
         /*Si aucune erreur décectée, création et ouverture de la nouvelle fenetre*/
         else{
-                /*Déclaration de la nouvelle fenetre*/
-                Stage stage = setNewStage("outils.fxml");
-                stage.setTitle("Constitution Bancs de Test : " + currentElement.getCodeElt() + " " + currentElement.getNom());
-                stage.showAndWait();
+            /*Déclaration de la nouvelle fenetre*/
+            Stage stage = setNewStage("outils.fxml");
+            stage.setTitle("Constitution Bancs de Test : " + currentElement.getCodeElt() + " " + currentElement.getNom());
+            stage.showAndWait();
         }
     }
 
@@ -388,50 +388,6 @@ public class Controller implements Initializable{
 
 
 
-    /*Getter et setter des éléments static*/
-
-    public static Element getCurrentElement() {
-        return currentElement;
-    }
-
-    public static boolean isAuto() {
-        return auto;
-    }
-
-    public static boolean isManuel() {
-        return manuel;
-    }
-
-    public static boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public static int getCountOpenedForm() {
-        return countOpenedForm;
-    }
-
-    public static void setCountOpenedForm(int countOpenedForm) {
-        Controller.countOpenedForm = countOpenedForm;
-    }
-
-    public static String getForm() {
-        return form;
-    }
-
-    public static void setForm(String form) {
-        Controller.form = form;
-    }
-
-    public static ArrayList<Element> getAllElements() {
-        return allElements;
-    }
-
-    public static void setAllElements(ArrayList<Element> allElements) {
-        Controller.allElements = allElements;
-    }
-
-
-
     /*Mise en place et affichage du menu et sous-menus*/
 
 
@@ -484,17 +440,17 @@ public class Controller implements Initializable{
         elementButton.getItems().clear();
         RadioMenuItem baseItem = new RadioMenuItem(selectedProd.getCodeElt() + " " + selectedProd.getNom());
         elementButton.getItems().add(baseItem); //ajout de l'élément selectedProd à sa propre liste
-        usableMenuItems.add(baseItem); //ajot de l'élément selectedProd à la liste d'items cliquables
+        usableMenuItems.add(baseItem); //ajout de l'élément selectedProd à la liste d'items cliquables
         /*Si la liste de sous élément de slectedProd n'est pas vide*/
         if(!selectedProd.getListeSousElements().isEmpty()){
             ArrayList<Element> listElt = selectedProd.getListeSousElements();
-            Element.sortElements(listElt); //tri de la liste
+            Element.sortElements(listElt);
             for(Element elt: listElt){
                 String chaine = elt.getCodeElt() + " " + elt.getNom();
                 /*Si l'élément courant possède des sous éléments, on l'ajoute au menu en que sous menu*/
                 if(!elt.hasNoSubElmt()){
                     Menu menu = new Menu(chaine);
-                    setSubMenu(menu); //mise en place du sous menu de l'item 
+                    setSubMenu(menu);
                     elementButton.getItems().add(menu);
                 }
                 /*Si l'élément courant ne possède pas de sous élèment on l'ajoute en tant que "bouton radio"*/
@@ -707,6 +663,49 @@ public class Controller implements Initializable{
             e.printStackTrace();
             return null;
         }
+    }
+
+
+    /*Getter et setter des éléments static*/
+
+    public static Element getCurrentElement() {
+        return currentElement;
+    }
+
+    public static boolean isAuto() {
+        return auto;
+    }
+
+    public static boolean isManuel() {
+        return manuel;
+    }
+
+    public static boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public static int getCountOpenedForm() {
+        return countOpenedForm;
+    }
+
+    public static void setCountOpenedForm(int countOpenedForm) {
+        Controller.countOpenedForm = countOpenedForm;
+    }
+
+    public static String getForm() {
+        return form;
+    }
+
+    public static void setForm(String form) {
+        Controller.form = form;
+    }
+
+    public static ArrayList<Element> getAllElements() {
+        return allElements;
+    }
+
+    public static void setAllElements(ArrayList<Element> allElements) {
+        Controller.allElements = allElements;
     }
     
 }

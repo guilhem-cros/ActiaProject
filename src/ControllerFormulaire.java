@@ -100,15 +100,23 @@ public class ControllerFormulaire implements Initializable{
             columnTitle.setText("");
         }
         else if(Controller.getForm().equals("modifOutilForm")){
+            titleLabel.setText("Formulaire de modification");
+            listMoyensGene.getItems().clear();
+            setComboBoxMoyenGene();
+            setForm();
+            setCbMode();
+        }
+        else if(Controller.getForm().equals("addOutilForm")){
+            titleLabel.setText("Formulaire de création");
             listMoyensGene.getItems().clear();
             setComboBoxMoyenGene();
             setForm();
             setCbMode();
         }
         else if(Controller.getForm().equals("modifColForm")){
+            title.setText("Modification de colonne");
             setComboBoxPosition();
             fillColForm();
-            title.setText("Modification de colonne");
         }
         
     }
@@ -140,18 +148,14 @@ public class ControllerFormulaire implements Initializable{
             ArrayList<Boolean> hyperlinks = ControllerAffichage.unserializeLinks();
             hyperlinks.add(hyperlinkBox.isSelected());
             ControllerAffichage.serialHyperlink(hyperlinks);
-            (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
-            Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
-            originControl.initialize(null, null); //mise à jour immédiate de la page d'affichage parente du formulaire
-            Alert alert = new Alert(AlertType.INFORMATION);
-            Controller.setAlert("Mise à jour effectuée", "La colonne a bien été ajoutée", "Confirmation", alert);
+            finalize(action);
         }
     }
 
     /**
      * Fonction appelé depuis l'appuie sur le bouton "Enregister" du form
      * de création / modification de ligne
-     * Modifie l'outils sélectionné précédemment, selon les données saisi,
+     * Modifie l'Outil sélectionné précédemment, selon les données saisi,
      * ou ajoute un nouvel Outil à l'élèment
      * @param action
      */
@@ -160,19 +164,22 @@ public class ControllerFormulaire implements Initializable{
         if(listMoyensGene.getValue()!=null && detailMoyen.getText().length()!=0 && testMode.getValue()!=null){
             if(doOutilByForm()!=null){
                 Element e = originControl.getSelectedElt();
-                for(int i=0; i<e.getOutils().size(); i++){
-                    if(e.getOutils().get(i).equals(originControl.getCurrentOutil())){
-                        e.getOutils().set(i, doOutilByForm());
-                        i = e.getOutils().size(); //sortie de la boucle
+                Outil outil = doOutilByForm();
+                /*Dans le cadre d'une modification*/
+                if(Controller.getForm().equals("modifOutilForm")){
+                    for(int i=0; i<e.getOutils().size(); i++){
+                        if(e.getOutils().get(i).equals(originControl.getCurrentOutil())){
+                            e.getOutils().set(i, outil);
+                            i = e.getOutils().size(); //sortie de la boucle
+                        }
                     }
                 }
-                titleLabel.setText("Formulaire de modification");
+                /*Dans le cadre d'un ajout*/
+                else if(Controller.getForm().equals("addOutilForm")){
+                    e.addOutil(outil);
+                }
                 Element.serializeAllElements(Controller.getAllElements());
-                Alert alert = new Alert(AlertType.INFORMATION);
-                Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
-                originControl.initialize(null, null);
-                Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
-                (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
+                finalize(action);
             }
         }
         else{
@@ -207,11 +214,7 @@ public class ControllerFormulaire implements Initializable{
         }
         else{
             SetCol();
-            Alert alert = new Alert(AlertType.INFORMATION);
-                Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
-                originControl.initialize(null, null);
-                Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
-                (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
+            finalize(action);
         }
     }
 
@@ -469,6 +472,23 @@ public class ControllerFormulaire implements Initializable{
         Outil.serializeAllTitles(titles);
         ControllerAffichage.serialHyperlink(links);
         Outil.serializeOrdre(ordre);
+    }
+
+
+    /*Fonctions diverses*/
+
+    /**
+     * Instancie et affiche un onglet de confirmation
+     * Actualise la page d'affichage et ferme l'onglet courant
+     * Décrémente le nombre de formulaires ouverts
+     * @param action
+     */
+    public void finalize(ActionEvent action){
+        Alert alert = new Alert(AlertType.INFORMATION);
+        Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
+        originControl.initialize(null, null); //actualisation de l'affichage
+        Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
+        (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
     }
 
 
