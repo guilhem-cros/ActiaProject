@@ -1,9 +1,12 @@
+package Controller;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import Model.Config;
+import Model.Element;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -166,7 +169,7 @@ public class Controller implements Initializable{
         /*Si aucune erreur décectée, création et ouverture de la nouvelle fenetre*/
         else{
             /*Déclaration de la nouvelle fenetre*/
-            Stage stage = setNewStage("outils.fxml");
+            Stage stage = setNewStage("../View/outils.fxml");
             /*Evènement de fermeture de fenêtre : retire le controllerAffichage correspondant de la liste des affichages ouverts*/
             stage.setOnCloseRequest(event ->{
                 for(int i=0; i<openedController.size(); i++){
@@ -273,7 +276,7 @@ public class Controller implements Initializable{
         /*Si aucune erreur décectée, création et ouverture de la nouvelle fenetre*/
         else{
             /*Déclaration de la nouvelle fenetre*/
-            Stage stage = setNewStage("logs.fxml");
+            Stage stage = setNewStage("../View/logs.fxml");
             stage.setTitle("Mots de passe : " + currentElement.getCodeElt() + " " + currentElement.getNom());
             stage.showAndWait();
         }
@@ -666,7 +669,7 @@ public class Controller implements Initializable{
             Stage stage = new Stage();
             stage.setScene(scene);
             stage = new Stage();
-            stage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("media/logoActiaPetit.png")));;
+            stage.getIcons().add(new Image("media/logoActiaPetit.png"));
             stage.setScene(scene);
             stage.setResizable(false);
             return stage;

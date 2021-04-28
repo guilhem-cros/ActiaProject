@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="paneId" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
+<Pane fx:id="paneId" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Controller">
    <children>
       <ComboBox fx:id="productList" layoutX="158.0" layoutY="183.0" onAction="#selectProduct" prefHeight="36.0" prefWidth="243.0" promptText="Sélectionnez un produit" visibleRowCount="3" />
       <Button fx:id="valideButton" layoutX="490.0" layoutY="600.0" mnemonicParsing="false" onAction="#validate" prefWidth="100.0" text="Valider">
@@ -37,7 +37,7 @@
       </CheckBox>
       <ImageView fx:id="actiaLogo" fitHeight="100.0" fitWidth="380.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@media/logoActia.png" />
+            <Image url="@../media/logoActia.png" />
          </image>
       </ImageView>
       <TextField fx:id="selectedElement" editable="false" layoutX="607.0" layoutY="323.0" prefHeight="36.0" prefWidth="300.0" promptText="Sélectionnez un ensemble" visible="false">

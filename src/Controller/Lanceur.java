@@ -1,3 +1,4 @@
+package Controller;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -19,11 +20,11 @@ public class Lanceur extends Application{
     public void start(Stage stage){
         try {
 			//récupérer les sources ici  !!
-			Parent root = FXMLLoader.load(getClass().getResource("accueil.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("../View/accueil.fxml"));
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			stage.setTitle("Menu Principal");
-			stage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("media/logoActiaPetit.png")));
+			stage.getIcons().add(new Image("media/logoActiaPetit.png"));
 			stage.setResizable(false);
 			stage.show();
 		} catch(Exception e) {

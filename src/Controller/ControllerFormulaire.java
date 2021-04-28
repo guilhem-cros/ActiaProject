@@ -1,8 +1,13 @@
+package Controller;
+
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import Model.Element;
+import Model.MoyenGenerique;
+import Model.Outil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

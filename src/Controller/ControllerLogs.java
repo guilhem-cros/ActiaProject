@@ -1,9 +1,10 @@
-
+package Controller;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import Model.Logs;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -21,7 +22,7 @@ import javafx.scene.text.Font;
 public class ControllerLogs implements Initializable{
 
     /*L'élément sélectionné depuis l'accueil*/
-    private Element selectedElt;
+    private Model.Element selectedElt;
 
     /*La liste des logs de l'élément sélectionné*/
     private ArrayList<Logs> listLogs;

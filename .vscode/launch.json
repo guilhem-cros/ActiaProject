@@ -8,6 +8,20 @@
             "type": "java",
             "name": "Launch Main",
             "request": "launch",
+            "mainClass": "Controller.Main",
+            "projectName": "ActiaProject_9b28131c"
+        },
+        {
+            "type": "java",
+            "name": "Launch Lanceur",
+            "request": "launch",
+            "mainClass": "Controller.Lanceur",
+            "projectName": "ActiaProject_9b28131c"
+        },
+        {
+            "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
             "mainClass": "Main",
             "projectName": "ActiaProject_9b28131c"
         },

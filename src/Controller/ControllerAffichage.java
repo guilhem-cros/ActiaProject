@@ -1,4 +1,4 @@
-
+package Controller;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +10,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import Model.Element;
+import Model.MoyenGenerique;
+import Model.Outil;
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -181,7 +184,7 @@ public class ControllerAffichage implements Initializable{
         }
         else{
             Controller.setForm("newColForm");
-            setStage("ajoutCol.fxml", "Ajout colonne");
+            setStage("../View/ajoutCol.fxml", "Ajout colonne");
         }
     }
 
@@ -203,7 +206,7 @@ public class ControllerAffichage implements Initializable{
             }
             else{
                 Controller.setForm("modifOutilForm");
-                setStage("formModifOutil.fxml", "Modification de ligne");
+                setStage("../View/formModifOutil.fxml", "Modification de ligne");
             }
         }
     }
@@ -221,7 +224,7 @@ public class ControllerAffichage implements Initializable{
         }
         else{
             Controller.setForm("addOutilForm");
-            setStage("formModifOutil.fxml", "Ajout de ligne");
+            setStage("../View/formModifOutil.fxml", "Ajout de ligne");
         }
 
     }
@@ -244,7 +247,7 @@ public class ControllerAffichage implements Initializable{
             }
             else{
                 Controller.setForm("modifColForm");
-                setStage("formModifCol.fxml", "Modification de colonne");
+                setStage("../View/formModifCol.fxml", "Modification de colonne");
             }
         }
     }
@@ -333,7 +336,7 @@ public class ControllerAffichage implements Initializable{
             }
             else{
                 Controller.setForm("modifMoyenForm");
-                setStage("formModifMoyen.fxml", "Modification de Moyen Générique");
+                setStage("../View/formModifMoyen.fxml", "Modification de Moyen Générique");
             }
         }
     }
@@ -713,7 +716,7 @@ public class ControllerAffichage implements Initializable{
             Stage stage = new Stage();
             stage.setScene(scene);
             stage = new Stage();
-            stage.getIcons().add(new Image(this.getClass().getClassLoader().getResourceAsStream("media/logoActiaPetit.png")));;
+            stage.getIcons().add(new Image("media/logoActiaPetit.png"));
             stage.setScene(scene);
             stage.setResizable(false);
             return stage;

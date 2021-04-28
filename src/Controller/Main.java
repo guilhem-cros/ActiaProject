@@ -1,5 +1,11 @@
+package Controller;
 
 import java.util.ArrayList;
+
+import Model.Element;
+import Model.Logs;
+import Model.MoyenGenerique;
+import Model.Outil;
 
 
 
