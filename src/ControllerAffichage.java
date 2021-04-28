@@ -46,6 +46,12 @@ public class ControllerAffichage implements Initializable{
 
     /*L'élément sélectionné depuis l'accueil*/
     private Element selectedElt;
+    
+    /*La valeur de la checkBox Auto lors de la validation depuis le menu d'accueil*/
+    private Boolean auto;
+
+    /*La valeur de la checkBox Manuel lors de la validation depuis le menu d'accueil*/
+    private boolean manuel;
 
     /*La liste des outils de selectedElt*/
     private ArrayList<Outil> listOutils;
@@ -123,9 +129,17 @@ public class ControllerAffichage implements Initializable{
     /**
      * Fonction appelée à l'ouverture de la fenêtre
      * Initialise les champs et variables
+     * Initialise / met à jour la liste des pages d'affichages ouvertes
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        /*Mise en place de la liste des ControllerAffichages "ouverts"*/
+        if(Controller.getOpenedController() == null){
+            Controller.setOpenedController(new ArrayList<ControllerAffichage>());
+        }
+        if(!Controller.getOpenedController().contains(this)){
+            Controller.getOpenedController().add(this);
+        }
         moyensGene = MoyenGenerique.unserializeMoyenGene();
         setHyperlinkList();
         paramTitles = Outil.getParamTitle();
@@ -134,7 +148,8 @@ public class ControllerAffichage implements Initializable{
         setComboBoxMoyenGene();
         setTable(null);
         setVisibility();
-        System.out.println(listOutils);
+        int i = Controller.getOpenedController().indexOf(this);
+        Controller.getOpenedController().set(i, this);       
     }
 
 
@@ -338,14 +353,23 @@ public class ControllerAffichage implements Initializable{
      * Crée le titre de la page
      */
     public void setParamOfElt(){ //PROBLEME ICI -> La liste est réinstancié à chaque appel depuis l'accueil
-        selectedElt = Controller.getCurrentElement();
+        /*Initialisation de l'élément avec la valeur sélectionnée à l'accueil s'il est null*/
+        if(selectedElt == null){
+            selectedElt = Controller.getCurrentElement();
+            auto = Controller.isAuto();
+            manuel = Controller.isManuel();
+        }
+        /*Mise à jour des données de l'élèment s'il est non-null*/
+        else{
+            selectedElt = Controller.getElementByCode(selectedElt.getCodeElt());
+        }
         /*si les 2 checkboxs ont été cochées*/
-        if(Controller.isAuto() && Controller.isManuel()){ 
+        if(auto && manuel){ 
             listOutils = selectedElt.getOutils();
         } 
         /*si une seule des checkbox a été cochée*/
         else { 
-            listOutils = selectedElt.getOutilsByMode(Controller.isAuto());
+            listOutils = selectedElt.getOutilsByMode(auto);
             
         }
         title.setText(selectedElt.getCodeElt() + " " + selectedElt.getNom());
@@ -724,7 +748,7 @@ public class ControllerAffichage implements Initializable{
     public void addCloseEvent(Stage stage){
         stage.setOnCloseRequest(event ->{
             Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1); //décrémentation du compteur de formulaires ouverts
-            Controller.setForm("null");             
+            Controller.setForm("null");           
         });
     }
 
@@ -751,7 +775,6 @@ public class ControllerAffichage implements Initializable{
         l.setPrefWidth(160);
         l.setStyle("-fx-border-color: grey;");
     }
-
 
     
     /*Getter et setter*/
@@ -795,5 +818,13 @@ public class ControllerAffichage implements Initializable{
     public ComboBox<String> getListMoyenGene() {
         return listMoyenGene;
     }
+
+    public Pane getPane() {
+        return pane;
+    }
+
+    
+
+    
     
 }

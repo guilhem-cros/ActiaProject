@@ -546,14 +546,17 @@ public class ControllerFormulaire implements Initializable{
 
     /**
      * Instancie et affiche un onglet de confirmation
-     * Actualise la page d'affichage et ferme l'onglet courant
+     * Actualise le page d'affichages et ferme l'onglet courant
      * Décrémente le nombre de formulaires ouverts
      * @param action
      */
     public void finalize(ActionEvent action){
         Alert alert = new Alert(AlertType.INFORMATION);
         Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
-        originControl.initialize(null, null); //actualisation de l'affichage
+        /*Actualisation de toutes les page d'affichage ouvertes*/
+        for(ControllerAffichage c: Controller.getOpenedController()){
+            c.initialize(null, null);
+        }
         Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
         (((Node) action.getSource())).getScene().getWindow().hide();//fermeture du formulaire
     }

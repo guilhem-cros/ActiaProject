@@ -55,6 +55,9 @@ public class Controller implements Initializable{
     /*liste des items sélectionnables du menu*/
     private ArrayList<RadioMenuItem> usableMenuItems;
 
+    /*Liste des ControllerAffichage (=pages d'affichages) ouvertes*/
+    private static  ArrayList<ControllerAffichage> openedController;
+
 
     /*Initialisation des objets XML utilisés*/
 
@@ -164,6 +167,14 @@ public class Controller implements Initializable{
         else{
             /*Déclaration de la nouvelle fenetre*/
             Stage stage = setNewStage("outils.fxml");
+            /*Evènement de fermeture de fenêtre : retire le controllerAffichage correspondant de la liste des affichages ouverts*/
+            stage.setOnCloseRequest(event ->{
+                for(int i=0; i<openedController.size(); i++){
+                    if(openedController.get(i).getPane().getScene().getWindow().equals(stage)){
+                        openedController.remove(i);
+                    }
+                }
+            });
             stage.setTitle("Constitution Bancs de Test : " + currentElement.getCodeElt() + " " + currentElement.getNom());
             stage.showAndWait();
         }
@@ -707,5 +718,17 @@ public class Controller implements Initializable{
     public static void setAllElements(ArrayList<Element> allElements) {
         Controller.allElements = allElements;
     }
+
+
+    public static ArrayList<ControllerAffichage> getOpenedController() {
+        return openedController;
+    }
+
+
+    public static void setOpenedController(ArrayList<ControllerAffichage> openedController) {
+        Controller.openedController = openedController;
+    }
+
+    
     
 }
