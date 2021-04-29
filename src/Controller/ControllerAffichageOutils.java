@@ -45,7 +45,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 
-public class ControllerAffichage implements Initializable{
+public class ControllerAffichageOutils implements Initializable{
 
     /*L'élément sélectionné depuis l'accueil*/
     private Element selectedElt;
@@ -138,7 +138,7 @@ public class ControllerAffichage implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
         /*Mise en place de la liste des ControllerAffichages "ouverts"*/
         if(Controller.getOpenedController() == null){
-            Controller.setOpenedController(new ArrayList<ControllerAffichage>());
+            Controller.setOpenedController(new ArrayList<ControllerAffichageOutils>());
         }
         if(!Controller.getOpenedController().contains(this)){
             Controller.getOpenedController().add(this);
@@ -733,7 +733,7 @@ public class ControllerAffichage implements Initializable{
      * @param title le titre de l'onglet
      */
     public void setStage(String xml, String title){
-        ControllerFormulaire.setOriginControl(this); //mise à jour du controller parent
+        ControllerFormOutils.setOriginControl(this); //mise à jour du controller parent
         /*Création du nouvel onglet*/
         Stage stage = setNewStage(xml);
         stage.setTitle(title);
@@ -799,7 +799,7 @@ public class ControllerAffichage implements Initializable{
     }
 
     public static void setMoyensGene(ArrayList<MoyenGenerique> moyensGene) {
-        ControllerAffichage.moyensGene = moyensGene;
+        ControllerAffichageOutils.moyensGene = moyensGene;
     }
 
     public Element getSelectedElt() {

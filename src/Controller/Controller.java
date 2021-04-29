@@ -58,8 +58,8 @@ public class Controller implements Initializable{
     /*liste des items sélectionnables du menu*/
     private ArrayList<RadioMenuItem> usableMenuItems;
 
-    /*Liste des ControllerAffichage (=pages d'affichages) ouvertes*/
-    private static  ArrayList<ControllerAffichage> openedController;
+    /*Liste des ControllerAffichageOutils (=pages d'affichages) ouvertes*/
+    private static  ArrayList<ControllerAffichageOutils> openedController;
 
 
     /*Initialisation des objets XML utilisés*/
@@ -723,12 +723,12 @@ public class Controller implements Initializable{
     }
 
 
-    public static ArrayList<ControllerAffichage> getOpenedController() {
+    public static ArrayList<ControllerAffichageOutils> getOpenedController() {
         return openedController;
     }
 
 
-    public static void setOpenedController(ArrayList<ControllerAffichage> openedController) {
+    public static void setOpenedController(ArrayList<ControllerAffichageOutils> openedController) {
         Controller.openedController = openedController;
     }
 

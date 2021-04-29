@@ -20,7 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class ControllerLogs implements Initializable{
+public class ControllerAffichageLogs implements Initializable{
 
     /*L'élément sélectionné depuis l'accueil*/
     private Model.Element selectedElt;

@@ -28,10 +28,10 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class ControllerFormulaire implements Initializable{
+public class ControllerFormOutils implements Initializable{
     
     /*Le controller parent du formulaire actuellement ouvert*/
-    private static ControllerAffichage originControl;
+    private static ControllerAffichageOutils originControl;
 
     /*Liste des champs complétables des paramètres de l'outils*/
     private ArrayList<TextField> listParamField;
@@ -172,9 +172,9 @@ public class ControllerFormulaire implements Initializable{
         /*Si le titre de colonne saisi est valide*/
         else{
             Outil.addTitle(title);
-            ArrayList<Boolean> hyperlinks = ControllerAffichage.unserializeLinks();
+            ArrayList<Boolean> hyperlinks = ControllerAffichageOutils.unserializeLinks();
             hyperlinks.add(hyperlinkBox.isSelected());
-            ControllerAffichage.serialHyperlink(hyperlinks);
+            ControllerAffichageOutils.serialHyperlink(hyperlinks);
             finalize(action);
         }
     }
@@ -297,7 +297,7 @@ public class ControllerFormulaire implements Initializable{
      * @return true si la chaine est présente, false sinon
      */
     public boolean isInTitles(String chain){
-        for(String s: ControllerAffichage.getParamTitles()){
+        for(String s: ControllerAffichageOutils.getParamTitles()){
             if(s.equals(chain)){
                 return true;
             }
@@ -337,7 +337,7 @@ public class ControllerFormulaire implements Initializable{
             grid.add(title,0, i);
             grid.add(tf, 1, i);
             /*Si la colonne correspondant au champs courrant est une colonne de liens hypertexte*/
-            if(ControllerAffichage.unserializeLinks().get(i)){
+            if(ControllerAffichageOutils.unserializeLinks().get(i)){
                 FileChooser fl = new FileChooser();
                 fl.setTitle("Sélection de fichier");
                 Button selectFileButton = new Button("...");
@@ -412,7 +412,7 @@ public class ControllerFormulaire implements Initializable{
     public void setComboBoxMoyenGene(){
         listMoyensGene.getItems().clear();
         listMoyensGene.setStyle("-fx-font-f: 16px;");
-        ArrayList<MoyenGenerique> moyens = ControllerAffichage.getMoyensGene();
+        ArrayList<MoyenGenerique> moyens = ControllerAffichageOutils.getMoyensGene();
         MoyenGenerique.sortMoyenGen(moyens);
         for(MoyenGenerique m : moyens){
             if(!m.getNom().equals("Tous")){
@@ -490,7 +490,7 @@ public class ControllerFormulaire implements Initializable{
         int pos = Outil.unserializeTitles().indexOf(title);
         colTitle.setText(title);
         colPosition.setValue(pos+1);
-        if(ControllerAffichage.unserializeLinks().get(pos)){
+        if(ControllerAffichageOutils.unserializeLinks().get(pos)){
             linkBox.setSelected(true);
         }
         else{
@@ -505,13 +505,13 @@ public class ControllerFormulaire implements Initializable{
      */
     public void SetCol(){
         ArrayList<String> titles = Outil.unserializeTitles();
-        ArrayList<Boolean> links = ControllerAffichage.unserializeLinks();
+        ArrayList<Boolean> links = ControllerAffichageOutils.unserializeLinks();
         String title = selectedCol;
         int pos = titles.indexOf(title);
         titles.set(pos, colTitle.getText());
         links.set(pos, linkBox.isSelected());
         Outil.serializeAllTitles(titles);
-        ControllerAffichage.serialHyperlink(links);
+        ControllerAffichageOutils.serialHyperlink(links);
         /*Mise à jour de l'affichage, la colonne est déplacée et toutes les autres également*/
         if(colPosition.getValue() != pos+1 && colPosition.getValue()>4){
             if(colPosition.getValue()-1 > pos){
@@ -534,7 +534,7 @@ public class ControllerFormulaire implements Initializable{
      */
     public void swapCols(int pos1, int pos2){
         ArrayList<String> titles = Outil.unserializeTitles();
-        ArrayList<Boolean> links = ControllerAffichage.unserializeLinks();
+        ArrayList<Boolean> links = ControllerAffichageOutils.unserializeLinks();
         ArrayList<Integer> ordre = Outil.unserializeOrdre();
         String auxTitle = titles.get(pos1);
         Boolean auxLink = links.get(pos1);
@@ -546,7 +546,7 @@ public class ControllerFormulaire implements Initializable{
         ordre.set(pos1, ordre.get(pos2));
         ordre.set(pos2, auxPos);
         Outil.serializeAllTitles(titles);
-        ControllerAffichage.serialHyperlink(links);
+        ControllerAffichageOutils.serialHyperlink(links);
         Outil.serializeOrdre(ordre);
     }
 
@@ -596,7 +596,7 @@ public class ControllerFormulaire implements Initializable{
         Alert alert = new Alert(AlertType.INFORMATION);
         Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
         /*Actualisation de toutes les page d'affichage ouvertes*/
-        for(ControllerAffichage c: Controller.getOpenedController()){
+        for(ControllerAffichageOutils c: Controller.getOpenedController()){
             c.initialize(null, null);
         }
         Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1);//décrémentation du compteur de formulaires
@@ -607,12 +607,12 @@ public class ControllerFormulaire implements Initializable{
 
     /*Getter et setter */
 
-    public static ControllerAffichage getOriginControl() {
+    public static ControllerAffichageOutils getOriginControl() {
         return originControl;
     }
 
-    public static void setOriginControl(ControllerAffichage originControl) {
-        ControllerFormulaire.originControl = originControl;
+    public static void setOriginControl(ControllerAffichageOutils originControl) {
+        ControllerFormOutils.originControl = originControl;
     }
 
 }
