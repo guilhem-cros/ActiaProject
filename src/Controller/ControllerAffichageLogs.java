@@ -28,6 +28,12 @@ public class ControllerAffichageLogs implements Initializable{
     /*La liste des logs de l'élément sélectionné*/
     private ArrayList<Logs> listLogs;
 
+    /*La liste des lignes clicables (sélectionnables) dans la grille*/
+    private ArrayList<ArrayList<Label>> clicableItems;
+
+    /*L'objet Logs (la ligne) courament sélectionnée*/
+    private Logs currentLogs;
+
 
     /*Initialisation des objets XML utilisés*/
 
@@ -51,7 +57,12 @@ public class ControllerAffichageLogs implements Initializable{
 
     @FXML
     private Button updateButton;
-    
+
+    @FXML
+    private Button addButton;
+
+    @FXML
+    private Button deleteButton;
     
 
     /**
@@ -60,8 +71,10 @@ public class ControllerAffichageLogs implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        currentLogs = null;
         setParam();
         initGrid();
+        selectForModif();
     }
 
 
@@ -91,9 +104,11 @@ public class ControllerAffichageLogs implements Initializable{
             titleGrid.setVisible(false); //invisibilité du tableau
         }
         else{
+            clicableItems = new ArrayList<ArrayList<Label>>();
             int count = 0; //l'indice de ligne courante du tableau
             /*Pour tous les Logs de l'élément sélectionné*/
             for(Logs l: listLogs){ 
+                ArrayList<Label> line = new ArrayList<Label>();
                 /*création d'un label pour chaque paramètre*/
                 Label lab1 = new Label(l.getParagraphe());
                 Label lab2 = new Label(l.getLogin());
@@ -107,6 +122,11 @@ public class ControllerAffichageLogs implements Initializable{
                 logsGrid.add(lab2, 1, count);
                 logsGrid.add(lab3, 2, count);
                 count++;
+                /*Ajout des labels à la liste des objets clicables*/
+                line.add(lab1);
+                line.add(lab2);
+                line.add(lab3);
+                clicableItems.add(line);
             }
             sp.setPrefHeight(36*listLogs.size() + 10); //adaptation de la taille du scrollPane à la taille du tableau si ppssible
         }
@@ -121,7 +141,46 @@ public class ControllerAffichageLogs implements Initializable{
         l.setPrefHeight(40);
         l.setPrefWidth(140);
         l.setAlignment(Pos.CENTER);
+        l.setStyle("-fx-border-color: grey;");
     }
 
+    /**
+     * Instancie l'évènement de type clic sur toutes les lignes de la grille 
+     * si le logiciel est en mode admin. 
+     * L'objet Logs courant sélectionné prend la valeur de l'objet de la ligne 
+     * cliqué et le fond de la ligne change de couleur.
+     */
+    public void selectForModif(){
+        if(Controller.isAdmin()){ //ne fonctionne que dans le cas ou le logiciel est en mode admin
+            BackgroundFill bf = new BackgroundFill(Color.rgb(204, 255, 179), CornerRadii.EMPTY , Insets.EMPTY); //la couleur de la ligne cliqué
+            /*parcours de toutes les lignes de la grille*/
+            for(int i=0; i<clicableItems.size(); i++){
+                /*Parcours de chaque case de la grille*/
+                ArrayList<Label> listAux = clicableItems.get(i);
+                for(Label lab : listAux){
+                    lab.setOnMouseClicked(event -> { //ajout de l'évènement à chaque case
+                        resetLabels();
+                        /*Changement de couleur sur toute la ligne sélectionnée*/
+                        for(Label label: listAux){
+                            label.setBackground(new Background(bf));
+                        }
+                        currentLogs = new Logs(listAux.get(0).getText(), listAux.get(1).getText(), listAux.get(2).getText());
+                    });
+                }
+            }
+        }
+    }
+
+     /**
+     * Passe la couleur de background de tous les éléments de la grille en blanc.
+     */
+    public void resetLabels(){
+        BackgroundFill bf = new BackgroundFill(Color.WHITE, CornerRadii.EMPTY , Insets.EMPTY);
+        for(ArrayList<Label> line: clicableItems){
+            for(Label lab : line){
+                lab.setBackground(new Background(bf));
+            }
+        }    
+    }
     
 }

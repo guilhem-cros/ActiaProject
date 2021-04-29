@@ -149,8 +149,8 @@ public class ControllerAffichageOutils implements Initializable{
         setParamOfElt();
         listMoyenGene.getItems().clear();
         setComboBoxMoyenGene();
-        setTable(null);
         setVisibility();
+        setTable(null);
         int i = Controller.getOpenedController().indexOf(this);
         Controller.getOpenedController().set(i, this);       
     }
@@ -406,6 +406,7 @@ public class ControllerAffichageOutils implements Initializable{
             newColumnButt.setVisible(false);
             deleteColButton.setVisible(false);
             updateMoyenButton.setVisible(false);
+            deleteLineButton.setVisible(false);
         }
         else{
             setVisibility();

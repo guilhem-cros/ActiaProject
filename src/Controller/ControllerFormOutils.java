@@ -57,10 +57,6 @@ public class ControllerFormOutils implements Initializable{
     @FXML
     private CheckBox hyperlinkBox;
 
-
-    @FXML
-    private Label titleLabel;
-
     @FXML
     private Button saveButton;
 
@@ -111,6 +107,9 @@ public class ControllerFormOutils implements Initializable{
     @FXML
     private Button saveMoyenGene;
 
+    @FXML
+    private Label elementTitle;
+
     /**
      * Fonction appelée à l'ouverture de la fenêtre
      * Initialise les champs et variables en fonction du formulaire ouvert
@@ -124,14 +123,14 @@ public class ControllerFormOutils implements Initializable{
             columnTitle.setText("");
         }
         else if(Controller.getForm().equals("modifOutilForm")){
-            titleLabel.setText("Formulaire de modification");
+            elementTitle.setText(originControl.getSelectedElt().getCodeElt() + " " + originControl.getSelectedElt().getNom());
             listMoyensGene.getItems().clear();
             setComboBoxMoyenGene();
             setForm();
             setCbMode();
         }
         else if(Controller.getForm().equals("addOutilForm")){
-            titleLabel.setText("Formulaire de création");
+            elementTitle.setText(originControl.getSelectedElt().getCodeElt() + " " + originControl.getSelectedElt().getNom());
             listMoyensGene.getItems().clear();
             setComboBoxMoyenGene();
             setForm();
