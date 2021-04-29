@@ -106,6 +106,7 @@ public class Outil implements Serializable{
 		}
 	}
 
+
 	/**
 	 * @return le liste contenant les valeurs des attributs de l'Outil en chaine de caractère
 	 */
@@ -149,6 +150,19 @@ public class Outil implements Serializable{
                 }
             }
         }
+	}
+
+	/**
+	 * Compare deux outils en selon leur moyenGenerique, leur detailMoyen et 
+	 * leut utilisationAuto.
+	 * @param outil l'outil comparé avec this
+	 * @return true si les outils sont les "mêmes", false sinon
+	 */
+	public boolean equals(Outil outil){
+		if(this.moyenGenerique.equals(outil.moyenGenerique) && this.detailMoyen.equals(outil.detailMoyen) && this.utilisationAuto==outil.utilisationAuto){
+			return true;
+		}
+		return false;
 	}
 
 

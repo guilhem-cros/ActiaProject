@@ -35,6 +35,15 @@ public class ControllerFormulaire implements Initializable{
 
     /*Liste des champs complétables des paramètres de l'outils*/
     private ArrayList<TextField> listParamField;
+
+    /*La ligne sélectionné depuis l'affichage*/
+    private Outil selectedOutil; 
+
+    /*La colonne sélectionnée depuis l'affichage*/
+    private String selectedCol;   
+
+    /*Le oyen générique sélectionné depuis l'affichage*/
+    private String selectedMoyen;
     
     
     /*Attributs FXML des fomulaires*/
@@ -108,6 +117,9 @@ public class ControllerFormulaire implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        selectedOutil = originControl.getCurrentOutil();
+        selectedCol = originControl.getCurrentTitle();
+        selectedMoyen = originControl.getListMoyenGene().getValue();
         if(Controller.getForm().equals("newColForm")){
             columnTitle.setText("");
         }
@@ -130,7 +142,7 @@ public class ControllerFormulaire implements Initializable{
             setComboBoxPosition();
             fillColForm();
         }
-        else if(Controller.getForm().equals("modifMoyenFor")){
+        else if(Controller.getForm().equals("modifMoyenForm")){
             fillFieldMoyenGene();
         }
         
@@ -180,10 +192,11 @@ public class ControllerFormulaire implements Initializable{
             if(doOutilByForm()!=null){
                 Element e = originControl.getSelectedElt();
                 Outil outil = doOutilByForm();
+                System.out.println("Outil1 1" + outil.getListParam());
                 /*Dans le cadre d'une modification*/
                 if(Controller.getForm().equals("modifOutilForm")){
                     for(int i=0; i<e.getOutils().size(); i++){
-                        if(e.getOutils().get(i).equals(originControl.getCurrentOutil())){
+                        if(e.getOutils().get(i).equals(selectedOutil)){
                             e.getOutils().set(i, outil);
                             i = e.getOutils().size(); //sortie de la boucle
                         }
@@ -192,6 +205,18 @@ public class ControllerFormulaire implements Initializable{
                 /*Dans le cadre d'un ajout*/
                 else if(Controller.getForm().equals("addOutilForm")){
                     e.addOutil(outil);
+                }
+                /*Ajout d'un outil supplémentaire similaire si "Auto et Manuel" est sélectionné*/
+                if(testMode.getValue().equals("Auto et Manuel")){
+                    Outil outil2 = doOutilByForm();
+                    outil2.setUtilisationAuto(!outil.isUtilisationAuto()); //utilisationAuto inverse de l'outil de départ
+                    if(outil2.isUtilisationAuto()){
+                        outil2.getListParam().set(2, "AUTO");
+                    }
+                    else{
+                        outil2.getListParam().set(2, "MANUEL");
+                    }
+                    e.addOutil(outil2);
                 }
                 Element.serializeAllElements(Controller.getAllElements());
                 finalize(action);
@@ -246,15 +271,21 @@ public class ControllerFormulaire implements Initializable{
             Controller.setAlert("Erreur de saisi", "Veuillez saisir au moins 4 caractères", "Erreur", alert);
         }
         ArrayList<MoyenGenerique> allMoyen = MoyenGenerique.unserializeMoyenGene();
-        for(MoyenGenerique m: allMoyen){
-            if(m.getNom().equals(originControl.getListMoyenGene().getValue())){
-                m.setNom(moyenGene.getText());
-            }
+        if(MoyenGenerique.isAlrdyInList(allMoyen, moyenGene.getText()) && !moyenGene.getText().equals(selectedMoyen)){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur : conflit de variables", "La modification saisie correspond à un moyen générique déjà existant", "Erreur", alert);
         }
-        updateOutilByMoyen(originControl.getListMoyenGene().getValue(), moyenGene.getText());
-        MoyenGenerique.sortMoyenGen(allMoyen);
-        MoyenGenerique.serializeMoyenGene(allMoyen);
-        finalize(action);
+        else{
+            for(MoyenGenerique m: allMoyen){
+                if(m.getNom().equals(selectedMoyen)){
+                    m.setNom(moyenGene.getText());
+                }
+            }
+            updateOutilByMoyen(selectedMoyen, moyenGene.getText());
+            MoyenGenerique.sortMoyenGen(allMoyen);
+            MoyenGenerique.serializeMoyenGene(allMoyen);
+            finalize(action);
+        }
     }
 
 
@@ -285,6 +316,7 @@ public class ControllerFormulaire implements Initializable{
         testMode.getItems().clear();
         testMode.getItems().add("Auto");
         testMode.getItems().add("Manuel");
+        testMode.getItems().add("Auto et Manuel");
     }
 
    /**
@@ -330,7 +362,7 @@ public class ControllerFormulaire implements Initializable{
      * courrament sélectionné.
      */
     public void fillFields(){
-        Outil outil = originControl.getCurrentOutil();
+        Outil outil = selectedOutil;
         ArrayList<String> param = outil.getListParam();
         listMoyensGene.setValue(outil.getMoyenGenerique());
         quantite.setText("" + outil.getQuantite());
@@ -400,7 +432,12 @@ public class ControllerFormulaire implements Initializable{
             MoyenGenerique.addMoyen(listMoyensGene.getValue());
         }
         Outil outil = new Outil(listMoyensGene.getValue(), detailMoyen.getText());
-        outil.setUtilisationAuto(testMode.getValue().equals("Auto"));
+        if(!testMode.getValue().equals("Auto et Manuel")){
+            outil.setUtilisationAuto(testMode.getValue().equals("Auto"));
+        }
+        else{
+            outil.setUtilisationAuto(true);
+        }
         outil.setQuantite(quantite.getText());
         for(int i=0; i<Outil.unserializeTitles().size()-4; i++){
             outil.getListParam().set(i+4, listParamField.get(Outil.unserializeOrdre().indexOf(i+4)-4).getText());
@@ -431,7 +468,7 @@ public class ControllerFormulaire implements Initializable{
      */
     public void setVisibilityForUpdates(){
         for(int i=0; i<Outil.unserializeTitles().size(); i++){
-            if(originControl.getCurrentTitle().equals(Outil.unserializeTitles().get(i))){
+            if(selectedCol.equals(Outil.unserializeTitles().get(i))){
                 if(i<4){
                     colPosition.setVisible(false);
                     position.setVisible(false);
@@ -449,7 +486,7 @@ public class ControllerFormulaire implements Initializable{
      * actuelles de la colonne sélectionnée
      */
     public void fillColForm(){
-        String title = originControl.getCurrentTitle();
+        String title = selectedCol;
         int pos = Outil.unserializeTitles().indexOf(title);
         colTitle.setText(title);
         colPosition.setValue(pos+1);
@@ -469,7 +506,7 @@ public class ControllerFormulaire implements Initializable{
     public void SetCol(){
         ArrayList<String> titles = Outil.unserializeTitles();
         ArrayList<Boolean> links = ControllerAffichage.unserializeLinks();
-        String title = originControl.getCurrentTitle();
+        String title = selectedCol;
         int pos = titles.indexOf(title);
         titles.set(pos, colTitle.getText());
         links.set(pos, linkBox.isSelected());
@@ -521,7 +558,7 @@ public class ControllerFormulaire implements Initializable{
      * Pré-remplissage du formulaire de modification de moyen générique avec la valeur courante
      */
     public void fillFieldMoyenGene(){
-        moyenGene.setText(originControl.getListMoyenGene().getValue());
+        moyenGene.setText(selectedMoyen);
     }
 
     /**

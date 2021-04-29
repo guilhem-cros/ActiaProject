@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerAffichage">
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="950.0" prefWidth="1850.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerAffichage">
    <children>
       <ImageView fx:id="logoActia" fitHeight="147.0" fitWidth="376.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -24,13 +24,13 @@
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="title" alignment="CENTER_RIGHT" layoutX="401.0" layoutY="33.0" prefHeight="45.0" prefWidth="1019.0" text="Nom Ensemble" textAlignment="RIGHT">
+      <Label fx:id="title" alignment="CENTER_RIGHT" layoutX="811.0" layoutY="33.0" prefHeight="45.0" prefWidth="1019.0" text="Nom Ensemble" textAlignment="RIGHT">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>
       </Label>
-      <ComboBox fx:id="listMoyenGene" layoutX="1237.0" layoutY="78.0" onAction="#selectMoyenGene" prefHeight="36.0" prefWidth="180.0" promptText="Moyen Générique" visibleRowCount="3" />
-      <ScrollPane fx:id="sp" layoutX="20.0" layoutY="210.0" maxHeight="640.0" maxWidth="1400.0" prefHeight="640.0" prefWidth="1400.0">
+      <ComboBox fx:id="listMoyenGene" layoutX="1650.0" layoutY="78.0" onAction="#selectMoyenGene" prefHeight="36.0" prefWidth="180.0" promptText="Moyen Générique" visibleRowCount="3" />
+      <ScrollPane fx:id="sp" layoutX="20.0" layoutY="210.0" maxHeight="680.0" maxWidth="1810.0" prefHeight="680.0" prefWidth="1810.0">
          <content>
             <GridPane fx:id="grid">
               <columnConstraints>
@@ -42,37 +42,37 @@
             </GridPane>
          </content>
       </ScrollPane>
-      <Button fx:id="newColumnButt" layoutX="1087.0" layoutY="856.0" maxWidth="150.0" mnemonicParsing="false" onAction="#openColumnSetUp" prefWidth="150.0" text="Nouvelle colonne">
+      <Button fx:id="newColumnButt" layoutX="20.0" layoutY="156.0" maxWidth="150.0" mnemonicParsing="false" onAction="#openColumnSetUp" prefWidth="160.0" text="Nouvelle colonne">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="newLineButton" layoutX="1270.0" layoutY="856.0" mnemonicParsing="false" onAction="#openAddLineWindow" prefWidth="150.0" text="Nouvelle ligne">
+      <Button fx:id="newLineButton" layoutX="15.0" layoutY="905.0" mnemonicParsing="false" onAction="#openAddLineWindow" prefWidth="160.0" text="Nouvelle ligne">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="setRawButt" layoutX="20.0" layoutY="856.0" mnemonicParsing="false" onAction="#openModifWindow" prefWidth="150.0" text="Modifier ligne">
+      <Button fx:id="setRawButt" layoutX="197.0" layoutY="905.0" mnemonicParsing="false" onAction="#openModifWindow" prefWidth="160.0" text="Modifier ligne">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="setColButton" layoutX="20.0" layoutY="156.0" mnemonicParsing="false" onAction="#setColumn" prefWidth="160.0" text="Modifier colonne">
+      <Button fx:id="setColButton" layoutX="197.0" layoutY="156.0" mnemonicParsing="false" onAction="#setColumn" prefWidth="160.0" text="Modifier colonne">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="deleteColButton" layoutX="216.0" layoutY="156.0" mnemonicParsing="false" onAction="#deleteColumn" prefWidth="160.0" text="Supprimer colonne">
+      <Button fx:id="deleteColButton" layoutX="383.0" layoutY="156.0" mnemonicParsing="false" onAction="#deleteColumn" prefWidth="160.0" text="Supprimer colonne">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="deleteLineButton" layoutX="202.0" layoutY="856.0" mnemonicParsing="false" onAction="#deleteLine" prefWidth="150.0" text="Supprimer ligne">
+      <Button fx:id="deleteLineButton" layoutX="383.0" layoutY="905.0" mnemonicParsing="false" onAction="#deleteLine" prefWidth="160.0" text="Supprimer ligne">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="updateMoyenButton" layoutX="1055.0" layoutY="78.0" mnemonicParsing="false" onAction="#updateMoyen" text="Modifier moyen">
+      <Button fx:id="updateMoyenButton" layoutX="1476.0" layoutY="78.0" mnemonicParsing="false" onAction="#updateMoyen" text="Modifier moyen">
          <font>
             <Font size="16.0" />
          </font>

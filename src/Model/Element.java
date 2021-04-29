@@ -29,6 +29,7 @@ public class Element implements Serializable{
     /*La liste des sous élément de l'élément*/
     private ArrayList<Element> listeSousElements;
 
+    /*La liste des logs associées à 'élments*/
     private ArrayList<Logs> listLogsElement;
     
 
@@ -79,7 +80,7 @@ public class Element implements Serializable{
     /*modifications sur la liste d'outils*/
 
     public void addOutil(Outil t){
-       listeOutils.add(t);  
+        listeOutils.add(t);  
     }
 
     public void removeOutil(Outil t){
