@@ -45,7 +45,7 @@
             </Label>
          </children>
       </GridPane>
-      <ScrollPane fx:id="sp" layoutX="259.0" layoutY="213.0" maxHeight="450.0" maxWidth="445.0" prefHeight="450.0" prefWidth="445.0">
+      <ScrollPane fx:id="sp" layoutX="259.0" layoutY="213.0" maxHeight="445.0" maxWidth="445.0" prefHeight="450.0" prefWidth="445.0">
          <content>
             <GridPane fx:id="logsGrid" gridLinesVisible="true">
               <columnConstraints>
@@ -64,22 +64,32 @@
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="titleLabel" alignment="CENTER_RIGHT" layoutX="344.0" layoutY="33.0" maxHeight="60.0" maxWidth="582.0" prefHeight="36.0" prefWidth="582.0" text="Label" textAlignment="RIGHT" wrapText="true">
+      <Label fx:id="titleLabel" alignment="CENTER_RIGHT" layoutX="391.0" layoutY="33.0" maxHeight="60.0" maxWidth="582.0" prefHeight="36.0" prefWidth="535.0" text="Label" textAlignment="RIGHT" wrapText="true">
          <font>
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <Button fx:id="addButton" layoutX="33.0" layoutY="176.0" mnemonicParsing="false" prefWidth="100.0" text="Ajouter">
+      <Button fx:id="addButton" layoutX="33.0" layoutY="176.0" mnemonicParsing="false" onAction="#setAddMode" prefWidth="100.0" text="Ajouter">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="updateButton" layoutX="33.0" layoutY="229.0" mnemonicParsing="false" onAction="#updateLogs" prefWidth="100.0" text="Modifier">
+      <Button fx:id="updateButton" layoutX="33.0" layoutY="229.0" mnemonicParsing="false" prefWidth="100.0" text="Modifier">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
       <Button fx:id="deleteButton" layoutX="33.0" layoutY="283.0" mnemonicParsing="false" prefWidth="100.0" text="Supprimer">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="saveButton" layoutX="433.0" layoutY="669.0" mnemonicParsing="false" onAction="#saveChanges" text="Enregistrer" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="cancelButton" layoutX="35.0" layoutY="669.0" mnemonicParsing="false" onAction="#cancelChanges" prefWidth="96.0" text="Annuler" visible="false">
          <font>
             <Font size="16.0" />
          </font>

@@ -60,6 +60,9 @@ public class Controller implements Initializable{
 
     /*Liste des ControllerAffichageOutils (=pages d'affichages) ouvertes*/
     private static  ArrayList<ControllerAffichageOutils> openedController;
+    
+    /*Liste des ControllerAffichageOutils (=pages d'affichages) ouvertes*/
+    private static  ArrayList<ControllerAffichageLogs> openedControllerLogs;
 
 
     /*Initialisation des objets XML utilisés*/
@@ -277,6 +280,13 @@ public class Controller implements Initializable{
         else{
             /*Déclaration de la nouvelle fenetre*/
             Stage stage = setNewStage("../View/logs.fxml");
+            stage.setOnCloseRequest(event ->{
+                for(int i=0; i<openedControllerLogs.size(); i++){
+                    if(openedControllerLogs.get(i).getPane().getScene().getWindow().equals(stage)){
+                        openedControllerLogs.remove(i);
+                    }
+                }
+            });
             stage.setTitle("Mots de passe : " + currentElement.getCodeElt() + " " + currentElement.getNom());
             stage.showAndWait();
         }
@@ -732,6 +742,12 @@ public class Controller implements Initializable{
         Controller.openedController = openedController;
     }
 
-    
+    public static ArrayList<ControllerAffichageLogs> getOpenedControllerLogs() {
+        return openedControllerLogs;
+    }
+
+    public static void setOpenedControllerLogs(ArrayList<ControllerAffichageLogs> openedControllerLogs) {
+        Controller.openedControllerLogs = openedControllerLogs;
+    }
     
 }

@@ -75,6 +75,9 @@ public class Element implements Serializable{
         return listLogsElement;
     }
 
+    public void setListLogsElement(ArrayList<Logs> listLogsElement) {
+        this.listLogsElement = listLogsElement;
+    }
 
 
     /*modifications sur la liste d'outils*/
