@@ -74,7 +74,7 @@
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="updateButton" layoutX="33.0" layoutY="229.0" mnemonicParsing="false" prefWidth="100.0" text="Modifier">
+      <Button fx:id="updateButton" layoutX="33.0" layoutY="229.0" mnemonicParsing="false" onAction="#setUpdateMode" prefWidth="100.0" text="Modifier">
          <font>
             <Font size="16.0" />
          </font>
@@ -94,5 +94,10 @@
             <Font size="16.0" />
          </font>
       </Button>
+      <Label fx:id="helpLabel" layoutX="83.0" layoutY="111.0" text="Label" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
    </children>
 </Pane>

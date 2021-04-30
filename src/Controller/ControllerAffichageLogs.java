@@ -65,6 +65,9 @@ public class ControllerAffichageLogs implements Initializable{
     private Label titleLabel;
 
     @FXML
+    private Label helpLabel;
+
+    @FXML
     private Button updateButton;
 
     @FXML
@@ -112,10 +115,8 @@ public class ControllerAffichageLogs implements Initializable{
      */
     @FXML
     public void setAddMode(ActionEvent action){
-        resetLabels();
-        currentLogs= null;
-        saveButton.setVisible(true);
-        cancelButton.setVisible(true);
+        prepModifAction();
+        helpLabel.setText("Ajout : remplissez les cases de la dernière ligne de la grille et enregistrez");
         int line = clicableItems.size();
         for(int i=0; i<3; i++){
             TextField tf = new TextField();
@@ -125,16 +126,43 @@ public class ControllerAffichageLogs implements Initializable{
             valuesInGrid.add(tf);
             sp.setPrefHeight(sp.getHeight()+40);
         }
+        /*Dans le cas ou aucun objet Logs n'était encore contenu dans l'ensemble*/
         sp.setVisible(true);
         titleGrid.setVisible(true);
         infoLabel.setVisible(false);
     }
 
     /**
-     * Appelée lors d'nun appuie sur le bouton "Enregistrer"
-     * Récupère toutes les données de la grille sous forme de logs
-     * et met à jour la liste de Logs de l'éléments sélectionné
+     * Appelée lors d'un appui sur le bouton "Modifier"
+     * Rend l'ensemble des champs de textes de la grille modifiable par l'utilisateur
+     * Ouvre un onglet d'erreur si la grille est vide
+     * @param action
+     */
+    @FXML 
+    public void setUpdateMode(){
+        if(listLogs==null || listLogs.isEmpty()){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur, aucune modification possible", "Aucun mot de passe n'est enregistré pour l'ensemble " + selectedElt.getCodeElt() + ". Modifications impossibles.", "Erreur", alert);
+        }
+        else{
+            prepModifAction();
+            helpLabel.setText("Modification : modifiez les cases souhaitez et enregistrez");
+            for(ArrayList<TextField> list : clicableItems){
+                for(TextField tf: list){
+                    tf.setEditable(true);
+                }
+            }
+        }
+        
+    }
+
+    /**
+     * Appelée lors d'un appuie sur le bouton "Enregistrer"
+     * Récupère toutes les données de la grille sous forme de logs et met à jour 
+     * la liste de Logs de l'éléments sélectionné
      * Actualise la page
+     * Ouvre un onglet d'erreur si un autre onglet de même ensemble est ouvert ou si
+     * l'un des champs de la grille est vide
      * @param action
      */
     @FXML
@@ -146,6 +174,7 @@ public class ControllerAffichageLogs implements Initializable{
                 Element.serializeAllElements(Controller.getAllElements());
                 cancelButton.setVisible(false);
                 saveButton.setVisible(false);
+                helpLabel.setVisible(false);
                 finalize();
             }
         }
@@ -161,9 +190,17 @@ public class ControllerAffichageLogs implements Initializable{
     public void cancelChanges(ActionEvent action){
         cancelButton.setVisible(false);
         saveButton.setVisible(false);
+        helpLabel.setVisible(false);
         this.initialize(null, null);
     }
 
+    /**
+     * Appelée lors d'un appuie sur le bouton "Supprimer"
+     * Supprime des données l'objet Logs courrament sélectionné et actualise la page
+     * Renvoie des erreurs dans le cas ou aucune ligne n'est sélectionnée ou si
+     * un autre onglet est déjà ouvert pour l'ensemble sélectionné (selectedElt)
+     * @param action
+     */
     @FXML
     public void deleteLogs(ActionEvent action){
         if(protectUpdate()){
@@ -184,7 +221,6 @@ public class ControllerAffichageLogs implements Initializable{
                     selectedElt.setListLogsElement(listLogs);
                     Element.serializeAllElements(Controller.getAllElements());
                     finalize();
-                    currentLogs=null;
                 }
             }
         }
@@ -288,6 +324,22 @@ public class ControllerAffichageLogs implements Initializable{
             }
         }    
     }
+
+    /**
+     * Ajuste la visibilité des items de la page pour le "mode ajout" de Logs
+     * et le "mode modif" de Logs
+     */
+    public void prepModifAction(){
+        resetLabels();
+        currentLogs= null;
+        saveButton.setVisible(true);
+        cancelButton.setVisible(true);
+        deleteButton.setVisible(false);
+        updateButton.setVisible(false);
+        addButton.setVisible(false);
+        helpLabel.setVisible(true);
+    }
+    
     
 
 
@@ -311,7 +363,10 @@ public class ControllerAffichageLogs implements Initializable{
                         resetLabels();
                         /*Changement de couleur sur toute la ligne sélectionnée*/
                         for(TextField textF: listAux){
-                            textF.setBackground(new Background(bf));
+                            /*Dans le cas ou la page n'est ni en "mode ajout" ni en "mode modif"*/
+                            if(!helpLabel.isVisible()){
+                                textF.setBackground(new Background(bf));
+                            }
                         }
                         currentLogs = new Logs(listAux.get(0).getText(), listAux.get(1).getText(), listAux.get(2).getText());
                     });
