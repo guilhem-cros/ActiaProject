@@ -13,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -161,6 +162,32 @@ public class ControllerAffichageLogs implements Initializable{
         cancelButton.setVisible(false);
         saveButton.setVisible(false);
         this.initialize(null, null);
+    }
+
+    @FXML
+    public void deleteLogs(ActionEvent action){
+        if(protectUpdate()){
+            if(currentLogs==null){
+                Alert alert = new Alert(AlertType.WARNING);
+                Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une ligne à supprimer.", "Erreur", alert);
+            }
+            else{
+                Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la ligne des données?", ButtonType.YES, ButtonType.CANCEL);
+                alert.showAndWait();
+                if(alert.getResult()==ButtonType.YES){
+                    /*Suppression de currentLog dans la liste*/
+                    for(int i=0; i<listLogs.size(); i++){
+                        if(listLogs.get(i).equals(currentLogs)){
+                            listLogs.remove(i);
+                        }
+                    }
+                    selectedElt.setListLogsElement(listLogs);
+                    Element.serializeAllElements(Controller.getAllElements());
+                    finalize();
+                    currentLogs=null;
+                }
+            }
+        }
     }
 
 

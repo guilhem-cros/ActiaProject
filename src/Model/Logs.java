@@ -56,6 +56,12 @@ public class Logs implements Serializable{
     }
     
 
+    public boolean equals(Logs log){
+        if(this.paragraphe.equals(log.paragraphe) && this.password.equals(log.password) && this.login.equals(log.login)){
+            return true;
+        }
+        return false;
+    }
 
    /*Sérialisation des objets Logs*/
 
