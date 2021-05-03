@@ -218,6 +218,7 @@ public class ControllerFormOutils implements Initializable{
                     e.addOutil(outil2);
                 }
                 Element.serializeAllElements(Controller.getAllElements());
+                originControl.setCurrentOutil(null);
                 finalize(action);
             }
         }

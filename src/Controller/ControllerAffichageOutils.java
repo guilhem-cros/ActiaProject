@@ -355,7 +355,7 @@ public class ControllerAffichageOutils implements Initializable{
      * en fonction du mode de test (auto / manuel)
      * Crée le titre de la page
      */
-    public void setParamOfElt(){ //PROBLEME ICI -> La liste est réinstancié à chaque appel depuis l'accueil
+    public void setParamOfElt(){ 
         /*Initialisation de l'élément avec la valeur sélectionnée à l'accueil s'il est null*/
         if(selectedElt == null){
             selectedElt = Controller.getCurrentElement();

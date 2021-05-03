@@ -173,13 +173,28 @@ public class Controller implements Initializable{
             Alert alert = new Alert(AlertType.WARNING);
             setAlert("Erreur : aucun élément sélectionné", "Veuillez sélectionner un produit et un ensemble avant de valider la recherche.", "Erreur", alert);
         }
+        /*Si l'élèment sélectionné ne possède aucun objet Outil enregistré*/
+        else if(currentElement.hasNoOutil() && !isAdmin){
+            Alert alert = new Alert(AlertType.INFORMATION);
+            setAlert("Aucun résultat disponible", "Aucun moyen de test n'a été enregistré pour cet ensemble.", "Information", alert);
+        }
         /*dans le cas ou aucun mode d'utilisation n'a été sélectionné*/
-        else if(auto==false && manuel==false){
+        else if(auto==false && manuel==false  && currentElement.hasAutoOutils() && currentElement.hasManuelOutils()){
             Alert alert = new Alert(AlertType.WARNING);
             setAlert("Erreur : aucun mode sélectionné", "Veuillez sélectionner au minimun un mode d'utilisation avant de valider la recherche.","Erreur", alert);
         }
-        /*Si aucune erreur décectée, création et ouverture de la nouvelle fenetre*/
+        /*Si aucune erreur détectée, création et ouverture de la nouvelle fenetre*/
         else{
+            /*Si l'ensemble n'a que des outils dit "auto"*/
+            if(currentElement.hasAutoOutils() && !currentElement.hasManuelOutils()){
+                auto = true;
+                manuel = false;
+            }
+            /*Si l'ensemble n'a que des outils dit "manuel"*/
+            else if(!currentElement.hasAutoOutils() && currentElement.hasManuelOutils()){
+                auto = false;
+                manuel = true;
+            }
             /*Déclaration de la nouvelle fenetre*/
             Stage stage = setNewStage("../View/outils.fxml");
             /*Evènement de fermeture de fenêtre : retire le controllerAffichage correspondant de la liste des affichages ouverts*/
@@ -191,6 +206,13 @@ public class Controller implements Initializable{
                 }
             });
             stage.setTitle("Constitution Bancs de Test : " + currentElement.getCodeElt() + " " + currentElement.getNom());
+            /*Reset de la page d'accueil*/
+            currentElement = null; //l'élément courrant devient null
+            selectedElement.setText("");
+            resetElt();
+            for(RadioMenuItem item: usableMenuItems){ 
+                item.setSelected(false);
+            }
             stage.showAndWait();
         }
     }
@@ -562,8 +584,15 @@ public class Controller implements Initializable{
     public void selectElement(RadioMenuItem item){
         currentElement = getElementByCode(getCodeByItem(item));
         selectedElement.setText(item.getText());
-        autoBox.setVisible(true);
-        manuelBox.setVisible(true);
+        /*On affiche les checkboxs uniquement si un choix est possible*/
+        if(currentElement.hasAutoOutils() && currentElement.hasManuelOutils()){
+            autoBox.setVisible(true);
+            manuelBox.setVisible(true);
+        }
+        else{
+            autoBox.setVisible(false);
+            manuelBox.setVisible(false);
+        }
     }
 
     /**

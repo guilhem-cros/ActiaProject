@@ -112,6 +112,27 @@ public class Element implements Serializable{
         return sortedList;
     }
 
+    /**
+     * @return vrai si l'element possède un/des outil(s) de mode auto
+     */
+    public Boolean hasAutoOutils(){
+        return !this.getOutilsByMode(true).isEmpty();
+    }
+
+    /**
+     * @return vrai si l'element possède un/des outil(s) de mode manuel
+     */
+    public Boolean hasManuelOutils(){
+        return !this.getOutilsByMode(false).isEmpty();
+    }
+
+    /**
+     * @return vrai si l'element ne possède aucun outil
+     */
+    public Boolean hasNoOutil(){
+        return this.getOutilsByMode(true).isEmpty() && this.getOutilsByMode(false).isEmpty();
+    }
+
 
 
     /*modifications sur la liste de sous élements*/
