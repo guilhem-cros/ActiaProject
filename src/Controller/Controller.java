@@ -133,6 +133,15 @@ public class Controller implements Initializable{
     @FXML 
     private Button reInitButton;
 
+    @FXML
+    private Button addEltButton;
+
+    @FXML
+    private Button deleteEltButton;
+
+    @FXML
+    private Button updateEltButton;
+
 
 
     /**

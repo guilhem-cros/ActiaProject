@@ -238,9 +238,13 @@ public class ControllerAffichageLogs implements Initializable{
             selectedElt = Controller.getCurrentElement(); //récupération de l'élèments sélectionnés précédemment dans la page d'accueil
         }
         listLogs = selectedElt.getListLogsElement();
+        /*Tri de la liste de Logs en fct du paragraphe de chaque Logs*/
+        if(listLogs.size()>1){
+            Logs.sortLog(listLogs);
+        }
         titleLabel.setText(selectedElt.getCodeElt() + " " + selectedElt.getNom());
         sp.setStyle("-fx-background-color:transparent;");
-        BackgroundFill bf = new BackgroundFill(Color.rgb(171, 171, 171), CornerRadii.EMPTY , Insets.EMPTY);
+        BackgroundFill bf = new BackgroundFill(Color.rgb(255, 248, 186), CornerRadii.EMPTY , Insets.EMPTY);
         titleGrid.setBackground(new Background(bf));
     }
 
@@ -423,11 +427,14 @@ public class ControllerAffichageLogs implements Initializable{
      * @return true si aucune case est vide, false sinon
      */
     public boolean setUpEmptyLogError(){
-        for(TextField tf : valuesInGrid){
-            if(tf.getText()==null || tf.getText().length()<1){
-                Alert alert = new Alert(AlertType.WARNING);
-                Controller.setAlert("Erreur, un ou plusieurs champs sont vides", "Veuillez compléter tous les champs avant d'enregistrer les modifications", "Erreur", alert);
-                return false;
+        for(int i=0; i<valuesInGrid.size();i++){ //ajouter un i et modulo 3
+            if(i%3!=0){
+                TextField tf = valuesInGrid.get(i);
+                if(tf.getText()==null|| tf.getText().length()<1){
+                    Alert alert = new Alert(AlertType.WARNING);
+                    Controller.setAlert("Erreur, un ou plusieurs champs login ou mot de passe sont vides", "Veuillez compléter tous les champs (mot de passe et login) avant d'enregistrer les modifications", "Erreur", alert);
+                    return false;
+                }
             }
         }
         return true;

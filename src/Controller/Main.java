@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import Model.Element;
 import Model.Logs;
-import Model.MoyenGenerique;
+
 import Model.Outil;
 
 
@@ -12,7 +12,6 @@ import Model.Outil;
 public class Main{
 
     public static void main(String[] args) {
-
 
         
         Outil.addTitle("Moyens Génériques");
@@ -31,8 +30,6 @@ public class Main{
        Outil.addTitle("Maintenance / Calibration");
        Outil.addTitle("Doc de référence pour calibration");
        Outil.addTitle("Raccourci vers photo");
-
-        System.out.println(Outil.unserializeTitles().size());
         
         Element elmt= new Element("test", "9555");
         Element elt2= new Element("test2", "9545");
@@ -46,21 +43,21 @@ public class Main{
         Outil t1 = new Outil("Logiciel", "il faut tester");
         Outil t2 = new Outil("Bande passante", "splitter vidéo composite 1 voie vers 16 voies encore encore core");
         Outil t3 = new Outil("Bande passante", "test num 2");
-        System.out.println(t2.getListParam());
         t2.getListParam().set(15, "C:/Users/g.cros/Documents/Projet/media/logoActia.png");
         for(int i=4; i<15; i++){
             t2.getListParam().set(i, i +"" );
         }
         
-        
-        System.out.println(t2.getListParam());
         elt3.addOutil(t1);
         elt3.addOutil(t2);
         elt3.addOutil(t3);
         Logs l1 = new Logs("1.2", "admin", "admin");
         Logs l2 = new Logs("1.2.8", "admin", "admin");
+        System.out.println(l1.compareByParagraphe(l2));
         elt3.addLogs(l1);
         elt3.addLogs(l2);
+        Logs.sortLog(elt3.getListLogsElement());
+        System.out.println(elt3.getListLogsElement());
         ArrayList<Element> list = new ArrayList<Element>();
         list.add(elmt);
         list.add(elt2);
@@ -69,15 +66,24 @@ public class Main{
         list.add(elt5);
         list.add(elt6);
         Element.serializeAllElements(list);
-        System.out.println(MoyenGenerique.addMoyen("Tous"));
     
-        /*
+        
         ArrayList<Integer> ordre = new ArrayList<Integer>();
         for(int i=0; i<Outil.unserializeTitles().size(); i++){
             ordre.add(i);
         }
         Outil.serializeOrdre(ordre);
-        System.out.println(ordre);
+        /*
+        Logs l1 = new Logs("1.28.57", "admin", "admin");
+        Logs l2 = new Logs("1.1", "aded", "aezez");
+        Logs l3 = new Logs("1.3", "adedt", "aezez");
+        System.out.println(l1.compareByParagraphe(l2));
+        ArrayList<Logs> lst = new ArrayList<>();
+        lst.add(l1);
+        lst.add(l2);
+        lst.add(l3);
+        Logs.sortLog(lst);
+        System.out.println(lst);
         */
 
     }
