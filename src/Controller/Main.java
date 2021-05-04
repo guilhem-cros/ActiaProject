@@ -13,7 +13,7 @@ public class Main{
 
     public static void main(String[] args) {
 
-        
+        /*
         Outil.addTitle("Moyens Génériques");
        Outil.addTitle("Quantité");
        Outil.addTitle("Utilisation pour test Manuel ou Auto (déverminage)");
@@ -73,7 +73,7 @@ public class Main{
             ordre.add(i);
         }
         Outil.serializeOrdre(ordre);
-        /*
+        
         Logs l1 = new Logs("1.28.57", "admin", "admin");
         Logs l2 = new Logs("1.1", "aded", "aezez");
         Logs l3 = new Logs("1.3", "adedt", "aezez");
@@ -85,6 +85,8 @@ public class Main{
         Logs.sortLog(lst);
         System.out.println(lst);
         */
+
+        System.out.println(Element.selectByName("test3"));
 
     }
 }

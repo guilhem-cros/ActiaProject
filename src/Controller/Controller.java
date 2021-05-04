@@ -7,12 +7,20 @@ import java.util.ResourceBundle;
 
 import Model.Config;
 import Model.Element;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,10 +34,12 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
 public class Controller implements Initializable{
 
@@ -68,6 +78,9 @@ public class Controller implements Initializable{
     /*Initialisation des objets XML utilisés*/
 
     @FXML
+    private ImageView actiaLogo;
+   
+    @FXML
     private Pane paneId;
 
     @FXML
@@ -82,9 +95,6 @@ public class Controller implements Initializable{
     @FXML
     private CheckBox manuelBox;
 
-    @FXML
-    private ImageView actiaLogo;
-
     @FXML 
     private ComboBox<String> productList;
 
@@ -93,6 +103,18 @@ public class Controller implements Initializable{
 
     @FXML
     private TextField selectedElement;
+
+    @FXML
+    private Label orLabel;
+
+    @FXML 
+    private TextField searchField;
+
+    @FXML
+    private VBox autoCompleteBox;
+
+    @FXML 
+    private ScrollPane searchResultsPane;
 
     @FXML
     private Button helpButton;
@@ -150,6 +172,7 @@ public class Controller implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        setSearch();
         productList.getItems().clear();
         productList.getItems().addAll(createComboBox().getItems());
         Config.unserializeConfig(); //initilisation de la config (mdp + log) actuelle
@@ -158,7 +181,27 @@ public class Controller implements Initializable{
     }
 
 
+
     /*Events FXML*/
+
+    /**
+     * Fonction appelé lors d'un changement de valeur dans la comboBox de produits
+     * Récupère le produit sélectionné et et lance la création 
+     * des menus d'éléments/sous-élèments correspondant à ce produit
+     * @param action
+     */
+    @FXML
+    public void selectProduct(ActionEvent action){
+        resetVisibility();
+        if(productList.getValue()!=null){
+            resetElt();
+            selectedProd = getElementByCode(sliceCode(productList.getValue().toString()));
+            selectedElement.setVisible(true);
+            elementButton.setVisible(true);
+            createElementMenu(); //création du menu de sélection d'élément
+            initUsableEvent(); //instanciation des events sur les items du menu
+        }
+    }
 
     /**
      * Fonction appelée lors d'un appuie sur le bouton "Valider" du menu principal
@@ -168,6 +211,7 @@ public class Controller implements Initializable{
     */
     @FXML
     public void validate(ActionEvent action){
+        resetVisibility();
         /*dans le cas ou aucun élément/produit n'a été sélectionné*/
         if(currentElement == null){
             Alert alert = new Alert(AlertType.WARNING);
@@ -209,10 +253,64 @@ public class Controller implements Initializable{
             /*Reset de la page d'accueil*/
             currentElement = null; //l'élément courrant devient null
             selectedElement.setText("");
+            searchField.setText("");
             resetElt();
             for(RadioMenuItem item: usableMenuItems){ 
                 item.setSelected(false);
             }
+            stage.showAndWait();
+        }
+    }
+
+    /**
+     * Fonction appelée lors d'un changement de valeur de la checkbox "Auto"
+     * Permettra la sélection des outils autos
+     * @param action
+    */
+    @FXML
+    public void setAuto(ActionEvent action){
+        resetVisibility();
+        auto = !auto;
+    }
+
+    /**
+     * Fonction appelée lors d'un changement de valeur (coché ou non) de la checkbox "Manuel"
+     * Permettra la sélection des outils manuels 
+     * @param action
+    */
+    @FXML
+    public void setManuel(ActionEvent action){
+        resetVisibility();
+        manuel = !manuel;
+    }
+
+    /**
+     * Fonction appelée lors d'un appuie sur le bouton "Mots de passe" du menu principal
+     * Ouvre une nouvel onglet affichant les mots de passes et logs correspondants à l'élement sélectionné
+     * Ouvre un onglet d'erreur indicatif si aucun élement/produit n'a été sélectionné
+     * @param action
+    */
+    @FXML
+    public void openLogs(ActionEvent action){
+        resetVisibility();
+        /*dans le cas ou aucun élément/produit n'a été sélectionné*/
+        if(currentElement == null){
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : aucun élément sélectionné", "Veuillez sélectionner un produit et un ensemble avant de valider la recherche.", "Erreur",  alert);
+        }
+        /*Si aucune erreur décectée, création et ouverture de la nouvelle fenetre*/
+        else{
+            /*Déclaration de la nouvelle fenetre*/
+            Stage stage = setNewStage("../View/logs.fxml");
+            /*Ajout d'un évènement de fermeture de fenêtre*/
+            stage.setOnCloseRequest(event ->{
+                for(int i=0; i<openedControllerLogs.size(); i++){
+                    if(openedControllerLogs.get(i).getPane().getScene().getWindow().equals(stage)){
+                        openedControllerLogs.remove(i);
+                    }
+                }
+            });
+            stage.setTitle("Mots de passe : " + currentElement.getCodeElt() + " " + currentElement.getNom());
             stage.showAndWait();
         }
     }
@@ -227,6 +325,7 @@ public class Controller implements Initializable{
     */
     @FXML
     public void openConfig(ActionEvent action){
+        /*Gestion de l'affichage en fonction du monde admin*/
         if(isAdmin){
             infoConnect.setText("Entrez le nouvel identifiant et le nouveau mot de passe que vous souhaitez utiliser : ");
             password2.setVisible(true);
@@ -254,73 +353,6 @@ public class Controller implements Initializable{
         backButton.setVisible(true);
         /*Invisibilité de la page d'accueil*/
         setMenuDisplay(false);
-    }
-
-    /**
-     * Fonction appelée lors d'un changement de valeur de la checkbox "Auto"
-     * Permettra la sélection des outils autos
-     * @param action
-    */
-    @FXML
-    public void setAuto(ActionEvent action){
-        auto = !auto;
-    }
-
-    /**
-     * Fonction appelée lors d'un changement de valeur (coché ou non) de la checkbox "Manuel"
-     * Permettra la sélection des outils manuels 
-     * @param action
-    */
-    @FXML
-    public void setManuel(ActionEvent action){
-        manuel = !manuel;
-    }
-
-    /**
-     * Fonction appelé lors d'un changement de valeur dans la comboBox de produits
-     * Récupère le produit sélectionné et et lance la création 
-     * des menus d'éléments/sous-élèments correspondant à ce produit
-     * @param action
-     */
-    @FXML
-    public void selectProduct(ActionEvent action){
-        if(productList.getValue()!=null){
-            resetElt();
-            selectedProd = getElementByCode(sliceCode(productList.getValue().toString()));
-            selectedElement.setVisible(true);
-            elementButton.setVisible(true);
-            createElementMenu(); //création du menu de sélection d'élément
-            initUsableEvent(); //instanciation des events sur les items du menu
-        }
-    }
-
-    /**
-     * Fonction appelée lors d'un appuie sur le bouton "Mots de passe" du menu principal
-     * Ouvre une nouvel onglet affichant les mots de passes et logs correspondants à l'élement sélectionné
-     * Ouvre un onglet d'erreur indicatif si aucun élement/produit n'a été sélectionné
-     * @param action
-    */
-    @FXML
-    public void openLogs(ActionEvent action){
-        /*dans le cas ou aucun élément/produit n'a été sélectionné*/
-        if(currentElement == null){
-            Alert alert = new Alert(AlertType.WARNING);
-            setAlert("Erreur : aucun élément sélectionné", "Veuillez sélectionner un produit et un ensemble avant de valider la recherche.", "Erreur",  alert);
-        }
-        /*Si aucune erreur décectée, création et ouverture de la nouvelle fenetre*/
-        else{
-            /*Déclaration de la nouvelle fenetre*/
-            Stage stage = setNewStage("../View/logs.fxml");
-            stage.setOnCloseRequest(event ->{
-                for(int i=0; i<openedControllerLogs.size(); i++){
-                    if(openedControllerLogs.get(i).getPane().getScene().getWindow().equals(stage)){
-                        openedControllerLogs.remove(i);
-                    }
-                }
-            });
-            stage.setTitle("Mots de passe : " + currentElement.getCodeElt() + " " + currentElement.getNom());
-            stage.showAndWait();
-        }
     }
      
     /**
@@ -387,6 +419,33 @@ public class Controller implements Initializable{
     }
 
     /**
+     * Fonction appelée lors de l'appuie sur le bouton "Réinitialiser identifiants"
+     * Supprime les identifiants de connexion admin actuels et les remplace
+     * par les identifiants de base
+     * @param action
+     */
+    @FXML
+    public void reInitConfig(ActionEvent action){
+        Config.serializeConfig("actia", "admin");
+        Alert alert = new Alert(AlertType.INFORMATION);
+        setAlert("Login réinitisalisé", "L'identifiant et le mot de passe de connexion ont bien été réinitialisés.", "Confirmation", alert);
+    }
+
+    /**
+     * Fonction appelée lors de l'appuie sur le bouton "Quitter le mode Admin".
+     * Désacive le mode administrateur du logiciel et retourne sur le menu d'accueil
+     * Ouvre un onglet d'alerte confirmant la réalisation de l'action
+     * @param action
+     */
+    @FXML
+    public void exitAdminMode(ActionEvent action){
+        isAdmin = false;
+        backToMenu(action);
+        Alert alert = new Alert(AlertType.INFORMATION);
+        setAlert("Fin du mode Administrateur", "Le logiciel n'est plus en mode administrateur, seuls les affichages de données sont disponibles", "Confirmation", alert);
+    }
+
+    /**
      * Fonction appelé lors d'un appuie sur le bouton "Retour"
      * Masque la sous-page actuellement affichée et affiche l'accueil
      * @param action
@@ -409,42 +468,39 @@ public class Controller implements Initializable{
         setMenuDisplay(true);
     }
 
-    /**
-     * Fonction appelée lors de l'appuie sur le bouton "Quitter le mode Admin".
-     * Désacive le mode administrateur du logiciel et retourne sur le menu d'accueil
-     * Ouvre un onglet d'alerte confirmant la réalisation de l'action
-     * @param action
-     */
-    @FXML
-    public void exitAdminMode(ActionEvent action){
-        isAdmin = false;
-        backToMenu(action);
-        Alert alert = new Alert(AlertType.INFORMATION);
-        setAlert("Fin du mode Administrateur", "Le logiciel n'est plus en mode administrateur, seuls les affichages de données sont disponibles", "Confirmation", alert);
-    }
-
-    /**
-     * Fonction appelée lors de l'appuie sur le bouton "Réinitialiser identifiants"
-     * Supprime les identifiants de connexion admin actuels et les remplace
-     * par les identifiants de base
-     * @param action
-     */
-    @FXML
-    public void reInitConfig(ActionEvent action){
-        Config.serializeConfig("actia", "admin");
-        Alert alert = new Alert(AlertType.INFORMATION);
-        setAlert("Login réinitisalisé", "L'identifiant et le mot de passe de connexion ont bien été réinitialisés.", "Confirmation", alert);
-    }
-
     @FXML
     public void displayHelp(ActionEvent action){
-
+        resetVisibility();
     }
 
+    /**
+     * Appelée lors d'un clic sur le champs de recherche
+     * Rend visible le résultat de la recherche courante si la valeur
+     * du champs n'est pas vide
+     * @param clic
+     */
+    @FXML
+    public void clicOnSearch(MouseEvent clic){
+        if(searchField.getText().length()>0){
+            searchResultsPane.setVisible(true);
+            autoCompleteBox.setVisible(true);
+        }
+    }
 
+     /**
+     * Appelée lors d'un clic sur un autre élèment que la barre de recherche sur le
+     * menu d'accueil.
+     * Masque les résultats de la recherche courante.
+     * @param clic
+     */
+    @FXML
+    public void clickOut(MouseEvent clic){
+        resetVisibility();
+    }
 
-    /*Mise en place et affichage du menu et sous-menus*/
-
+    
+    
+    /*Récupréation d'lélément par chaines de caractères*/
 
     /**
      * Récupère un objet Element dans la liste à partir de son code
@@ -483,6 +539,26 @@ public class Controller implements Initializable{
         }
         return code;
     }
+
+    /**
+     * Récupère uniquemeent le code d'un Element depuis une chaine de caractère
+     * dans laquelle il se trouve à la fin
+     * @param chain la chaine de cractère de type : "nomElement codeElement"
+     * @return le code ontenu dans la chaine de caractère
+     */
+    public static String sliceInvertCode(String chain){
+        String code = new String();
+        int i = chain.length()-1;
+        while(chain.charAt(i)!=' '){
+            code = chain.charAt(i) + code;
+            i--;
+        }
+        return code;
+    }
+
+
+
+    /*Mise en place et affichage du menu déroulant et sous-menus*/
  
     /**
      * Fonction appelée lors de la sélection d'un produit 
@@ -578,14 +654,25 @@ public class Controller implements Initializable{
      * Fonction appelé lors de la sélection d'un élément dans le menu
      * Met à jour l'élément selectionné courrant
      * Affiche dans le champs de texte le nom et code de l'élément sélectionné
-     * Rend visible les checkBox auto et manuel
      * @param item l'item sélectionné par un clic
      */
     public void selectElement(RadioMenuItem item){
         currentElement = getElementByCode(getCodeByItem(item));
         selectedElement.setText(item.getText());
+        searchField.setText(item.getText());
         /*On affiche les checkboxs uniquement si un choix est possible*/
-        if(currentElement.hasAutoOutils() && currentElement.hasManuelOutils()){
+        setCheckBoxes(currentElement);
+    }
+
+    /**
+     * Met en place l'affichage des checkboxes en fonction de la possibilité
+     * d'un choix pour le produit sélectionné (cad que si l'ensemble possède 
+     * outil auto et manuel, on affiche les checkbox, sinon, l'affichage des
+     * outils est direct)
+     * @param e l'element pour lequel on met en place l'affichage des checkboxes ou non
+     */
+    public void setCheckBoxes(Element e){
+        if(e.hasAutoOutils() && e.hasManuelOutils()){
             autoBox.setVisible(true);
             manuelBox.setVisible(true);
         }
@@ -603,11 +690,13 @@ public class Controller implements Initializable{
     public void initUsableEvent(){
         for(RadioMenuItem item:usableMenuItems){
             item.setOnAction((event) ->{
+                resetVisibility();
                 RadioMenuItem source = (RadioMenuItem) event.getSource();
                 /*si l'élement est déssélectionné*/
                 if(!source.isSelected()){
                     currentElement = null; //l'élément courrant devient null
                     selectedElement.setText("");
+                    searchField.setText("");
                     resetElt();
                 }
                 /*Si l'élément est sélectionné*/
@@ -627,7 +716,7 @@ public class Controller implements Initializable{
      */
     public void uncheckItemsButThis(RadioMenuItem i){
         for(RadioMenuItem item: usableMenuItems){
-            if(!i.equals(item)){
+            if(i==null || !i.equals(item)){
                 item.setSelected(false);
             }
         }
@@ -647,6 +736,137 @@ public class Controller implements Initializable{
         autoBox.setVisible(false); //les checkbox redeviennent invisibles
         manuelBox.setVisible(false);
         selectedElement.setText("");
+    }
+
+
+    /*Fonctions relatives à la recherche et sélection d'elt via barre de recherche*/
+
+    /**
+     * Instancie l'évènement provoquant la mise à jour de la liste d'élèments
+     * correspondant à la recherche
+     * L'événement est appelé pour chaque modification du texte dans le champs de recherche 
+     */
+    public void setSearch(){
+        searchField.textProperty().addListener(new ChangeListener<String>(){
+            public void changed(ObservableValue<? extends String> observable,
+                String oldValue, String newValue){
+                    fillVBox(searchField.getText());
+                }
+        });
+    }
+
+    /**
+     * Instancie une liste de chaines de caractère correspondant aux nom et code 
+     * de chaque élèment sélectionné selon une chaine de caractère spécifique
+     * @param value la chaine de caractère similaire au code / nom des élèments sélectionnées
+     * @return la liste des noms et codes de chaque élément correspondant au paramètre
+     */
+    public ArrayList<String> setSearchedElements(String value){
+        ArrayList<String> elementsList = new ArrayList<>();
+        for(Element e : Element.selectByCode(value)){
+            elementsList.add(e.getCodeElt() + " " + e.getNom());
+        }
+        for(Element e : Element.selectByName(value)){
+            elementsList.add(e.getNom() + " " + e.getCodeElt());
+        }
+        return elementsList;
+    }
+
+    /**
+     * Complète la VBox des résultats de recherche par des Labels contenant le nom et le
+     * code de chaque ensemble correspondant à la recherche
+     * Affiche le résultat de recherche s'il n'est pas vide
+     * @param value
+     */
+    public void fillVBox(String value){
+        autoCompleteBox.getChildren().clear();
+        /*Si la valeur du champs de recherche n'est pas vide*/
+        if(value.length()!=0){
+            searchResultsPane.setPrefHeight(0);
+            for(String s : setSearchedElements(value)){
+                Label l = new Label(s);
+                l.setPrefHeight(26);
+                l.setPrefWidth(280);
+                setMouseOverEvent(l);
+                setMouseOutEvent(l);
+                setClickedEvent(l);
+                autoCompleteBox.getChildren().add(l);
+                /*Adaptation de la hauteur du scrollpane en fct du nombre de résultats de la recherche*/
+                searchResultsPane.setPrefHeight(searchResultsPane.getPrefHeight() + 26);
+            }
+            /*Si le résultat de la recherche n'est pas vide : affichage*/
+            if(!autoCompleteBox.getChildren().isEmpty()){
+                searchResultsPane.setVisible(true);
+                autoCompleteBox.setVisible(true);
+            }
+            
+        }
+        /*Invisibilité des zones de résultats si aucun résultat n'est dispo*/
+        else{
+            searchResultsPane.setVisible(false);
+            autoCompleteBox.setVisible(false);
+        }
+    }
+
+    /**
+     * Masque les résultats et la zone de résultat de la recherche
+     */
+    public void resetVisibility(){
+        searchResultsPane.setVisible(false);
+        autoCompleteBox.setVisible(false);
+    }
+
+    /**
+     * Instancie l'événement appelée lors d'un passage du cuseur sur un label de résultat
+     * Le label pointé est alors écrit en gras et sa couleur de fond est modifiée
+     * @param l le label visable par le curseur
+     */
+    public void setMouseOverEvent(Label l){
+        BackgroundFill bf = new BackgroundFill(Color.rgb(77, 106, 255), CornerRadii.EMPTY , Insets.EMPTY);
+        l.setOnMouseEntered((event) -> {
+            l.setBackground(new Background(bf));
+            l.setStyle("-fx-font-weight: bold");
+        });
+
+    }
+
+    /**
+     * Instancie l'évènement appelée lorsque le curseurs sort de la zone d'un label
+     * La couleur de fond du label rdevient celle de base et la police n'est plus en gras
+     * @param l le label précédemment visé par le curseur
+     */
+    public void setMouseOutEvent(Label l){
+        BackgroundFill bf = new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY , Insets.EMPTY);
+        l.setOnMouseExited((event) -> {
+            l.setBackground(new Background(bf));
+            l.setStyle("-fx-font-weight: regular");
+        });
+    }
+
+    /**
+     * Instancie l'évènement appelée lorsqu'un label de la liste des résultats de recherche
+     * est cliqué
+     * Recupère l'Element lié au label et passe celui-ci en element courant
+     * Masque le menu et le champs de texte lié à la sélection d'élèment par 
+     * liste déroulante et réinitialise la valeur de la de liste produits à null
+     * @param l
+     */
+    public void setClickedEvent(Label l){
+        l.setOnMouseClicked((event) -> {
+            resetElt();
+            searchField.setText(l.getText());
+            if(Character.isDigit(l.getText().charAt(0))){
+                currentElement = getElementByCode(sliceCode(l.getText()));
+            }
+            else{
+                currentElement = getElementByCode(sliceInvertCode(l.getText()));
+            }
+            resetVisibility();
+            selectedElement.setVisible(false);
+            elementButton.setVisible(false);
+            productList.setValue(null);
+            setCheckBoxes(currentElement);
+        });
     }
 
 
@@ -688,6 +908,8 @@ public class Controller implements Initializable{
             productList.setVisible(true);
             valideButton.setVisible(true);
             logsButton.setVisible(true);
+            searchField.setVisible(true);
+            orLabel.setVisible(true);
         }
         /*Invisibilité du menu */
         else{
@@ -698,8 +920,11 @@ public class Controller implements Initializable{
             valideButton.setVisible(false);
             logsButton.setVisible(false);
             selectedElement.setVisible(false);
+            searchField.setVisible(false);
+            orLabel.setVisible(false);
             productList.getSelectionModel().clearSelection(); //réinitialisation de la liste des produits
             resetElt(); //réinisialisation de l'ensemble des variables qui aurait pu être sélectionnées
+            resetVisibility();//invisibilité des résultat obtenu par recherche
         }
     }
 

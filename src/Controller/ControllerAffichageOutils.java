@@ -826,9 +826,5 @@ public class ControllerAffichageOutils implements Initializable{
     public Pane getPane() {
         return pane;
     }
-
-    
-
-    
     
 }

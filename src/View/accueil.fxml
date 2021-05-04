@@ -6,15 +6,17 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="paneId" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Controller">
+<Pane fx:id="paneId" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#clickOut" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Controller">
    <children>
-      <ComboBox fx:id="productList" layoutX="158.0" layoutY="183.0" onAction="#selectProduct" prefHeight="36.0" prefWidth="243.0" promptText="Sélectionnez un produit" visibleRowCount="3" />
+      <ComboBox fx:id="productList" layoutX="158.0" layoutY="183.0" onAction="#selectProduct" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="243.0" promptText="Sélectionnez un produit" visibleRowCount="3" />
       <Button fx:id="valideButton" layoutX="490.0" layoutY="600.0" mnemonicParsing="false" onAction="#validate" prefWidth="100.0" text="Valider">
          <font>
             <Font size="16.0" />
@@ -40,12 +42,12 @@
             <Image url="@../media/logoActia.png" />
          </image>
       </ImageView>
-      <TextField fx:id="selectedElement" editable="false" layoutX="607.0" layoutY="323.0" prefHeight="36.0" prefWidth="300.0" promptText="Sélectionnez un ensemble" visible="false">
+      <TextField fx:id="selectedElement" editable="false" layoutX="607.0" layoutY="323.0" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="300.0" promptText="Sélectionnez un ensemble" visible="false">
          <font>
             <Font size="16.0" />
          </font>
       </TextField>
-      <MenuButton fx:id="elementButton" contentDisplay="CENTER" layoutX="158.0" layoutY="323.0" maxHeight="50.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="243.0" text="Ensemble / Sous-ensemble" visible="false">
+      <MenuButton fx:id="elementButton" contentDisplay="CENTER" layoutX="158.0" layoutY="323.0" maxHeight="50.0" mnemonicParsing="false" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="243.0" text="Ensemble / Sous-ensemble" visible="false">
          <font>
             <Font size="16.0" />
          </font>
@@ -130,5 +132,20 @@
             <Font size="16.0" />
          </font>
       </Button>
+      <TextField fx:id="searchField" layoutX="607.0" layoutY="184.0" onMouseClicked="#clicOnSearch" prefHeight="25.0" prefWidth="300.0" promptText="Recherchez directement un ensemble">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </TextField>
+      <ScrollPane fx:id="searchResultsPane" layoutX="607.0" layoutY="216.0" maxHeight="104.0" maxWidth="400.0" prefHeight="104.0" prefWidth="300.0" visible="false">
+         <content>
+            <VBox fx:id="autoCompleteBox" prefWidth="280.0" visible="false" />
+         </content>
+      </ScrollPane>
+      <Label fx:id="orLabel" layoutX="501.0" layoutY="190.0" text="ou">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
    </children>
 </Pane>

@@ -346,7 +346,6 @@ public class ControllerAffichageLogs implements Initializable{
     
     
 
-
     /*Fonctions nécessaires au mode admin*/
     
     /**

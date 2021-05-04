@@ -134,7 +134,7 @@ public class Element implements Serializable{
     }
 
 
-
+    
     /*modifications sur la liste de sous élements*/
 
     /**
@@ -180,6 +180,81 @@ public class Element implements Serializable{
     }
 
 
+
+    /*Tri de liste d'éléments*/
+
+    /**
+     * Fonction triant une liste d'éléments dans l'ordre décroisant de leur code
+     * @param L la liste d'éléments à trier
+     */
+    public static void sortElements(ArrayList<Element> L){
+        for(int i=0; i<L.size()-1; i++){
+            for(int j=i+1;j<L.size(); j++){
+                if(Integer.parseInt(L.get(i).getCodeElt()) < Integer.parseInt(L.get(j).getCodeElt())){
+                    Element aux = L.get(i);
+                    L.set(i, L.get(j));
+                    L.set(j, aux);
+                }
+            }
+        }
+        
+    }
+
+    /**
+     * Trie une liste d'élèment dans l'ordre alphabétique de leur nom
+     * @param L la liste d'éléments à trier
+     */
+    public static void sortEltByName(ArrayList<Element> L){
+        for(int i=0; i<L.size()-1; i++){
+            for(int j=i+1;j<L.size(); j++){
+                if(L.get(i).getNom().compareTo(L.get(j).getNom())>0){
+                    Element aux = L.get(i);
+                    L.set(i, L.get(j));
+                    L.set(j, aux);
+                }
+            }
+        }
+    }
+
+
+
+    /*Sélections particulières d'élèments*/
+
+    /**
+     * Sélectionne tous les élèments enregistrés en fonction de la similarité d'une
+     * chaine de caractères avec le nom de l'élèment
+     * @param value la chaine de caractère devant être similaire au nom
+     * @return la liste d'élèments pour lequels le nom débute par la value en param
+     */
+    public static ArrayList<Element> selectByName(String value){
+        ArrayList<Element> selectedElements = new ArrayList<>();
+        for(Element e :unserializeElement()){
+            int length = value.length();
+            if(length<= e.getNom().length() && value.equals(e.getNom().substring(0, length))){
+                selectedElements.add(e);
+            }
+        }
+        sortEltByName(selectedElements);
+        return selectedElements;
+    }
+
+    /**
+     * Sélectionne tous les élèments enregistrés en fonction de la similarité d'une 
+     * chaine de caractères avec le code e l'élèment
+     * @param code la chaine de caractère devant être similaire au code des élèments
+     * @return la liste d'élèments pour lesquels le code débute par la valeur en param
+     */
+    public static ArrayList<Element> selectByCode(String code){
+        ArrayList<Element> selectedElements = new ArrayList<>();
+        for(Element e :unserializeElement()){
+            int length = code.length();
+            if(length<= e.getCodeElt().length() && code.equals(e.getCodeElt().substring(0, length))){
+                selectedElements.add(e);
+            }    
+        }
+        sortElements(selectedElements);
+        return selectedElements;
+    }
 
     /**
      * @return vrai si l'élément est un "produit" ~ codeElt commence par 95
@@ -248,22 +323,4 @@ public class Element implements Serializable{
 		}
         return list; 
     }
-
-    /**
-     * Fonction triant une liste d'éléments dans l'ordre décroisant de leur code
-     * @param L la liste d'éléments à trier
-     */
-    public static void sortElements(ArrayList<Element> L){
-        for(int i=0; i<L.size()-1; i++){
-            for(int j=i+1;j<L.size(); j++){
-                if(Integer.parseInt(L.get(i).getCodeElt()) < Integer.parseInt(L.get(j).getCodeElt())){
-                    Element aux = L.get(i);
-                    L.set(i, L.get(j));
-                    L.set(j, aux);
-                }
-            }
-        }
-        
-    }
-    
 }
