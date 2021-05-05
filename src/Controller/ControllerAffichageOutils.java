@@ -310,6 +310,7 @@ public class ControllerAffichageOutils implements Initializable{
                     }
                 }
                 Element.serializeAllElements(allElt);
+                Controller.setAllElements(allElt);
                 Alert alert2 = new Alert(AlertType.INFORMATION);
                 Controller.setAlert("Modifications enregistrées", "La ligne a bien été supprimée, l'outil a été supprimé des données", "Confirmation", alert2);
                 this.initialize(null, null);

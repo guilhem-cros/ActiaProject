@@ -43,10 +43,10 @@ import javafx.scene.input.MouseEvent;
 
 public class Controller implements Initializable{
 
-    /*Compteur du nombre de formulaires actuellement ouverts*/
+    /*Compteur du nombre de formulaires liés à la page d'affichage d'outils actuellement ouverts*/
     private static int countOpenedForm = 0;
 
-    /*Nom représentatif du formulaire ouvert*/
+    /*Compteur du nombre de formulaire ouvert depuis la page d'accueil*/
     private static String form;
 
     /*Mode admin du logiciel*/
@@ -498,6 +498,31 @@ public class Controller implements Initializable{
         resetVisibility();
     }
 
+    /**
+     * Appelée lors d'un click sur la bouton "Ajouter un ensemble"
+     * Ouvre le formulaire de création d'ensemble si aucun autre formulaire
+     * n'est déjà ouvert sur l'application, ouvre un onglet d'erreur sinon
+     * @param action
+     */
+    @FXML 
+    public void addEnsemble(ActionEvent action){
+        if(countOpenedForm==0){
+            Stage stage = setNewStage("../View/formModifEnsemble.fxml");
+            stage.setOnCloseRequest(event ->{
+                countOpenedForm --;
+            });
+            stage.setTitle("Nouvel ensemble");
+            countOpenedForm ++;
+            ControllerFormEnsembles.setOriginControll(this);
+            stage.showAndWait();
+        }
+        else{
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : formulaire déjà ouvert", "Un autre formulaire de modification est déjà ouvert, veuillez le fermer avant de continuer", "Erreur", alert);
+        }
+        
+    }
+
     
     
     /*Récupréation d'lélément par chaines de caractères*/
@@ -869,6 +894,18 @@ public class Controller implements Initializable{
         });
     }
 
+    /**
+     * Met à jour l'ensemble des onglets d'affichages ouverts
+     */
+    public void reloadAll(){
+        for(ControllerAffichageLogs c : openedControllerLogs){
+            c.initialize(null, null);
+        }
+        for(ControllerAffichageOutils c : openedController){
+            c.initialize(null, null);
+        }
+    }
+
 
 
     /*Affichage */
@@ -1011,6 +1048,10 @@ public class Controller implements Initializable{
 
     public static void setOpenedControllerLogs(ArrayList<ControllerAffichageLogs> openedControllerLogs) {
         Controller.openedControllerLogs = openedControllerLogs;
+    }
+
+    public static void setAdmin(boolean isAdmin) {
+        Controller.isAdmin = isAdmin;
     }
     
 }

@@ -117,7 +117,7 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Button fx:id="addEltButton" layoutX="867.0" layoutY="530.0" mnemonicParsing="false" prefWidth="190.0" text="Ajouter un ensemble">
+      <Button fx:id="addEltButton" layoutX="867.0" layoutY="530.0" mnemonicParsing="false" onAction="#addEnsemble" prefWidth="190.0" text="Ajouter un ensemble">
          <font>
             <Font size="16.0" />
          </font>
