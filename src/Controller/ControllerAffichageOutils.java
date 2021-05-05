@@ -264,6 +264,10 @@ public class ControllerAffichageOutils implements Initializable{
             Alert alert = new Alert(AlertType.WARNING);
             Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une colonne à supprimer.", "Erreur", alert);
         }
+        else if(Controller.getCountOpenedForm()>0){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Conflit possible", "Veuillez fermez les formulaires ouverts avant de supprimer la colonne afin d'éviter les conflits.", "Erreur", alert);
+        }
         else{
             Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la colonne  " + currentTitle + " ?", ButtonType.YES, ButtonType.CANCEL);
             alert.showAndWait();
@@ -295,6 +299,10 @@ public class ControllerAffichageOutils implements Initializable{
         if(currentOutil==null){
             Alert alert = new Alert(AlertType.WARNING);
             Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une ligne à supprimer.", "Erreur", alert);
+        }
+        else if(Controller.getCountOpenedForm()>0){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Conflit possible", "Veuillez fermez les formulaires ouverts avant de supprimer la colonne afin d'éviter les conflits.", "Erreur", alert);
         }
         else{
             Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la ligne ?\nL'outil associé sera définitivement supprimé des données.", ButtonType.YES, ButtonType.CANCEL);
@@ -779,6 +787,14 @@ public class ControllerAffichageOutils implements Initializable{
         l.maxWidth(160);
         l.setPrefWidth(160);
         l.setStyle("-fx-border-color: grey;");
+    }
+
+    public void updatedElement(){
+        Controller.setAdmin(false);
+        setTable(null);
+        Controller.setAdmin(true);
+        title.setText("Ensemble modifié ou supprimé");
+        listMoyenGene.setVisible(false);
     }
 
     

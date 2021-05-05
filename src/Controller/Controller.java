@@ -46,7 +46,7 @@ public class Controller implements Initializable{
     /*Compteur du nombre de formulaires liés à la page d'affichage d'outils actuellement ouverts*/
     private static int countOpenedForm = 0;
 
-    /*Compteur du nombre de formulaire ouvert depuis la page d'accueil*/
+    /*Type du de formulaire ouvert*/
     private static String form;
 
     /*Mode admin du logiciel*/
@@ -230,12 +230,12 @@ public class Controller implements Initializable{
         /*Si aucune erreur détectée, création et ouverture de la nouvelle fenetre*/
         else{
             /*Si l'ensemble n'a que des outils dit "auto"*/
-            if(currentElement.hasAutoOutils() && !currentElement.hasManuelOutils()){
+            if(currentElement.hasAutoOutils() && !currentElement.hasManuelOutils() && !isAdmin){
                 auto = true;
                 manuel = false;
             }
             /*Si l'ensemble n'a que des outils dit "manuel"*/
-            else if(!currentElement.hasAutoOutils() && currentElement.hasManuelOutils()){
+            else if(!currentElement.hasAutoOutils() && currentElement.hasManuelOutils() && !isAdmin){
                 auto = false;
                 manuel = true;
             }
@@ -255,8 +255,10 @@ public class Controller implements Initializable{
             selectedElement.setText("");
             searchField.setText("");
             resetElt();
-            for(RadioMenuItem item: usableMenuItems){ 
-                item.setSelected(false);
+            if(usableMenuItems!=null){
+                for(RadioMenuItem item: usableMenuItems){ 
+                    item.setSelected(false);
+                }
             }
             stage.showAndWait();
         }
@@ -499,7 +501,7 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Appelée lors d'un click sur la bouton "Ajouter un ensemble"
+     * Appelée lors d'un clic sur la bouton "Ajouter un ensemble"
      * Ouvre le formulaire de création d'ensemble si aucun autre formulaire
      * n'est déjà ouvert sur l'application, ouvre un onglet d'erreur sinon
      * @param action
@@ -507,25 +509,35 @@ public class Controller implements Initializable{
     @FXML 
     public void addEnsemble(ActionEvent action){
         if(countOpenedForm==0){
-            Stage stage = setNewStage("../View/formModifEnsemble.fxml");
-            stage.setOnCloseRequest(event ->{
-                countOpenedForm --;
-            });
-            stage.setTitle("Nouvel ensemble");
-            countOpenedForm ++;
-            ControllerFormEnsembles.setOriginControll(this);
-            stage.showAndWait();
+            form="addElementForm";
+            setFormStage("../View/formModifEnsemble.fxml", "Nouvel ensemble");
         }
         else{
             Alert alert = new Alert(AlertType.WARNING);
-            setAlert("Erreur : formulaire déjà ouvert", "Un autre formulaire de modification est déjà ouvert, veuillez le fermer avant de continuer", "Erreur", alert);
-        }
-        
+            setAlert("Erreur : formulaire déjà ouvert", "Un autre formulaire de modification est déjà ouvert, veuillez le fermer avant de continuer.", "Erreur", alert);
+        }  
     }
 
+    /**
+     * Appelée lors d'un clic sur le bouton "Modifier l'ensemble"
+     * Ouvre le formulaire de modification de l'ensemble si aucun autre form n'est
+     * déjà ouvert et si un ensemble a été sélectionné, ouvre un onglet d'erreur sinon
+     * @param action
+     */
+    @FXML
+    private void updateEnsemble(ActionEvent action){
+        if(currentElement==null){
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : aucun ensemble sélectionné", "Veuillez sélectionner un ensemble à modifier.", "Erreur", alert);
+        }
+        else{
+            form = "updateElementForm";
+            setFormStage("../View/formModifEnsemble.fxml", "Modifiction d'ensemble");
+        }
+    }
     
     
-    /*Récupréation d'lélément par chaines de caractères*/
+    /*Récupération d'élément par chaines de caractères*/
 
     /**
      * Récupère un objet Element dans la liste à partir de son code
@@ -697,11 +709,11 @@ public class Controller implements Initializable{
      * @param e l'element pour lequel on met en place l'affichage des checkboxes ou non
      */
     public void setCheckBoxes(Element e){
-        if(e.hasAutoOutils() && e.hasManuelOutils()){
+        if(e.hasAutoOutils() && e.hasManuelOutils()|| isAdmin){
             autoBox.setVisible(true);
             manuelBox.setVisible(true);
         }
-        else{
+        else {
             autoBox.setVisible(false);
             manuelBox.setVisible(false);
         }
@@ -894,18 +906,6 @@ public class Controller implements Initializable{
         });
     }
 
-    /**
-     * Met à jour l'ensemble des onglets d'affichages ouverts
-     */
-    public void reloadAll(){
-        for(ControllerAffichageLogs c : openedControllerLogs){
-            c.initialize(null, null);
-        }
-        for(ControllerAffichageOutils c : openedController){
-            c.initialize(null, null);
-        }
-    }
-
 
 
     /*Affichage */
@@ -987,6 +987,42 @@ public class Controller implements Initializable{
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void setFormStage(String fxml, String title){
+        Stage stage = setNewStage(fxml);
+            stage.setOnCloseRequest(event ->{
+                countOpenedForm --;
+            });
+            stage.setTitle(title);
+            countOpenedForm ++;
+            ControllerFormEnsembles.setOriginControll(this);
+            stage.showAndWait();
+            searchField.setText("");
+            resetElt();
+            if(usableMenuItems!=null){
+                uncheckItemsButThis(null);
+            }
+            selectedElement.setVisible(false);
+            elementButton.setVisible(false);
+            productList.setValue(null);
+    }
+
+    public static void shutDownUpdatedWindows(Element updatedElt){
+        if(openedControllerLogs!=null){
+            for(ControllerAffichageLogs c : openedControllerLogs){
+                if(c.getSelectedElt().equals(updatedElt)){
+                    c.updatedElement();;
+                }
+            }
+        }
+        if(openedController!=null){
+            for(ControllerAffichageOutils c : openedController){
+                if(c.getSelectedElt().equals(updatedElt)){
+                    c.updatedElement();
+                }
+            }
+        } 
     }
 
 

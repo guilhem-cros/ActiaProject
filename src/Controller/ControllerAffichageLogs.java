@@ -115,21 +115,27 @@ public class ControllerAffichageLogs implements Initializable{
      */
     @FXML
     public void setAddMode(ActionEvent action){
-        prepModifAction();
-        helpLabel.setText("Ajout : remplissez les cases de la dernière ligne de la grille et enregistrez");
-        int line = clicableItems.size();
-        for(int i=0; i<3; i++){
-            TextField tf = new TextField();
-            setParamTextF(tf);
-            tf.setEditable(true);
-            logsGrid.add(tf, i, line);
-            valuesInGrid.add(tf);
-            sp.setPrefHeight(sp.getHeight()+40);
+        if(Controller.getCountOpenedForm()>0){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur : conflits potentiels", "Veuillez fermer tous les formulaires avant d'opérer à de nouvelles modifications", "Erreur", alert);
         }
-        /*Dans le cas ou aucun objet Logs n'était encore contenu dans l'ensemble*/
-        sp.setVisible(true);
-        titleGrid.setVisible(true);
-        infoLabel.setVisible(false);
+        else{
+            prepModifAction();
+            helpLabel.setText("Ajout : remplissez les cases de la dernière ligne de la grille et enregistrez");
+            int line = clicableItems.size();
+            for(int i=0; i<3; i++){
+                TextField tf = new TextField();
+                setParamTextF(tf);
+                tf.setEditable(true);
+                logsGrid.add(tf, i, line);
+                valuesInGrid.add(tf);
+                sp.setPrefHeight(sp.getHeight()+40);
+            }
+            /*Dans le cas ou aucun objet Logs n'était encore contenu dans l'ensemble*/
+            sp.setVisible(true);
+            titleGrid.setVisible(true);
+            infoLabel.setVisible(false);
+        }  
     }
 
     /**
@@ -140,13 +146,17 @@ public class ControllerAffichageLogs implements Initializable{
      */
     @FXML 
     public void setUpdateMode(){
-        if(listLogs==null || listLogs.isEmpty()){
+        if(Controller.getCountOpenedForm()>0){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur : conflits potentiels", "Veuillez fermer tous les formulaires avant d'opérer à de nouvelles modifications", "Erreur", alert);
+        }
+        else if(listLogs==null || listLogs.isEmpty()){
             Alert alert = new Alert(AlertType.WARNING);
             Controller.setAlert("Erreur, aucune modification possible", "Aucun mot de passe n'est enregistré pour l'ensemble " + selectedElt.getCodeElt() + ". Modifications impossibles.", "Erreur", alert);
         }
         else{
             prepModifAction();
-            helpLabel.setText("Modification : modifiez les cases souhaitez et enregistrez");
+            helpLabel.setText("Modification : modifiez les cases souhaitées et enregistrez");
             for(ArrayList<TextField> list : clicableItems){
                 for(TextField tf: list){
                     tf.setEditable(true);
@@ -169,13 +179,21 @@ public class ControllerAffichageLogs implements Initializable{
     public void saveChanges(ActionEvent action){
         if(protectUpdate()){
             if(setUpEmptyLogError()){
-                ArrayList<Logs> listLogs = readTable();
-                selectedElt.setListLogsElement(listLogs);
-                Element.serializeAllElements(Controller.getAllElements());
-                cancelButton.setVisible(false);
-                saveButton.setVisible(false);
-                helpLabel.setVisible(false);
-                finalize();
+                if(Controller.getCountOpenedForm()>0){
+                    Alert alert = new Alert(AlertType.WARNING);
+                    Controller.setAlert("Erreur : conflit de mise à jours", "Veuillez fermer tous les formulaires avant d'opérer à de nouvelles modifications", "Erreur", alert);;
+                    initialize(null, null);
+                }
+                else{
+                    ArrayList<Logs> listLogs = readTable();
+                    selectedElt.setListLogsElement(listLogs);
+                    Element.serializeAllElements(Controller.getAllElements());
+                    cancelButton.setVisible(false);
+                    saveButton.setVisible(false);
+                    helpLabel.setVisible(false);
+                    finalize();
+                }
+                
             }
         }
     }
@@ -207,6 +225,10 @@ public class ControllerAffichageLogs implements Initializable{
             if(currentLogs==null){
                 Alert alert = new Alert(AlertType.WARNING);
                 Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une ligne à supprimer.", "Erreur", alert);
+            }
+            else if(Controller.getCountOpenedForm()>0){
+                Alert alert = new Alert(AlertType.WARNING);
+                Controller.setAlert("Erreur : conflit de mise à jours", "Veuillez fermer tous les formulaires avant d'opérer à de nouvelles modifications", "Erreur", alert);
             }
             else{
                 Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la ligne des données?", ButtonType.YES, ButtonType.CANCEL);
@@ -450,6 +472,16 @@ public class ControllerAffichageLogs implements Initializable{
         Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
         /*Actualisation de toutes les page d'affichage ouvertes*/
         this.initialize(null, null);
+    }
+
+    public void updatedElement(){
+        Controller.setAdmin(false);
+        initialize(null, null);
+        Controller.setAdmin(true);
+        helpLabel.setVisible(false);
+        cancelButton.setVisible(false);
+        saveButton.setVisible(false);
+        titleLabel.setText("Ensemble modifié ou supprimé");
     }
 
 

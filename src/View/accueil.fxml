@@ -127,7 +127,7 @@
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="updateEltButton" layoutX="867.0" layoutY="585.0" mnemonicParsing="false" prefWidth="190.0" text="Modifier l'ensemble">
+      <Button fx:id="updateEltButton" layoutX="867.0" layoutY="585.0" mnemonicParsing="false" onAction="#updateEnsemble" prefWidth="190.0" text="Modifier l'ensemble">
          <font>
             <Font size="16.0" />
          </font>

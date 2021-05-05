@@ -1,10 +1,13 @@
 package Controller;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 import Model.Element;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -12,7 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 
-public class ControllerFormEnsembles {
+public class ControllerFormEnsembles implements Initializable{
     
     /*L'ensemble sélectionné depuis le menu d'accueil*/
     public Element selectedElement;
@@ -42,6 +45,18 @@ public class ControllerFormEnsembles {
     private Button cancelButton;
 
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        System.out.println(Controller.getForm());
+        selectedElement = Controller.getCurrentElement();
+        if(Controller.getForm().equals("updateElementForm")){
+            saveButton.setText("Enregistrer");
+            fillFields();
+        }
+        else if(Controller.getForm().equals("addElementForm")){
+            saveButton.setText("Créer l'ensemble");
+        }
+    }
 
     /*Fonctions FXML*/
 
@@ -53,25 +68,35 @@ public class ControllerFormEnsembles {
      */
     @FXML
     public void saveElement(ActionEvent action){
+        /*Si les champs ne sons pas correctement remplis*/
         if(codeField.getText().length()<3 || nameField.getText().length()<3){
             Alert alert  = new Alert(AlertType.WARNING);
             Controller.setAlert("Erreur : champs invalide(s)", "Veuillez saisir au moins 3 caractères pour chaque champs du formulaire", "Erreur", alert);
-        }
-        else if(isAlreadyDefine()){
-            Alert alert = new Alert(AlertType.WARNING);
-            Controller.setAlert("Erreur : ensemble déjà existant", "Le code saisi pour l'ensemble correspond à un ensemble déjà existant.", "Erreur", alert);
-        }
-        else if(selectedElement != null){
-
-        }
+        } 
+        /*S'il s'agit d'une création qui respecte toutes les conditions*/
         else{
             Element e = makeElementByForm();
             ArrayList<Element> allElt = Controller.getAllElements();
-            allElt.add(e);
-            Element.sortElements(allElt);
-            Controller.setAllElements(allElt);
-            Element.serializeAllElements(Controller.getAllElements());
-            finalize(action);
+            if(Controller.getForm().equals("addElementForm") && !isAlreadyDefine()){
+                allElt.add(e);
+                saveDatas(allElt);
+                finalize(action);
+            }
+            else if(Controller.getForm().equals("updateElementForm") && (!isAlreadyDefine() || selectedElement.getCodeElt().equals(codeField.getText()))){
+                int i = allElt.indexOf(selectedElement);
+                Controller.shutDownUpdatedWindows(selectedElement);
+                e.setListLogsElement(selectedElement.getListLogsElement());
+                e.setListeOutils(selectedElement.getListeOutils());
+                e.setListeSousElements(e.getListeSousElements());
+                allElt.set(i, e);
+                saveDatas(allElt);
+                System.out.println("ii");
+                finalize(action);
+            }
+            else{
+                Alert alert = new Alert(AlertType.WARNING);
+                Controller.setAlert("Erreur : ensemble déjà existant", "Le code saisi pour l'ensemble correspond à un ensemble déjà existant.", "Erreur", alert);
+            }   
         }
     }
 
@@ -114,7 +139,10 @@ public class ControllerFormEnsembles {
         return false;
     }
 
-    
+    public void fillFields(){
+        nameField.setText(selectedElement.getNom());
+        codeField.setText(selectedElement.getCodeElt());
+    }
 
     /*Fonctions diverses*/
 
@@ -128,6 +156,12 @@ public class ControllerFormEnsembles {
         closeForm(action);
     }
 
+    public void saveDatas(ArrayList<Element> listElt){
+        Element.sortElements(listElt);
+        Controller.setAllElements(listElt);
+        Element.serializeAllElements(Controller.getAllElements());
+    }
+
 
 
     /*Getter et setter*/
@@ -138,8 +172,6 @@ public class ControllerFormEnsembles {
 
     public static void setOriginControll(Controller originControll) {
         ControllerFormEnsembles.originControll = originControll;
-    }
-
-    
+    } 
 
 }
