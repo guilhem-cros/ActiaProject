@@ -198,8 +198,8 @@ public class Controller implements Initializable{
             selectedProd = getElementByCode(sliceCode(productList.getValue().toString()));
             selectedElement.setVisible(true);
             elementButton.setVisible(true);
-            createElementMenu(); //création du menu de sélection d'élément
-            initUsableEvent(); //instanciation des events sur les items du menu
+            createElementMenu();
+            initUsableEvent();
         }
     }
 
@@ -251,7 +251,7 @@ public class Controller implements Initializable{
             });
             stage.setTitle("Constitution Bancs de Test : " + currentElement.getCodeElt() + " " + currentElement.getNom());
             /*Reset de la page d'accueil*/
-            currentElement = null; //l'élément courrant devient null
+            currentElement = null;
             selectedElement.setText("");
             searchField.setText("");
             resetElt();
@@ -378,8 +378,8 @@ public class Controller implements Initializable{
             else if(login.getText().equals(Config.getLogin())){
                 /*Si le mot de passe est valide */
                 if(password.getText().equals(Config.getPassword())){
-                    isAdmin = true;  //passage en mode administrateur
-                    backToMenu(action); //retour à la page d'accueil
+                    isAdmin = true;
+                    backToMenu(action);
                     /*Ouverture d'une alerte informative quant au succès de l'action*/
                     Alert alert = new Alert(AlertType.INFORMATION);
                     setAlert("Logiciel en mode administrateur", "Vous avez désormais accès à l'ajout, la modification et la suppression d'éléments.", "Confirmation", alert);
@@ -394,7 +394,7 @@ public class Controller implements Initializable{
             }
             /*Si l'identifiant est invalide*/
             else{
-                /*Ongle d'erreur d'identifiant*/
+                /*Onglet d'erreur d'identifiants*/
                 Alert alert = new Alert(AlertType.WARNING);
                 setAlert("Erreur : identifiant inconnu", "Veuillez vérifier que le l'identifiant saisi correspond bien à l'identifiant enregistré.", "Erreur",  alert);
             }
@@ -537,6 +537,7 @@ public class Controller implements Initializable{
     }
     
     
+
     /*Récupération d'élément par chaines de caractères*/
 
     /**
@@ -625,7 +626,7 @@ public class Controller implements Initializable{
                 else{
                     RadioMenuItem item = new RadioMenuItem(chaine);
                     elementButton.getItems().add(item);
-                    usableMenuItems.add(item); //Ajout de cet item à la liste des items sélectionnables
+                    usableMenuItems.add(item);
                 }
             }  
         }
@@ -668,8 +669,8 @@ public class Controller implements Initializable{
      * @return la ComboBox contenant l'ensemble des produits (95...)
      */
     public ComboBox<String> createComboBox(){
-        allElements = Element.unserializeElement(); //récupération des données stockées dans le fichier .ser
-        Element.sortElements(allElements); //tri des éléments dans l'ordre décroissant
+        allElements = Element.unserializeElement();
+        Element.sortElements(allElements);
         ComboBox<String> list = new ComboBox<String>();
         list.getItems().clear();
         list.setStyle("-fx-font: 16px;");//police d'écriture en taille 16px
@@ -731,7 +732,7 @@ public class Controller implements Initializable{
                 RadioMenuItem source = (RadioMenuItem) event.getSource();
                 /*si l'élement est déssélectionné*/
                 if(!source.isSelected()){
-                    currentElement = null; //l'élément courrant devient null
+                    currentElement = null;
                     selectedElement.setText("");
                     searchField.setText("");
                     resetElt();
@@ -960,10 +961,14 @@ public class Controller implements Initializable{
             searchField.setVisible(false);
             orLabel.setVisible(false);
             productList.getSelectionModel().clearSelection(); //réinitialisation de la liste des produits
-            resetElt(); //réinisialisation de l'ensemble des variables qui aurait pu être sélectionnées
-            resetVisibility();//invisibilité des résultat obtenu par recherche
+            resetElt();
+            resetVisibility();
         }
     }
+
+
+
+    /*Fonctions diverses*/
 
     /**
      * Initialise un Stage dans l'optique d'une ouverture de nouvelle fenêtre
@@ -989,41 +994,61 @@ public class Controller implements Initializable{
         }
     }
 
+    /**
+     * Initialise un stage dans l'optique d'une ouverture de fenêtre de type formulaire
+     * Met en place les paramètres du stage et instancie un évènement de fermeture de
+     * fenêtre qui décrémente le nb de formulaires ouverts
+     * Met à jour l'affichage nécessaire une fois la fenêtre fermée
+     * @param fxml le lien vers le code fxml du stage ouvert
+     * @param title le titre de la fenêtre ouverte
+     */
     public void setFormStage(String fxml, String title){
         Stage stage = setNewStage(fxml);
-            stage.setOnCloseRequest(event ->{
-                countOpenedForm --;
-            });
-            stage.setTitle(title);
-            countOpenedForm ++;
-            ControllerFormEnsembles.setOriginControll(this);
-            stage.showAndWait();
-            searchField.setText("");
-            resetElt();
-            if(usableMenuItems!=null){
-                uncheckItemsButThis(null);
-            }
-            selectedElement.setVisible(false);
-            elementButton.setVisible(false);
-            productList.setValue(null);
+        stage.setOnCloseRequest(event ->{
+            countOpenedForm --;
+        });
+        stage.setTitle(title);
+        countOpenedForm ++;
+        ControllerFormEnsembles.setOriginControll(this);
+        stage.showAndWait();
+        /*Une fois la fenêtre fermée*/
+        searchField.setText("");
+        resetElt();
+        if(usableMenuItems!=null){
+            uncheckItemsButThis(null);
+        }
+        selectedElement.setVisible(false);
+        elementButton.setVisible(false);
+        productList.setValue(null);
     }
 
-    public static void shutDownUpdatedWindows(Element updatedElt){
+    /**
+     * Met à jour l'affichage et les données pour toutes les fenêtres ouvertes
+     * Met à jour l'Element sélectionné pour les fenêtre correspondant à un Objet
+     * element ayant été modifié
+     */
+    public static void updateConcernedWindows(Element updatedElt, Element newElt){
+        /*Si au moins une page d'affichage de Logs est ouverte*/
         if(openedControllerLogs!=null){
             for(ControllerAffichageLogs c : openedControllerLogs){
                 if(c.getSelectedElt().equals(updatedElt)){
-                    c.updatedElement();;
+                    c.setSelectedElt(newElt);
                 }
+                c.initialize(null, null); //mise à jour du controller courant
             }
         }
+        /*Si au moins une page d'affiche d' Outils est ouverte*/
         if(openedController!=null){
             for(ControllerAffichageOutils c : openedController){
                 if(c.getSelectedElt().equals(updatedElt)){
-                    c.updatedElement();
+                    c.setSelectedElt(newElt);
+
                 }
+                c.initialize(null, null); //mise à jour du controller courant
             }
         } 
     }
+
 
 
     /*Getter et setter des éléments static*/

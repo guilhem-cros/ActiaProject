@@ -313,7 +313,7 @@ public class ControllerAffichageOutils implements Initializable{
                 for(int i=0; i<allElt.size();i++){
                     if(allElt.get(i).getCodeElt().equals(selectedElt.getCodeElt())){
                         selectedElt.removeOutil(currentOutil);
-                        allElt.set(i, selectedElt); //suppression de l'outil
+                        allElt.set(i, selectedElt);
                         i=allElt.size();//sortie de la boucle
                     }
                 }
@@ -446,7 +446,7 @@ public class ControllerAffichageOutils implements Initializable{
                     countP++;
                 }
                 sp.setPrefHeight(100*(count+1)+20); //ajustement de la hauteur du scrollpane en fct du nb de lignes de grid
-                clicableItems.add(list); //ajout de la liste de case de la ligne courante à la liste de lignes de la grille
+                clicableItems.add(list); //ajout de la ligne courante à la liste de lignes de la grille
                 count++;
             }
             /*affichage de la grille et invisibilité du label*/
@@ -743,13 +743,13 @@ public class ControllerAffichageOutils implements Initializable{
      * @param title le titre de l'onglet
      */
     public void setStage(String xml, String title){
-        ControllerFormOutils.setOriginControl(this); //mise à jour du controller parent
+        ControllerFormOutils.setOriginControl(this);
         /*Création du nouvel onglet*/
         Stage stage = setNewStage(xml);
         stage.setTitle(title);
         /*Ajout d'une action lors de la fermeture de l'onglet depuis la croix rouge*/
         addCloseEvent(stage);
-        Controller.setCountOpenedForm(Controller.getCountOpenedForm()+1);//incrémentation du compteur de formulaires ouverts
+        Controller.setCountOpenedForm(Controller.getCountOpenedForm()+1);
         stage.showAndWait();
     }
 
@@ -769,7 +769,7 @@ public class ControllerAffichageOutils implements Initializable{
      * Instancie et ouvre l'onglet d'erreur lié au trop grand nombre de formulaires ouverts
      */
     public void openFormError(){
-        Alert alert = new Alert(AlertType.WARNING); //message d'erreur
+        Alert alert = new Alert(AlertType.WARNING);
         Controller.setAlert("Erreur formulaire", "Un autre formulaire est déjà ouvert, veuillez le fermer afin d'en ouvrir un nouveau", "Erreur", alert);
     }
 
@@ -788,14 +788,7 @@ public class ControllerAffichageOutils implements Initializable{
         l.setPrefWidth(160);
         l.setStyle("-fx-border-color: grey;");
     }
-
-    public void updatedElement(){
-        Controller.setAdmin(false);
-        setTable(null);
-        Controller.setAdmin(true);
-        title.setText("Ensemble modifié ou supprimé");
-        listMoyenGene.setVisible(false);
-    }
+    
 
     
     /*Getter et setter*/

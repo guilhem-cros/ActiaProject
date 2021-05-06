@@ -44,10 +44,12 @@ public class ControllerFormEnsembles implements Initializable{
     @FXML
     private Button cancelButton;
 
-
+    /**
+     * Appelée à l'ouverture de la fenêtre
+     * Instancie les variables met en place l'affichage de la page
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println(Controller.getForm());
         selectedElement = Controller.getCurrentElement();
         if(Controller.getForm().equals("updateElementForm")){
             saveButton.setText("Enregistrer");
@@ -73,25 +75,38 @@ public class ControllerFormEnsembles implements Initializable{
             Alert alert  = new Alert(AlertType.WARNING);
             Controller.setAlert("Erreur : champs invalide(s)", "Veuillez saisir au moins 3 caractères pour chaque champs du formulaire", "Erreur", alert);
         } 
-        /*S'il s'agit d'une création qui respecte toutes les conditions*/
+        /*Si le remplissage des champs est correct*/
         else{
             Element e = makeElementByForm();
             ArrayList<Element> allElt = Controller.getAllElements();
+            /*Dans les cas ou l'action est d'ajouter un element*/
             if(Controller.getForm().equals("addElementForm") && !isAlreadyDefine()){
                 allElt.add(e);
                 saveDatas(allElt);
                 finalize(action);
             }
+            /*Dans le cas ou l'action est de modifier un element*/
             else if(Controller.getForm().equals("updateElementForm") && (!isAlreadyDefine() || selectedElement.getCodeElt().equals(codeField.getText()))){
                 int i = allElt.indexOf(selectedElement);
-                Controller.shutDownUpdatedWindows(selectedElement);
                 e.setListLogsElement(selectedElement.getListLogsElement());
                 e.setListeOutils(selectedElement.getListeOutils());
                 e.setListeSousElements(e.getListeSousElements());
                 allElt.set(i, e);
+                /*Mise à jour de la liste de sous Element des Elements contenant selectedElement*/
+                for(Element elt: allElt){
+                    for(Element subElt : elt.getListeSousElements()){
+                        if(subElt.getCodeElt().equals(selectedElement.getCodeElt())){
+                            elt.updateElement(selectedElement, e);
+                        }
+                    }
+                }
                 saveDatas(allElt);
-                System.out.println("ii");
                 finalize(action);
+                Controller.updateConcernedWindows(selectedElement, e);
+                selectedElement = null;
+                Alert alert = new Alert(AlertType.INFORMATION);
+                Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
+            
             }
             else{
                 Alert alert = new Alert(AlertType.WARNING);
@@ -139,6 +154,9 @@ public class ControllerFormEnsembles implements Initializable{
         return false;
     }
 
+    /**
+     * Pré-rempli les champs de saisi du formulaire de modification d'objet Element
+     */
     public void fillFields(){
         nameField.setText(selectedElement.getNom());
         codeField.setText(selectedElement.getCodeElt());
@@ -156,6 +174,11 @@ public class ControllerFormEnsembles implements Initializable{
         closeForm(action);
     }
 
+    /**
+     * Met à jour les données dans le fichier de stockage et dans la liste de 
+     * tous les objets Element du Controller
+     * @param listElt la nouvelle liste d'elements à sauvegarder
+     */
     public void saveDatas(ArrayList<Element> listElt){
         Element.sortElements(listElt);
         Controller.setAllElements(listElt);

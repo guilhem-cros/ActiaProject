@@ -177,6 +177,17 @@ public class Element implements Serializable{
         listeSousElements.remove(e);
     }
 
+    /**
+     * Remplace un Element de la liste de sous-éléments pas un autre et tri la liste
+     * @param oldElt l'ancien élément supprimé de la liste
+     * @param newElt le nouvel élément ajouté à la liste
+     */
+    public void updateElement(Element oldElt, Element newElt){
+        int i = listeSousElements.indexOf(oldElt);
+        this.listeSousElements.set(i, newElt);
+        sortElements(listeSousElements);
+    }
+
 
 
     /*Modifications sur la liste de logs de l'élément*/
