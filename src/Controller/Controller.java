@@ -223,7 +223,7 @@ public class Controller implements Initializable{
             setAlert("Aucun résultat disponible", "Aucun moyen de test n'a été enregistré pour cet ensemble.", "Information", alert);
         }
         /*dans le cas ou aucun mode d'utilisation n'a été sélectionné*/
-        else if(auto==false && manuel==false  && currentElement.hasAutoOutils() && currentElement.hasManuelOutils()){
+        else if((auto==false && manuel==false  && currentElement.hasAutoOutils() && currentElement.hasManuelOutils())||(auto==false && manuel==false  && isAdmin)){
             Alert alert = new Alert(AlertType.WARNING);
             setAlert("Erreur : aucun mode sélectionné", "Veuillez sélectionner au minimun un mode d'utilisation avant de valider la recherche.","Erreur", alert);
         }

@@ -88,25 +88,24 @@ public class ControllerFormEnsembles implements Initializable{
             /*Dans le cas ou l'action est de modifier un element*/
             else if(Controller.getForm().equals("updateElementForm") && (!isAlreadyDefine() || selectedElement.getCodeElt().equals(codeField.getText()))){
                 int i = allElt.indexOf(selectedElement);
+                /*Mise à jour de la liste de sous Element des Elements contenant selectedElement*/
                 e.setListLogsElement(selectedElement.getListLogsElement());
                 e.setListeOutils(selectedElement.getListeOutils());
-                e.setListeSousElements(e.getListeSousElements());
-                allElt.set(i, e);
-                /*Mise à jour de la liste de sous Element des Elements contenant selectedElement*/
+                e.setListeSousElements(selectedElement.getListeSousElements());
                 for(Element elt: allElt){
                     for(Element subElt : elt.getListeSousElements()){
                         if(subElt.getCodeElt().equals(selectedElement.getCodeElt())){
-                            elt.updateElement(selectedElement, e);
+                            elt.updateElement(subElt, e);
                         }
                     }
                 }
+                allElt.set(i, e);
                 saveDatas(allElt);
                 finalize(action);
                 Controller.updateConcernedWindows(selectedElement, e);
                 selectedElement = null;
                 Alert alert = new Alert(AlertType.INFORMATION);
-                Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
-            
+                Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);    
             }
             else{
                 Alert alert = new Alert(AlertType.WARNING);
