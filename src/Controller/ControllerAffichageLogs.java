@@ -487,6 +487,20 @@ public class ControllerAffichageLogs implements Initializable{
         this.initialize(null, null);
     }
 
+    /**
+     * Rend invisibles les boutons permettant des modifications sur les données
+     * Modifie le titre de la page
+     */
+    public void shutDown(){
+        Controller.setAdmin(false);
+        setVisibility();
+        Controller.setAdmin(true);
+        saveButton.setVisible(false);
+        cancelButton.setVisible(false);
+        titleLabel.setText("Ensemble supprimé");
+        selectedElt=null;
+    }
+
 
 
     /*Getter et setter*/

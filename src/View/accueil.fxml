@@ -117,17 +117,17 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Button fx:id="addEltButton" layoutX="867.0" layoutY="530.0" mnemonicParsing="false" onAction="#addEnsemble" prefWidth="190.0" text="Ajouter un ensemble">
+      <Button fx:id="addEltButton" layoutX="867.0" layoutY="530.0" mnemonicParsing="false" onAction="#addEnsemble" prefWidth="190.0" text="Ajouter un ensemble" visible="false">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="deleteEltButton" layoutX="867.0" layoutY="640.0" mnemonicParsing="false" prefWidth="190.0" text="Supprimer l'ensemble">
+      <Button fx:id="deleteEltButton" layoutX="867.0" layoutY="640.0" mnemonicParsing="false" onAction="#deleteEnsemble" prefWidth="190.0" text="Supprimer l'ensemble" visible="false">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="updateEltButton" layoutX="867.0" layoutY="585.0" mnemonicParsing="false" onAction="#updateEnsemble" prefWidth="190.0" text="Modifier l'ensemble">
+      <Button fx:id="updateEltButton" layoutX="867.0" layoutY="585.0" mnemonicParsing="false" onAction="#updateEnsemble" prefWidth="190.0" text="Modifier l'ensemble" visible="false">
          <font>
             <Font size="16.0" />
          </font>

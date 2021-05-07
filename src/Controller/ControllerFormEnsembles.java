@@ -77,40 +77,46 @@ public class ControllerFormEnsembles implements Initializable{
         } 
         /*Si le remplissage des champs est correct*/
         else{
-            Element e = makeElementByForm();
-            ArrayList<Element> allElt = Controller.getAllElements();
-            /*Dans les cas ou l'action est d'ajouter un element*/
-            if(Controller.getForm().equals("addElementForm") && !isAlreadyDefine()){
-                allElt.add(e);
-                saveDatas(allElt);
-                finalize(action);
-            }
-            /*Dans le cas ou l'action est de modifier un element*/
-            else if(Controller.getForm().equals("updateElementForm") && (!isAlreadyDefine() || selectedElement.getCodeElt().equals(codeField.getText()))){
-                int i = allElt.indexOf(selectedElement);
-                /*Mise à jour de la liste de sous Element des Elements contenant selectedElement*/
-                e.setListLogsElement(selectedElement.getListLogsElement());
-                e.setListeOutils(selectedElement.getListeOutils());
-                e.setListeSousElements(selectedElement.getListeSousElements());
-                for(Element elt: allElt){
-                    for(Element subElt : elt.getListeSousElements()){
-                        if(subElt.getCodeElt().equals(selectedElement.getCodeElt())){
-                            elt.updateElement(subElt, e);
+            if(isInt()){
+                Element e = makeElementByForm();
+                ArrayList<Element> allElt = Controller.getAllElements();
+                /*Dans les cas ou l'action est d'ajouter un element*/
+                if(Controller.getForm().equals("addElementForm") && !isAlreadyDefine()){
+                    allElt.add(e);
+                    saveDatas(allElt);
+                    Controller.setCurrentElement(null);
+                    finalize(action);
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
+                }
+                /*Dans le cas ou l'action est de modifier un element*/
+                else if(Controller.getForm().equals("updateElementForm") && (!isAlreadyDefine() || selectedElement.getCodeElt().equals(codeField.getText()))){
+                    int i = allElt.indexOf(selectedElement);
+                    /*Mise à jour de la liste de sous Element des Elements contenant selectedElement*/
+                    e.setListLogsElement(selectedElement.getListLogsElement());
+                    e.setListeOutils(selectedElement.getListeOutils());
+                    e.setListeSousElements(selectedElement.getListeSousElements());
+                    for(Element elt: allElt){
+                        for(Element subElt : elt.getListeSousElements()){
+                            if(subElt.getCodeElt().equals(selectedElement.getCodeElt())){
+                                elt.updateElement(subElt, e);
+                            }
                         }
                     }
+                    allElt.set(i, e);
+                    saveDatas(allElt);
+                    Controller.setCurrentElement(null);
+                    finalize(action);
+                    Controller.updateConcernedWindows(selectedElement, e);
+                    selectedElement = null;
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);    
                 }
-                allElt.set(i, e);
-                saveDatas(allElt);
-                finalize(action);
-                Controller.updateConcernedWindows(selectedElement, e);
-                selectedElement = null;
-                Alert alert = new Alert(AlertType.INFORMATION);
-                Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);    
-            }
-            else{
-                Alert alert = new Alert(AlertType.WARNING);
-                Controller.setAlert("Erreur : ensemble déjà existant", "Le code saisi pour l'ensemble correspond à un ensemble déjà existant.", "Erreur", alert);
-            }   
+                else{
+                    Alert alert = new Alert(AlertType.WARNING);
+                    Controller.setAlert("Erreur : ensemble déjà existant", "Le code saisi pour l'ensemble correspond à un ensemble déjà existant.", "Erreur", alert);
+                }
+            }          
         }
     }
 
@@ -161,6 +167,21 @@ public class ControllerFormEnsembles implements Initializable{
         codeField.setText(selectedElement.getCodeElt());
     }
 
+    /**
+     * Vérifie que tous les caractères du champs de saisi du code de l'Element
+     * sont tous des chiffres
+     * @return true si la chaine n'est composé que de chiffres, false sinon
+     */
+    public boolean isInt(){
+        for(int i=0; i<codeField.getText().length(); i++){
+            if(!Character.isDigit(codeField.getText().charAt(i))){
+                Alert alert = new Alert(AlertType.WARNING);
+                Controller.setAlert("Erreur  de saisi", "Le code saisi pour l'element doit être composé uniquement de chiffres", "Erreur", alert);
+                return false;
+            }
+        }
+        return true;
+    }
     /*Fonctions diverses*/
 
     /**

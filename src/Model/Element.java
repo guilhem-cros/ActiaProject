@@ -173,8 +173,18 @@ public class Element implements Serializable{
         }
     }
 
+    /**
+     * Supprime un Element de la liste de sous Element de this si celui-ci y est présent
+     * @param e l'element supprimé de la liste
+     */
     public void removeElement(Element e){
-        listeSousElements.remove(e);
+        ArrayList<Element> aux = this.listeSousElements;
+        for(int i=0; i<aux.size(); i++){
+            if(aux.get(i).codeElt.equals(e.codeElt)){
+                aux.remove(i);
+            }
+        }
+        setListeSousElements(aux);
     }
 
     /**

@@ -26,6 +26,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -192,6 +193,7 @@ public class Controller implements Initializable{
      */
     @FXML
     public void selectProduct(ActionEvent action){
+        setDisplayModifButtons(isAdmin);
         resetVisibility();
         if(productList.getValue()!=null){
             resetElt();
@@ -355,6 +357,7 @@ public class Controller implements Initializable{
         backButton.setVisible(true);
         /*Invisibilité de la page d'accueil*/
         setMenuDisplay(false);
+        setDisplayModifButtons(false);
     }
      
     /**
@@ -466,6 +469,7 @@ public class Controller implements Initializable{
         confirmMdp.setVisible(false);
         adminQuitButton.setVisible(false);
         reInitButton.setVisible(false);
+        setDisplayModifButtons(isAdmin);
         /*Affichage de la page d'accueil*/
         setMenuDisplay(true);
     }
@@ -526,13 +530,62 @@ public class Controller implements Initializable{
      */
     @FXML
     private void updateEnsemble(ActionEvent action){
+        /*Si aucun element n'est sélectionné : erreur*/
         if(currentElement==null){
             Alert alert = new Alert(AlertType.WARNING);
             setAlert("Erreur : aucun ensemble sélectionné", "Veuillez sélectionner un ensemble à modifier.", "Erreur", alert);
         }
+        /*Si un autre form est ouvert : erreur préventive*/
+        else if(countOpenedForm>0){
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : formulaire déjà ouvert", "Un autre formulaire de modification est déjà ouvert, veuillez le fermer avant de continuer.", "Erreur", alert);
+        }
         else{
             form = "updateElementForm";
-            setFormStage("../View/formModifEnsemble.fxml", "Modifiction d'ensemble");
+            setFormStage("../View/formModifEnsemble.fxml", "Modification d'ensemble");
+        }
+    }
+
+    /**
+     * Appelée lors d'un clic sur le bouton "Supprimer l'ensemble"
+     * Ouvre un onglet de confirmation de suppression, si l'utilisateur confirme,
+     * l'élément courant est supprimé
+     * Ouvre un onglet d'erreur si aucun element n'est sélectionné ou si un formulaire
+     * de modification est ouvert
+     * @param action
+     */
+    @FXML
+    private void deleteEnsemble(ActionEvent action){
+        /*Si aucun element n'est sélectionné*/
+        if(currentElement==null){
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : aucun ensemble sélectionné", "Veuillez sélectionner un ensemble à supprimer.", "Erreur", alert);
+        }
+        else{
+            /*Si aucun formulaire de modification n'est ouvert*/
+            if(countOpenedForm==0){
+                Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer l'ensemble'  " + currentElement.getCodeElt() + " " + currentElement.getNom() + " ? Toutes les données associées disparaitront avec lui (mots de passes, outils, etc).", ButtonType.YES, ButtonType.CANCEL);
+                alert.showAndWait(); 
+                if(alert.getResult()==ButtonType.YES){
+                    allElements.remove(currentElement);
+                    /*Suppression de l'element dans toutes les listes de sous-element qui le contiennent*/
+                    for(Element e: allElements){
+                        e.removeElement(currentElement);
+                    }
+                    Element.serializeAllElements(allElements);
+                    Alert alert2 = new Alert(AlertType.INFORMATION);
+                    setAlert("Modifications enregistrées", "L'element a été supprimé des données avec succès.", "Confirmation", alert2);
+                    shutDownConcernedWindows(currentElement);
+                    initialize(null, null);
+                    isAdmin = true;
+                    resetAccueil();
+                } 
+            }
+            /*Si un formulaire est ouvert*/
+            else{
+                Alert alert3 = new Alert(AlertType.WARNING);
+                setAlert("Conflits potentiels", "Veuillez fermez les formulaires ouverts avant d'eefectuer de nouvelles modifications.", "Erreur", alert3);
+            }
         }
     }
     
@@ -599,7 +652,6 @@ public class Controller implements Initializable{
     /*Mise en place et affichage du menu déroulant et sous-menus*/
  
     /**
-     * Fonction appelée lors de la sélection d'un produit 
      * Met sous la forme de menuButton les éléments issus du produit sélectionné 
      * Ajoute les sous menus correspondant à ces éléments si nécessaire
      * Ajoute ces menus aux items de la liste déroulante d'ensembles
@@ -633,7 +685,6 @@ public class Controller implements Initializable{
 	}
 
     /**
-     * Fonction appelé lors de la sélection d'un produit
      * Crée récursivement un sous menu d'éléments pour l'élément sélectionné
      * @param item l'item auquel on crée un sous menu
      */
@@ -663,7 +714,6 @@ public class Controller implements Initializable{
     } 
 
     /**
-     * Fonction appelé lors de l'ouverture de la fénêtre
      * Récupère les éléments enregistrés depuis la data et ajoute les éléments 
      * de type produit (code=95..)en tant à la comboBox "produits"
      * @return la ComboBox contenant l'ensemble des produits (95...)
@@ -689,7 +739,6 @@ public class Controller implements Initializable{
     /*Utilisation et évènements relatifs au menu*/
 
     /**
-     * Fonction appelé lors de la sélection d'un élément dans le menu
      * Met à jour l'élément selectionné courrant
      * Affiche dans le champs de texte le nom et code de l'élément sélectionné
      * @param item l'item sélectionné par un clic
@@ -721,7 +770,6 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Fonction appelé lorsqu'un produit a été sélectionné
      * Parcours la liste des radiosItem du menu d'ensembles et 
      * crée les  évènements correspondant pour tous ces radioItems
      */
@@ -747,7 +795,6 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Fonction appelé lors de la sélection d'un élément dans le menu
      * Parcours la liste des radiosItem du menu et les rend tous 
      * unchecké sauf l'élément sélectionné
      * @param i l'item sélectionné lors d'un clic
@@ -761,7 +808,6 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Fonction appelé lorsque la valeur de l'élément courant doit être "supprimée"
      * Repasse la valeur de l'élément courant à null et réinitialise les objets 
      * liés (checkbox, textField)
      */
@@ -966,6 +1012,17 @@ public class Controller implements Initializable{
         }
     }
 
+    /**
+     * Modifie la visibilité des boutons disponibles uniquement en mode admin
+     * @param displayed le boolean de l'affichage des boutons : affichés pour true,
+     * invisibles pour false
+     */
+    public void setDisplayModifButtons(Boolean displayed){
+        addEltButton.setVisible(displayed);
+        updateEltButton.setVisible(displayed);
+        deleteEltButton.setVisible(displayed);
+    }
+
 
 
     /*Fonctions diverses*/
@@ -1012,6 +1069,16 @@ public class Controller implements Initializable{
         ControllerFormEnsembles.setOriginControll(this);
         stage.showAndWait();
         /*Une fois la fenêtre fermée*/
+        if(currentElement==null){
+            resetAccueil();
+        } 
+    }
+
+    /**
+     * Remet la page d'accueil à zéro : l'affichage redevient l'affichage présent à
+     * l'ouverture de la fenêtre
+     */
+    public void resetAccueil(){
         searchField.setText("");
         resetElt();
         if(usableMenuItems!=null){
@@ -1023,15 +1090,17 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Met à jour l'affichage et les données pour toutes les fenêtres ouvertes
-     * Met à jour l'Element sélectionné pour les fenêtre correspondant à un Objet
-     * element ayant été modifié
+     * Met à jour l'affichage et les données pour toutes les fenêtres ouvertes.
+     * Met à jour la valeur de l'element sélectionné pour les fenêtres ouvertes
+     * lié à un Element en particulier
+     * @param updatedElt l'Element pour lequel on met à jour les fenêtres d'affichage
+     * @param newElt la nouvelle valeur prise par l'element sélectionné des fenêtres concernés
      */
     public static void updateConcernedWindows(Element updatedElt, Element newElt){
         /*Si au moins une page d'affichage de Logs est ouverte*/
         if(openedControllerLogs!=null){
             for(ControllerAffichageLogs c : openedControllerLogs){
-                if(c.getSelectedElt().equals(updatedElt)){
+                if(c.getSelectedElt()!=null && c.getSelectedElt().getCodeElt().equals(updatedElt.getCodeElt())){
                     c.setSelectedElt(newElt);
                 }
                 c.initialize(null, null); //mise à jour du controller courant
@@ -1040,11 +1109,35 @@ public class Controller implements Initializable{
         /*Si au moins une page d'affiche d' Outils est ouverte*/
         if(openedController!=null){
             for(ControllerAffichageOutils c : openedController){
-                if(c.getSelectedElt().equals(updatedElt)){
+                if(c.getSelectedElt()!=null && c.getSelectedElt().getCodeElt().equals(updatedElt.getCodeElt())){
                     c.setSelectedElt(newElt);
 
                 }
                 c.initialize(null, null); //mise à jour du controller courant
+            }
+        } 
+    }
+
+    /**
+     * "Désactive" toutes les pages d'affichages ouvertes qui sont liées à un élèment afin
+     * de ne plus pouvoir y apporter de modifications
+     * @param deletedElt un Element pour lequel on désactive les modifs sur ses pages d'affichages ouvertes
+     */
+    public static void shutDownConcernedWindows(Element deletedElt){
+        /*Si au moins une page d'affichage de Logs est ouverte*/
+        if(openedControllerLogs!=null){
+            for(ControllerAffichageLogs c : openedControllerLogs){
+                if(c.getSelectedElt()!=null && c.getSelectedElt().getCodeElt().equals(deletedElt.getCodeElt())){
+                    c.shutDown();
+                }
+            }
+        }
+        /*Si au moins une page d'affiche d' Outils est ouverte*/
+        if(openedController!=null){
+            for(ControllerAffichageOutils c : openedController){
+                if(c.getSelectedElt()!=null && c.getSelectedElt().getCodeElt().equals(deletedElt.getCodeElt())){
+                    c.shutDown();
+                }
             }
         } 
     }
@@ -1055,6 +1148,10 @@ public class Controller implements Initializable{
 
     public static Element getCurrentElement() {
         return currentElement;
+    }
+
+    public static void setCurrentElement(Element currentElement) {
+        Controller.currentElement = currentElement;
     }
 
     public static boolean isAuto() {

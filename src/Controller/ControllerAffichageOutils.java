@@ -348,15 +348,7 @@ public class ControllerAffichageOutils implements Initializable{
                 setStage("../View/formModifMoyen.fxml", "Modification de Moyen Générique");
             }
         }
-    }
-
-
-
-    /*Permet d'utiliser les hostsServices depuis le controller*/
-    public void setGetHostController(HostServices hostServices){
-        this.hostServices = hostServices;
-    }       
-    
+    }   
 
     /**
      * Récupère l'élément sélectionné depuis la page accueil
@@ -712,6 +704,11 @@ public class ControllerAffichageOutils implements Initializable{
 
     /*Fonctions "diverses"*/
 
+    /*Permet d'utiliser les hostsServices depuis le controller*/
+    public void setGetHostController(HostServices hostServices){
+        this.hostServices = hostServices;
+    }    
+
     /**
      * Initialise un Stage dans l'optique d'une ouverture de nouvelle fenêtre
      * et met en place les paramètres de base de ce stage
@@ -763,6 +760,25 @@ public class ControllerAffichageOutils implements Initializable{
             Controller.setCountOpenedForm(Controller.getCountOpenedForm()-1); //décrémentation du compteur de formulaires ouverts
             Controller.setForm("null");           
         });
+    }
+
+    /**
+     * Rend invisible les boutons permettant des modifications sur les données ainsi
+     * que le le bouton de choix de moyen générique
+     * Modifie le titre de la page
+     */
+    public void shutDown(){
+        if(listOutils.isEmpty()){
+            newLineButton.setVisible(false);
+        }
+        else{
+            Controller.setAdmin(false);
+            setVisibility();
+            Controller.setAdmin(true);
+        }
+        listMoyenGene.setVisible(false);
+        title.setText("Ensemble supprimé");
+        selectedElt=null;
     }
 
     /**
