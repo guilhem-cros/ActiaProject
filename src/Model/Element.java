@@ -20,7 +20,7 @@ public class Element implements Serializable{
     /*Nom de l'élément*/
     private String nom;
 
-    /*Le code correspondant à lélément*/
+    /*Le code correspondant à l'élément*/
     private String codeElt;
 
     /*La liste des outils enregistrés de l'élément*/
@@ -29,7 +29,7 @@ public class Element implements Serializable{
     /*La liste des sous élément de l'élément*/
     private ArrayList<Element> listeSousElements;
 
-    /*La liste des logs associées à 'élments*/
+    /*La liste des logs associées à l'éléments*/
     private ArrayList<Logs> listLogsElement;
     
 

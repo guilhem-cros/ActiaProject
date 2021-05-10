@@ -608,7 +608,6 @@ public class Controller implements Initializable{
             Alert alert = new Alert(AlertType.WARNING);
             setAlert("Erreur : aucun ensemble sélectionné", "Veuillez sélectionner un ensemble pour lequel un sous-ensemble doit être attribué", "Erreur", alert);
         }
-        
         else if(countOpenedForm!=0){
             Alert alert = new Alert(AlertType.WARNING);
             setAlert("Erreur : formulaire déjà ouvert", "Un autre formulaire de modification est déjà ouvert, veuillez le fermer avant de continuer.", "Erreur", alert);
@@ -619,6 +618,34 @@ public class Controller implements Initializable{
             createElementMenu();
         } 
     }    
+
+    /**
+     * Appelée lors d'un clic sur le bouton "Supprimer un sous-ensemble".
+     * Ouvre un onglet d'erreur si aucun ensemble n'a été sélectionné, si un autre formulaire
+     * est ouvert, ou si l'ensemble sélectionné ne possède pas de sous-ensembles.
+     * Ouvre l'onglet de suppression d'ensemble sinon.
+     * @param action
+     */
+    @FXML
+    private void removeSubElt(ActionEvent action){
+        if(currentElement==null){
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : aucun ensemble sélectionné", "Veuillez sélectionner un ensemble pour lequel un sous-ensemble doit être attribué", "Erreur", alert);
+        }
+        else if(currentElement.getListeSousElements().size()==0){
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : aucun ensemble supprimable", "L'ensemble sélectionné ne possède aucun sous ensemble à supprimer.", "Erreur", alert);
+        }
+        else if(countOpenedForm!=0){
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : formulaire déjà ouvert", "Un autre formulaire de modification est déjà ouvert, veuillez le fermer avant de continuer.", "Erreur", alert);
+        }
+        else{
+            form="removeSubForm";
+            setFormStage("../View/formRemoveSub.fxml", "Suppression d'un sous-ensemble");
+            createElementMenu();
+        }
+    }
     
 
     /*Récupération d'élément par chaines de caractères*/

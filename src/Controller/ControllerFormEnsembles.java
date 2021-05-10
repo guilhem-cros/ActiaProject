@@ -162,6 +162,7 @@ public class ControllerFormEnsembles implements Initializable{
             selectedElement.addElement(selectedSub);
             saveDatas(Controller.getAllElements());
             selectedElement = null;
+            selectedSub = null;
             finalize(action);
             Alert alert = new Alert(AlertType.INFORMATION);
             Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont biens été enregistrées.", "Confirmation", alert);
@@ -169,7 +170,32 @@ public class ControllerFormEnsembles implements Initializable{
     }
 
     /**
-     * Appelé lors d'un click sur le bouton "Annuler"
+     * Appelée lors d'un clic sur le bouton "Enregistrer" du formulaire de 
+     * suppression de sous-ensemble.
+     * Ouvre un onglet d'erreur si aucun sous-ensemble n'a été sélectionné.
+     * Retire le sous-ensemble sélectionné de la liste de sous-ensemble de 
+     * l'ensemble sélectionné précedemment depuis l'accueil.
+     * @param action
+     */
+    @FXML
+    public void removeSubElt(ActionEvent action){
+        if(selectedSub == null){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur : aucun ensemble sélectionné", "Veuillez sélectionner un sous-ensemble à retirer.", "Erreur", alert);
+        }
+        else{
+            selectedElement.removeElement(selectedSub);
+            saveDatas(Controller.getAllElements());
+            selectedElement=null;
+            selectedSub=null;
+            finalize(action);
+            Alert alert = new Alert(AlertType.INFORMATION);
+            Controller.setAlert("Modifications enregistrées.", "Lensemble a bien été retiré de la liste de sous-ensembles.", "Confirmation", alert);
+        }
+    }
+
+    /**
+     * Appelé lors d'un clic sur le bouton "Annuler"
      * Décrémente le nombre de formulaire ouvert et ferme le formulaire courant
      * @param action
      */
@@ -181,7 +207,7 @@ public class ControllerFormEnsembles implements Initializable{
 
 
 
-    /*Construcion et modification d'objets Element */
+    /*Construction et modification d'objets Element */
 
     /**
      * Construit un objet Element avec les données entrées dans les champs de 
