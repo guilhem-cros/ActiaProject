@@ -263,7 +263,7 @@ public class ControllerAffichageLogs implements Initializable{
         if(listLogs.size()>1){
             Logs.sortLog(listLogs);
         }
-        titleLabel.setText(selectedElt.getCodeElt() + " " + selectedElt.getNom());
+        titleLabel.setText(selectedElt.toString());
         sp.setStyle("-fx-background-color:transparent;");
         BackgroundFill bf = new BackgroundFill(Color.rgb(255, 248, 186), CornerRadii.EMPTY , Insets.EMPTY);
         titleGrid.setBackground(new Background(bf));

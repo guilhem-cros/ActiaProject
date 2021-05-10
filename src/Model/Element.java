@@ -198,6 +198,54 @@ public class Element implements Serializable{
         sortElements(listeSousElements);
     }
 
+    /**
+     * Vérifie si code Element correspond à un sous-élément de this en fonction de son code
+     * @param code une chaine de caractère correspondant à un code d'Element
+     * @return true si le code correspond à un sous-élément, false sinon
+     */
+    public boolean isASubElt(String code){
+        for(Element elt: listeSousElements){
+            if(elt.getCodeElt().equals(code)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Récupère tous les parents, grands-parents, etc, de l'Element this.
+     * @param allElements la liste de tous les élèments connus
+     * @return la liste de tous les Element "parent" de this.
+     */
+    public ArrayList<Element> getAllParents(ArrayList<Element> allElements){
+        ArrayList<Element> allParents = new ArrayList<>();
+        for(Element e: allElements){
+            for(Element child: e.listeSousElements){
+                if(child.codeElt.equals(this.codeElt)){
+                    allParents.add(e);
+                    /*appel récursif afin de remonter toute l'arborescence de l'Element*/
+                    allParents.addAll(e.getAllParents(allElements));
+                }
+            }
+        }
+        return allParents;
+    }
+    
+    /**
+     * Vérifie si this est parent d'un autre Element passé en paramètre.
+     * @param allElements la liste de tous les Element
+     * @param elt l'element pour lequel on vérifie si this est un parent
+     * @return true si this est parent de l'Element, false sinon
+     */
+    public boolean isParent(ArrayList<Element> allElements, Element elt){
+        for(Element e: elt.getAllParents(allElements)){
+            if(e.codeElt.equals(this.codeElt)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
     /*Modifications sur la liste de logs de l'élément*/

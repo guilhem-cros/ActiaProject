@@ -165,6 +165,12 @@ public class Controller implements Initializable{
     @FXML
     private Button updateEltButton;
 
+    @FXML
+    private Button addSubButton;
+
+    @FXML
+    private Button removeSubButton;
+
 
 
     /**
@@ -251,7 +257,7 @@ public class Controller implements Initializable{
                     }
                 }
             });
-            stage.setTitle("Constitution Bancs de Test : " + currentElement.getCodeElt() + " " + currentElement.getNom());
+            stage.setTitle("Constitution Bancs de Test : " + currentElement.toString());
             /*Reset de la page d'accueil*/
             currentElement = null;
             selectedElement.setText("");
@@ -314,7 +320,7 @@ public class Controller implements Initializable{
                     }
                 }
             });
-            stage.setTitle("Mots de passe : " + currentElement.getCodeElt() + " " + currentElement.getNom());
+            stage.setTitle("Mots de passe : " + currentElement.toString());
             stage.showAndWait();
         }
     }
@@ -564,7 +570,8 @@ public class Controller implements Initializable{
         else{
             /*Si aucun formulaire de modification n'est ouvert*/
             if(countOpenedForm==0){
-                Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer l'ensemble'  " + currentElement.getCodeElt() + " " + currentElement.getNom() + " ? Toutes les données associées disparaitront avec lui (mots de passes, outils, etc).", ButtonType.YES, ButtonType.CANCEL);
+                Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer l'ensemble'  " + currentElement.toString() +
+                     " ? Toutes les données associées disparaitront avec lui (mots de passes, outils, etc).", ButtonType.YES, ButtonType.CANCEL);
                 alert.showAndWait(); 
                 if(alert.getResult()==ButtonType.YES){
                     allElements.remove(currentElement);
@@ -588,7 +595,30 @@ public class Controller implements Initializable{
             }
         }
     }
-    
+
+    /**
+     * Appelée lors d'un clic sur le bouton "Ajouter un sous-ensemble".
+     * Ouvre un onglet d'erreur si aucun ensemble n'a été selectionné ou 
+     * si un formulaire est ouvert.
+     * Ouvre l'onglet d'ajout de sous-ensemble sinon.
+     */
+    @FXML
+    private void addSubElt(ActionEvent action){
+        if(currentElement==null){
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : aucun ensemble sélectionné", "Veuillez sélectionner un ensemble pour lequel un sous-ensemble doit être attribué", "Erreur", alert);
+        }
+        
+        else if(countOpenedForm!=0){
+            Alert alert = new Alert(AlertType.WARNING);
+            setAlert("Erreur : formulaire déjà ouvert", "Un autre formulaire de modification est déjà ouvert, veuillez le fermer avant de continuer.", "Erreur", alert);
+        }
+        else{
+            form="addSubForm";
+            setFormStage("../View/formAddSub.fxml", "Ajout d'un sous-ensemble");
+            createElementMenu();
+        } 
+    }    
     
 
     /*Récupération d'élément par chaines de caractères*/
@@ -632,7 +662,7 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Récupère uniquemeent le code d'un Element depuis une chaine de caractère
+     * Récupère uniquement le code d'un Element depuis une chaine de caractère
      * dans laquelle il se trouve à la fin
      * @param chain la chaine de cractère de type : "nomElement codeElement"
      * @return le code ontenu dans la chaine de caractère
@@ -659,7 +689,7 @@ public class Controller implements Initializable{
     public void createElementMenu(){  
         usableMenuItems = new ArrayList<RadioMenuItem>(); //initilisation de la liste d'items sélectionnables
         elementButton.getItems().clear();
-        RadioMenuItem baseItem = new RadioMenuItem(selectedProd.getCodeElt() + " " + selectedProd.getNom());
+        RadioMenuItem baseItem = new RadioMenuItem(selectedProd.toString());
         elementButton.getItems().add(baseItem); //ajout de l'élément selectedProd à sa propre liste
         usableMenuItems.add(baseItem); //ajout de l'élément selectedProd à la liste d'items cliquables
         /*Si la liste de sous élément de slectedProd n'est pas vide*/
@@ -667,7 +697,7 @@ public class Controller implements Initializable{
             ArrayList<Element> listElt = selectedProd.getListeSousElements();
             Element.sortElements(listElt);
             for(Element elt: listElt){
-                String chaine = elt.getCodeElt() + " " + elt.getNom();
+                String chaine = elt.toString();
                 /*Si l'élément courant possède des sous éléments, on l'ajoute au menu en que sous menu*/
                 if(!elt.hasNoSubElmt()){
                     Menu menu = new Menu(chaine);
@@ -697,7 +727,7 @@ public class Controller implements Initializable{
         ArrayList<Element> sousListe = courant.getListeSousElements();
         Element.sortElements(sousListe);
         for(Element e: sousListe){
-            String chaine = e.getCodeElt() + " " + e.getNom();
+            String chaine = e.toString();
             /*Si l'élément courant ne possède pas de sous élèment on l'ajoute en tant que "bouton radio"*/
             if(e.getListeSousElements().isEmpty()){
                 RadioMenuItem sousItem= new RadioMenuItem(chaine);
@@ -726,7 +756,7 @@ public class Controller implements Initializable{
         list.setStyle("-fx-font: 16px;");//police d'écriture en taille 16px
         for(Element elt: allElements){
 			if(elt.isProduit()){
-				String chaine = elt.getCodeElt() + " " + elt.getNom();
+				String chaine = elt.toString();
                 list.getItems().add(chaine);
 			}
         }
@@ -845,10 +875,10 @@ public class Controller implements Initializable{
      * @param value la chaine de caractère similaire au code / nom des élèments sélectionnées
      * @return la liste des noms et codes de chaque élément correspondant au paramètre
      */
-    public ArrayList<String> setSearchedElements(String value){
+    public static ArrayList<String> setSearchedElements(String value){
         ArrayList<String> elementsList = new ArrayList<>();
         for(Element e : Element.selectByCode(value)){
-            elementsList.add(e.getCodeElt() + " " + e.getNom());
+            elementsList.add(e.toString());
         }
         for(Element e : Element.selectByName(value)){
             elementsList.add(e.getNom() + " " + e.getCodeElt());
@@ -860,7 +890,7 @@ public class Controller implements Initializable{
      * Complète la VBox des résultats de recherche par des Labels contenant le nom et le
      * code de chaque ensemble correspondant à la recherche
      * Affiche le résultat de recherche s'il n'est pas vide
-     * @param value
+     * @param value la valeur sur laquelle s'effectue la recherche
      */
     public void fillVBox(String value){
         autoCompleteBox.getChildren().clear();
@@ -879,11 +909,15 @@ public class Controller implements Initializable{
                 searchResultsPane.setPrefHeight(searchResultsPane.getPrefHeight() + 26);
             }
             /*Si le résultat de la recherche n'est pas vide : affichage*/
-            if(!autoCompleteBox.getChildren().isEmpty()){
+            if(autoCompleteBox.getChildren().size()!=0){
                 searchResultsPane.setVisible(true);
                 autoCompleteBox.setVisible(true);
             }
-            
+            /*Si le résulat de la recherche est vide*/
+            else{
+                searchResultsPane.setVisible(false);
+                autoCompleteBox.setVisible(false);
+            }   
         }
         /*Invisibilité des zones de résultats si aucun résultat n'est dispo*/
         else{
@@ -905,7 +939,7 @@ public class Controller implements Initializable{
      * Le label pointé est alors écrit en gras et sa couleur de fond est modifiée
      * @param l le label visable par le curseur
      */
-    public void setMouseOverEvent(Label l){
+    public static void setMouseOverEvent(Label l){
         BackgroundFill bf = new BackgroundFill(Color.rgb(77, 106, 255), CornerRadii.EMPTY , Insets.EMPTY);
         l.setOnMouseEntered((event) -> {
             l.setBackground(new Background(bf));
@@ -919,7 +953,7 @@ public class Controller implements Initializable{
      * La couleur de fond du label rdevient celle de base et la police n'est plus en gras
      * @param l le label précédemment visé par le curseur
      */
-    public void setMouseOutEvent(Label l){
+    public static void setMouseOutEvent(Label l){
         BackgroundFill bf = new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY , Insets.EMPTY);
         l.setOnMouseExited((event) -> {
             l.setBackground(new Background(bf));
@@ -933,7 +967,7 @@ public class Controller implements Initializable{
      * Recupère l'Element lié au label et passe celui-ci en element courant
      * Masque le menu et le champs de texte lié à la sélection d'élèment par 
      * liste déroulante et réinitialise la valeur de la de liste produits à null
-     * @param l
+     * @param l un label résultat de recherche
      */
     public void setClickedEvent(Label l){
         l.setOnMouseClicked((event) -> {
@@ -1021,6 +1055,8 @@ public class Controller implements Initializable{
         addEltButton.setVisible(displayed);
         updateEltButton.setVisible(displayed);
         deleteEltButton.setVisible(displayed);
+        addSubButton.setVisible(displayed);
+        removeSubButton.setVisible(displayed);
     }
 
 

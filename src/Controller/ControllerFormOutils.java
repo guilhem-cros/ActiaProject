@@ -123,14 +123,14 @@ public class ControllerFormOutils implements Initializable{
             columnTitle.setText("");
         }
         else if(Controller.getForm().equals("modifOutilForm")){
-            elementTitle.setText(originControl.getSelectedElt().getCodeElt() + " " + originControl.getSelectedElt().getNom());
+            elementTitle.setText(originControl.getSelectedElt().toString());
             listMoyensGene.getItems().clear();
             setComboBoxMoyenGene();
             setForm();
             setCbMode();
         }
         else if(Controller.getForm().equals("addOutilForm")){
-            elementTitle.setText(originControl.getSelectedElt().getCodeElt() + " " + originControl.getSelectedElt().getNom());
+            elementTitle.setText(originControl.getSelectedElt().toString());
             listMoyensGene.getItems().clear();
             setComboBoxMoyenGene();
             setForm();

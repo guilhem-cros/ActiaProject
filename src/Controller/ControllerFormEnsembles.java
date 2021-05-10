@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import Model.Element;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,8 +14,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.VBox;
 
 public class ControllerFormEnsembles implements Initializable{
     
@@ -25,6 +29,8 @@ public class ControllerFormEnsembles implements Initializable{
 
     /*Le controller ayant ouvert le formulaire*/
     public static Controller originControll;
+
+    public Element selectedSub;
 
 
     /*Attributs FXML des formulaires*/
@@ -44,6 +50,21 @@ public class ControllerFormEnsembles implements Initializable{
     @FXML
     private Button cancelButton;
 
+    @FXML 
+    private Label title;
+
+    @FXML
+    private TextField searchField;
+
+    @FXML
+    private ScrollPane sPane;
+
+    @FXML
+    private VBox resultsBox;
+
+    @FXML
+    private Button addSubEButton;
+
     /**
      * Appelée à l'ouverture de la fenêtre
      * Instancie les variables met en place l'affichage de la page
@@ -57,6 +78,10 @@ public class ControllerFormEnsembles implements Initializable{
         }
         else if(Controller.getForm().equals("addElementForm")){
             saveButton.setText("Créer l'ensemble");
+        }
+        else if(Controller.getForm().equals("addSubForm")){
+            search();
+            title.setText(selectedElement.toString());
         }
     }
 
@@ -117,6 +142,29 @@ public class ControllerFormEnsembles implements Initializable{
                     Controller.setAlert("Erreur : ensemble déjà existant", "Le code saisi pour l'ensemble correspond à un ensemble déjà existant.", "Erreur", alert);
                 }
             }          
+        }
+    }
+
+    /**
+     * Appelé lors d'un clic sur le bouton "Ajouter le sous-ensemble".
+     * Renvoie une erreur si aucun ensemble n'a été sélectionné.
+     * Ajoute le sous-ensemble sélectionné à la liste de sous-ensembles de
+     * l'élément correspondant au formulaire (selectedElement) et sauvegarde cet ajout
+     * @param action
+     */
+    @FXML
+    public void addSubElt(ActionEvent action){
+        if(selectedSub == null){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur : aucun ensemble sélectionné", "Veuillez sélectionner un ensemble à ajouter en tant que sous-ensemble.", "Erreur", alert);
+        }
+        else{
+            selectedElement.addElement(selectedSub);
+            saveDatas(Controller.getAllElements());
+            selectedElement = null;
+            finalize(action);
+            Alert alert = new Alert(AlertType.INFORMATION);
+            Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont biens été enregistrées.", "Confirmation", alert);
         }
     }
 
@@ -182,6 +230,121 @@ public class ControllerFormEnsembles implements Initializable{
         }
         return true;
     }
+
+
+
+    /*Ajout de sous-ensemble*/
+
+    /**
+     * Instancie l'évènement provoquant la mise à jour de la liste d'éléments 
+     * correspondant à la recherche courante
+     * L'événement est appelé à chaque modification du texte dans le champs de recherche
+     */
+    public void search(){
+        searchField.textProperty().addListener(new ChangeListener<String>(){
+            public void changed(ObservableValue<? extends String> observable,
+                String oldValue, String newValue){
+                    fillResultsBox(searchField.getText());
+                }
+        });
+    }
+
+    /**
+     * Rempli la liste des résultats obtenus depuis la saisi dans le champs de recherche
+     * avec des Labels contenant nom et code de chaque ensemble correspondant à la recherche.
+     * Affiche les résultats de recherche s'il en existe
+     * @param value la valeur sur laquelle s'effectue la recherche
+     */
+    public void fillResultsBox(String value){
+        resultsBox.getChildren().clear();
+        /*Si le champs de saisi n'est pas vide*/
+        if(value.length()>0){
+            sPane.setPrefHeight(5);
+            for(String s : setSearchedElements(value)){
+                Label l = new Label(s);
+                l.setPrefHeight(26);
+                l.setPrefWidth(350); 
+                Controller.setMouseOverEvent(l);
+                Controller.setMouseOutEvent(l);
+                setClickedEvent(l);
+                resultsBox.getChildren().add(l);
+                sPane.setPrefHeight(sPane.getPrefHeight() + 26);
+            }
+            /*S'il existe des résultat à la recherhe*/
+            if(resultsBox.getChildren().size()!=0){
+                sPane.setVisible(true);
+                resultsBox.setVisible(true);
+            }
+            /*Si aucun Element similaire à la rcherche n'a été trouvé*/
+            else{
+                sPane.setVisible(false);
+                resultsBox.setVisible(false);
+            }  
+        }
+        else{
+            sPane.setVisible(false);
+            resultsBox.setVisible(false);
+        }
+    }
+
+    /**
+     * Instancie la liste de chaines de caractère dans laquelle va être effectué 
+     * la recherche d'ensembles pour l'ajout en tant que sous-ensemble.
+     * Un ensemble est ajoutable en tant que sous-ensemble s'il n'est pas égal au parent,
+     * s'il n'est pas déjà un sous ensemble et s'il n'est pas parent du parent.
+     * @param value la valeur sur laquelle s'effectue la recherche
+     * @return une liste de chaiîne de caractère correspondant à tous les ensembles
+     * ajoutables en tant que sous ensemble
+     */
+    public ArrayList<String> setSearchedElements(String value){
+        ArrayList<String> elementsList = Controller.setSearchedElements(value);
+        for(int i=0; i<elementsList.size(); i++){
+            /*Si le code de l'Element est au début de la chaine de caractères*/
+            if(Character.isDigit(elementsList.get(i).charAt(0))){
+                /*On retire tous les ensembles non ajoutables de la liste*/
+                if(Controller.sliceCode(elementsList.get(i)).equals(selectedElement.getCodeElt())
+                    || selectedElement.isASubElt(Controller.sliceCode(elementsList.get(i)))
+                    || Controller.getElementByCode(Controller.sliceCode(elementsList.get(i))).isParent(Controller.getAllElements(), selectedElement)){
+                    elementsList.remove(i);
+                    i--;
+                }
+            }
+            /*Si le code de l'Element est à la fin de la chaine de caractères*/
+            else{
+                /*On retire tous les ensembles non ajoutables de la liste*/
+                if(Controller.sliceInvertCode(elementsList.get(i)).equals(selectedElement.getCodeElt())
+                    || selectedElement.isASubElt(Controller.sliceInvertCode(elementsList.get(i)))
+                    || Controller.getElementByCode(Controller.sliceInvertCode(elementsList.get(i))).isParent(Controller.getAllElements(), selectedElement)){
+                    elementsList.remove(i);
+                    i--;
+                }
+            }
+        }
+        return elementsList;
+    }
+
+    /**
+     * Instancie l'événement appelé lorsqu'un label de la liste des rsultats de
+     * recherche est cliqué
+     * Récupère l'Element lié au label et donne cette valeur au sous-élement courant
+     * Masque les résultats de recherche et compléte le champs avec le texte du labe
+     * @param l un label résultat de recherche
+     */
+    public void setClickedEvent(Label l){
+        l.setOnMouseClicked((event) -> {
+            searchField.setText(l.getText());
+            if(Character.isDigit(l.getText().charAt(0))){
+                selectedSub = Controller.getElementByCode(Controller.sliceCode(l.getText()));
+            }
+            else{
+              selectedSub = Controller.getElementByCode(Controller.sliceInvertCode(l.getText()));
+            }
+            sPane.setVisible(false);
+        });
+    }
+
+
+
     /*Fonctions diverses*/
 
     /**

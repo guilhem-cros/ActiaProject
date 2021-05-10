@@ -376,7 +376,7 @@ public class ControllerAffichageOutils implements Initializable{
             listOutils = selectedElt.getOutilsByMode(auto);
             
         }
-        title.setText(selectedElt.getCodeElt() + " " + selectedElt.getNom());
+        title.setText(selectedElt.toString());
         Outil.sortOutilsByMoyen(listOutils);
     }
 

@@ -65,6 +65,7 @@ public class Main{
         list.add(elt4);
         list.add(elt5);
         list.add(elt6);
+        System.out.println("list" + elt5.getAllParents(list));
         Element.serializeAllElements(list);
     
         
