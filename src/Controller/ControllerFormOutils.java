@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import Model.Colonne;
 import Model.Element;
 import Model.MoyenGenerique;
 import Model.Outil;
@@ -156,7 +157,7 @@ public class ControllerFormOutils implements Initializable{
     @FXML
     public void newColumn(ActionEvent action){
         String title = columnTitle.getText();
-        if(isInTitles(title)){
+        if(Colonne.isAlrdySaved(title)){
             Alert alert = new Alert(AlertType.WARNING);
             Controller.setAlert("Erreur, nom de colonne déjà existant", "Le titre saisi pour la création d'une nouvelle colonne correspond déjà à une autre colonne.", "Erreur", alert);
         }
@@ -166,10 +167,8 @@ public class ControllerFormOutils implements Initializable{
         } 
         /*Si le titre de colonne saisi est valide*/
         else{
-            Outil.addTitle(title);
-            ArrayList<Boolean> hyperlinks = ControllerAffichageOutils.unserializeLinks();
-            hyperlinks.add(hyperlinkBox.isSelected());
-            ControllerAffichageOutils.serialHyperlink(hyperlinks);
+            Colonne.addNewCol(title, hyperlinkBox.isSelected());
+            Outil.addOrdre();
             finalize(action);
         }
     }
@@ -245,7 +244,11 @@ public class ControllerFormOutils implements Initializable{
     public void setColumn(ActionEvent action){
         if(colTitle.getText().length()<4){
             Alert alert = new Alert(AlertType.WARNING);
-            Controller.setAlert("Erreur de saisi", "Veuillez saisir au moins 4 caractères pour le titre de la colonne", "Erreur", alert);
+            Controller.setAlert("Erreur de saisi", "Veuillez saisir au moins 4 caractères pour le titre de la colonne.", "Erreur", alert);
+        }
+        if(Colonne.isAlrdySaved(colTitle.getText()) && !colTitle.getText().equals(selectedCol)){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur nom de colonne déjà existant", "Le nom de colonne saisi correspond à une colonne déjà existante.", "Erreur", alert); 
         }
         else{
             SetCol();
@@ -284,23 +287,6 @@ public class ControllerFormOutils implements Initializable{
     }
 
 
-    /*Fonctions relatives à la création de colonne*/
-
-    /**
-     * Vérifie la présence d'une chaine de caractère dans la liste des titres de colonnes
-     * @param chain la chaine vérifié
-     * @return true si la chaine est présente, false sinon
-     */
-    public boolean isInTitles(String chain){
-        for(String s: ControllerAffichageOutils.getParamTitles()){
-            if(s.equals(chain)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-
 
     /*Fonctions relative à l'ajout/modification de lignes*/
 
@@ -332,7 +318,7 @@ public class ControllerFormOutils implements Initializable{
             grid.add(title,0, i);
             grid.add(tf, 1, i);
             /*Si la colonne correspondant au champs courrant est une colonne de liens hypertexte*/
-            if(ControllerAffichageOutils.unserializeLinks().get(i)){
+            if(Colonne.unserializeCols().get(i).isHyperLink()){
                 FileChooser fl = new FileChooser();
                 fl.setTitle("Sélection de fichier");
                 Button selectFileButton = new Button("...");
@@ -434,7 +420,7 @@ public class ControllerFormOutils implements Initializable{
             outil.setUtilisationAuto(true);
         }
         outil.setQuantite(quantite.getText());
-        for(int i=0; i<Outil.unserializeTitles().size()-4; i++){
+        for(int i=0; i<Colonne.unserializeCols().size()-4; i++){
             outil.getListParam().set(i+4, listParamField.get(Outil.unserializeOrdre().indexOf(i+4)-4).getText());
         }
         return outil;
@@ -451,7 +437,7 @@ public class ControllerFormOutils implements Initializable{
     public void setComboBoxPosition(){
         colPosition.getItems().clear();
         colPosition.setStyle("-fx-font-f: 16px;");
-        for(int i=4; i<Outil.unserializeTitles().size(); i++){
+        for(int i=4; i<Colonne.unserializeCols().size(); i++){
             colPosition.getItems().add(i+1); 
         }
         setVisibilityForUpdates();
@@ -462,8 +448,8 @@ public class ControllerFormOutils implements Initializable{
      * de la colonne sélectionné : inivisible pour les 4 premières colonnes
      */
     public void setVisibilityForUpdates(){
-        for(int i=0; i<Outil.unserializeTitles().size(); i++){
-            if(selectedCol.equals(Outil.unserializeTitles().get(i))){
+        for(int i=0; i<Colonne.unserializeCols().size(); i++){
+            if(selectedCol.equals(Colonne.unserializeCols().get(i).getTitle())){
                 if(i<4){
                     colPosition.setVisible(false);
                     position.setVisible(false);
@@ -482,10 +468,10 @@ public class ControllerFormOutils implements Initializable{
      */
     public void fillColForm(){
         String title = selectedCol;
-        int pos = Outil.unserializeTitles().indexOf(title);
+        int pos = Colonne.getIndexByTitle(Colonne.unserializeCols(), title);
         colTitle.setText(title);
         colPosition.setValue(pos+1);
-        if(ControllerAffichageOutils.unserializeLinks().get(pos)){
+        if(Colonne.unserializeCols().get(pos).isHyperLink()){
             linkBox.setSelected(true);
         }
         else{
@@ -499,14 +485,11 @@ public class ControllerFormOutils implements Initializable{
      * Met à jour le tableau en fonction du changement de position de la colonne
      */
     public void SetCol(){
-        ArrayList<String> titles = Outil.unserializeTitles();
-        ArrayList<Boolean> links = ControllerAffichageOutils.unserializeLinks();
+        ArrayList<Colonne> allCols = Colonne.unserializeCols();
         String title = selectedCol;
-        int pos = titles.indexOf(title);
-        titles.set(pos, colTitle.getText());
-        links.set(pos, linkBox.isSelected());
-        Outil.serializeAllTitles(titles);
-        ControllerAffichageOutils.serialHyperlink(links);
+        int pos = Colonne.getIndexByTitle(allCols, title);
+        allCols.get(pos).updateCol(colTitle.getText(), linkBox.isSelected());
+        Colonne.serialCols(allCols);
         /*Mise à jour de l'affichage, la colonne est déplacée et toutes les autres également*/
         if(colPosition.getValue() != pos+1 && colPosition.getValue()>4){
             if(colPosition.getValue()-1 > pos){
@@ -528,20 +511,15 @@ public class ControllerFormOutils implements Initializable{
      * @param pos2 la position de la deuxième colonne
      */
     public void swapCols(int pos1, int pos2){
-        ArrayList<String> titles = Outil.unserializeTitles();
-        ArrayList<Boolean> links = ControllerAffichageOutils.unserializeLinks();
+        ArrayList<Colonne> allCols = Colonne.unserializeCols();
         ArrayList<Integer> ordre = Outil.unserializeOrdre();
-        String auxTitle = titles.get(pos1);
-        Boolean auxLink = links.get(pos1);
+        Colonne auxCol = allCols.get(pos1);
         int auxPos = ordre.get(pos1);
-        titles.set(pos1, titles.get(pos2));
-        titles.set(pos2, auxTitle);
-        links.set(pos1, links.get(pos2));
-        links.set(pos2, auxLink);
+        allCols.set(pos1, allCols.get(pos2));
+        allCols.set(pos2, auxCol);
         ordre.set(pos1, ordre.get(pos2));
         ordre.set(pos2, auxPos);
-        Outil.serializeAllTitles(titles);
-        ControllerAffichageOutils.serialHyperlink(links);
+        Colonne.serialCols(allCols);
         Outil.serializeOrdre(ordre);
     }
 
@@ -569,7 +547,7 @@ public class ControllerFormOutils implements Initializable{
                     Outil outil = new Outil(newMoyen, e.getOutils().get(i).getDetailMoyen());
                     outil.setUtilisationAuto(e.getOutils().get(i).isUtilisationAuto());
                     outil.setQuantite(e.getOutils().get(i).getQuantite());
-                    for(int n=4; n<Outil.unserializeTitles().size(); n++){
+                    for(int n=4; n<Colonne.unserializeCols().size(); n++){
                         outil.getListParam().set(n, e.getOutils().get(i).getListParam().get(n));
                     }
                     e.getOutils().set(i, outil);

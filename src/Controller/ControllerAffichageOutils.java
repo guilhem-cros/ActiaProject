@@ -1,15 +1,12 @@
 package Controller;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import Model.Colonne;
 import Model.Element;
 import Model.MoyenGenerique;
 import Model.Outil;
@@ -64,9 +61,6 @@ public class ControllerAffichageOutils implements Initializable{
 
     /*La liste des titres des colonnes*/
     private static ArrayList<String> paramTitles;
-
-    /*La liste des paramètres affichés sous format lien*/
-    private static ArrayList<Boolean> listHyperlink;
     
     /*La liste des lignes (des paramètres des outils) de la grille*/
     private ArrayList<ArrayList<Labeled>> clicableItems;
@@ -144,7 +138,6 @@ public class ControllerAffichageOutils implements Initializable{
             Controller.getOpenedController().add(this);
         }
         moyensGene = MoyenGenerique.unserializeMoyenGene();
-        setHyperlinkList();
         paramTitles = Outil.getParamTitle();
         setParamOfElt();
         listMoyenGene.getItems().clear();
@@ -168,24 +161,6 @@ public class ControllerAffichageOutils implements Initializable{
         String value = listMoyenGene.getValue();
         setTable(value);
         currentOutil = null;
-    }
-
-    /**
-     * Appelée lors d'un appuie sur le bouton "Nouvelle colonne"
-     * Ouvre un formulaire de création de nouvelle colonne si 
-     * aucun autre formulaire n'est déjà ouvert
-     * @param action
-     */
-    @FXML
-    public void openColumnSetUp(ActionEvent action){
-        /*Si un formulaire est déjà ouvert*/
-        if(Controller.getCountOpenedForm()>0){
-            openFormError();
-        }
-        else{
-            Controller.setForm("newColForm");
-            setStage("../View/ajoutCol.fxml", "Ajout colonne");
-        }
     }
 
     /**
@@ -230,6 +205,67 @@ public class ControllerAffichageOutils implements Initializable{
     }
 
     /**
+     * Appelée lors d'un appuie sur le bouton "Supprimer ligne"
+     * Ouvre un onglet de confirmation afin de valider ou non
+     * la suppression de la ligne
+     * Actualise la fenêtre et supprime des données l'Outil 
+     * associé à la ligne sélectionnée
+     * @param action
+     */
+    @FXML
+    public void deleteLine(ActionEvent action){
+        /*Si aucun outil n'a été sélectionné*/
+        if(currentOutil==null){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une ligne à supprimer.", "Erreur", alert);
+        }
+        /*Si un formualaire de modif est déjà ouvert*/
+        else if(Controller.getCountOpenedForm()>0){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Conflit possible", "Veuillez fermez les formulaires ouverts avant de supprimer la colonne afin d'éviter les conflits.", "Erreur", alert);
+        }
+        else{
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la ligne ?\nL'outil associé sera définitivement supprimé des données.", ButtonType.YES, ButtonType.CANCEL);
+            alert.showAndWait();
+            if(alert.getResult()==ButtonType.YES){ 
+                ArrayList<Element> allElt = Element.unserializeElement();
+                /*Recherche de l'élément sélectionné dans les données*/   
+                for(int i=0; i<allElt.size();i++){
+                    if(allElt.get(i).getCodeElt().equals(selectedElt.getCodeElt())){
+                        selectedElt.removeOutil(currentOutil);
+                        allElt.set(i, selectedElt);
+                        i=allElt.size();//sortie de la boucle
+                    }
+                }
+                Element.serializeAllElements(allElt);
+                Controller.setAllElements(allElt);
+                Alert alert2 = new Alert(AlertType.INFORMATION);
+                Controller.setAlert("Modifications enregistrées", "La ligne a bien été supprimée, l'outil a été supprimé des données", "Confirmation", alert2);
+                this.initialize(null, null);
+                currentOutil = null;
+            } 
+        }
+    }
+    
+    /**
+     * Appelée lors d'un appuie sur le bouton "Nouvelle colonne"
+     * Ouvre un formulaire de création de nouvelle colonne si 
+     * aucun autre formulaire n'est déjà ouvert
+     * @param action
+     */
+    @FXML
+    public void openColumnSetUp(ActionEvent action){
+        /*Si un formulaire est déjà ouvert*/
+        if(Controller.getCountOpenedForm()>0){
+            openFormError();
+        }
+        else{
+            Controller.setForm("newColForm");
+            setStage("../View/ajoutCol.fxml", "Ajout colonne");
+        }
+    }
+
+    /**
      * Appelée lors d'un appuie sur le bouton "Modifier colonne"
      * Ouvre la fenêtre du formulaire de modification de colonne
      * si une colonne a été saisie et qu'aucun autre form n'est ouvert
@@ -260,10 +296,12 @@ public class ControllerAffichageOutils implements Initializable{
      */
     @FXML 
     public void deleteColumn(){
-        if(currentTitle == null || Outil.unserializeTitles().indexOf(currentTitle) < 4){
+        /*Si aucune colonne n'a été sélectioné ou s'il s'agit d'un des 4 premières colonnes*/
+        if(currentTitle == null || Colonne.getIndexByTitle(Colonne.unserializeCols(), currentTitle)<4){
             Alert alert = new Alert(AlertType.WARNING);
             Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une colonne à supprimer (les 4 premières colonnes ne peuvent pa être supprimées).", "Erreur", alert);
         }
+        /*Si une formulaire de modif est déjà ouvert*/
         else if(Controller.getCountOpenedForm()>0){
             Alert alert = new Alert(AlertType.WARNING);
             Controller.setAlert("Conflit possible", "Veuillez fermez les formulaires ouverts avant de supprimer la colonne afin d'éviter les conflits.", "Erreur", alert);
@@ -272,57 +310,15 @@ public class ControllerAffichageOutils implements Initializable{
             Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la colonne  " + currentTitle + " ?", ButtonType.YES, ButtonType.CANCEL);
             alert.showAndWait();
             if(alert.getResult()==ButtonType.YES){    
-                int i = Outil.unserializeTitles().indexOf(currentTitle);
+                int i = Colonne.getIndexByTitle(Colonne.unserializeCols(), currentTitle);
                 int index = Outil.unserializeOrdre().get(i);
                 Outil.removeFromAllOutil(index);
-                Outil.removeTitle(currentTitle);
-                listHyperlink.remove(i);
-                serialHyperlink(listHyperlink);
+                Outil.removeOrdre(i);
+                Colonne.removeCol(currentTitle);
                 Alert alert2 = new Alert(AlertType.INFORMATION);
                 Controller.setAlert("Modifications enregistrées", "La colonne a bien été supprimée", "Confirmation", alert2);
                 this.initialize(null, null);
                 currentTitle = null;
-            } 
-        }
-    }
-
-    /**
-     * Appelée lors d'un appuie sur le bouton "Supprimer ligne"
-     * Ouvre un onglet de confirmation afin de valider ou non
-     * la suppression de la ligne
-     * Actualise la fenêtre et supprime des données l'Outil 
-     * associé à la ligne sélectionnée
-     * @param action
-     */
-    @FXML
-    public void deleteLine(ActionEvent action){
-        if(currentOutil==null){
-            Alert alert = new Alert(AlertType.WARNING);
-            Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une ligne à supprimer.", "Erreur", alert);
-        }
-        else if(Controller.getCountOpenedForm()>0){
-            Alert alert = new Alert(AlertType.WARNING);
-            Controller.setAlert("Conflit possible", "Veuillez fermez les formulaires ouverts avant de supprimer la colonne afin d'éviter les conflits.", "Erreur", alert);
-        }
-        else{
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la ligne ?\nL'outil associé sera définitivement supprimé des données.", ButtonType.YES, ButtonType.CANCEL);
-            alert.showAndWait();
-            if(alert.getResult()==ButtonType.YES){ 
-                ArrayList<Element> allElt = Element.unserializeElement();
-                /*Recherche de l'élément sélectionné dans les données*/   
-                for(int i=0; i<allElt.size();i++){
-                    if(allElt.get(i).getCodeElt().equals(selectedElt.getCodeElt())){
-                        selectedElt.removeOutil(currentOutil);
-                        allElt.set(i, selectedElt);
-                        i=allElt.size();//sortie de la boucle
-                    }
-                }
-                Element.serializeAllElements(allElt);
-                Controller.setAllElements(allElt);
-                Alert alert2 = new Alert(AlertType.INFORMATION);
-                Controller.setAlert("Modifications enregistrées", "La ligne a bien été supprimée, l'outil a été supprimé des données", "Confirmation", alert2);
-                this.initialize(null, null);
-                currentOutil = null;
             } 
         }
     }
@@ -349,6 +345,8 @@ public class ControllerAffichageOutils implements Initializable{
             }
         }
     }   
+
+
 
     /**
      * Récupère l'élément sélectionné depuis la page accueil
@@ -385,12 +383,12 @@ public class ControllerAffichageOutils implements Initializable{
     /*Mise en place du tableau*/
 
     /**
-     * Si la liste Outil est vide : renvoie un message indiquant qu'aucun moyen de test n'est diponible
+     * Si la liste Outil est vide : renvoie un message indiquant qu'aucun moyen de test n'est diponible.
      * Sinon : Rempli la grille avec les attributs correspondant à chaque moyens de test de l'élément
      * en fonction du moyen générique sélectionné (renvoie le même message si l'élément ne contient 
      * aucun Outil de test pour ce moyen générique).
-     * Rempli la grille selon l'ordre enregistré
-     * Met en place les liens hypertextes
+     * Rempli la grille selon l'ordre enregistré.
+     * Met en place les liens hypertextes.
      */
     public void setTable(String selectedMoyenGene){
         clicableItems = new ArrayList<ArrayList<Labeled>>();
@@ -419,10 +417,10 @@ public class ControllerAffichageOutils implements Initializable{
                 ArrayList<Labeled> list = new ArrayList<Labeled>();
                 int countP=0; //numéro de la colonne actuelle
                 /*Parcours de tous les attributs de l'outil courant*/
-                for(int i=0; i<Outil.unserializeTitles().size(); i++){ 
+                for(int i=0; i<Colonne.unserializeCols().size(); i++){ 
                     String param = listParam.get(Outil.unserializeOrdre().get(i));
                     /*s'il s'agit d'un attribut de type lien*/
-                    if(unserializeLinks().get(i) && param!="" && param!=null){ 
+                    if(Colonne.unserializeCols().get(i).isHyperLink() && param!="" && param!=null){ 
                         Hyperlink text = setLink(param);
                         list.add(text); //ajout à la liste des cases de la ligne
                         grid.add(text, countP, count); //remplissage de la case courante de grid
@@ -555,61 +553,6 @@ public class ControllerAffichageOutils implements Initializable{
         setLabelParam(text);
         text.setFont(Font.font(16));
         return text;
-    }
-
-    /**
-     * Instancie la liste de paramètres affichés sous forme
-     * d'hyperlien à false pour tous
-     */
-    public static void setHyperlinkList(){
-        listHyperlink = unserializeLinks();
-        if(listHyperlink==null || listHyperlink.isEmpty()){
-            listHyperlink = new ArrayList<Boolean>();
-            for(int i=0; i<Outil.getParamTitle().size();i++){
-                listHyperlink.add(false);
-            }
-        }
-        serialHyperlink(listHyperlink);
-    }
-
-    /**
-	 * Eregistre dans le fichier correpondant, les valeurs des liens du bouléens hypertexte 
-     * pour chaque colonne
-	 * @param allTitles la liste des bouléens de lien hypertexte de chaque colonne
-	 */
-    public static void serialHyperlink(ArrayList<Boolean> links){
-        try {
-			FileOutputStream fichier = new FileOutputStream("data/links.ser");
-			ObjectOutputStream oos = new ObjectOutputStream(fichier);
-			for(Boolean link: links){
-                oos.writeObject(link);
-            }
-            oos.close();
-		} catch (IOException e) {
-			System.out.println(e.toString());
-		}
-    }
-
-    /**
-	 * Lis le fichier contenant l'ensemble des bouléens de lien hypertexte
-	 * @return la liste des boléens de lien hypertexte contenus dans le fichier
-	 */
-    public static ArrayList<Boolean> unserializeLinks(){
-        ArrayList<Boolean> links = new ArrayList<Boolean>();
-        try (ObjectInputStream ois = 
-				new ObjectInputStream(
-						new FileInputStream("data/links.ser"))) {
-			/* Lecture du fichier*/
-			while (true) {
-				links.add((Boolean) ois.readObject());
-			}
-		} catch (IOException e) {
-			//Exception lorsqu'on atteint la fin du fichier
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}   
-        return links;
-
     }
 
 

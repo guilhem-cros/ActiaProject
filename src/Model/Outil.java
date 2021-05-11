@@ -101,11 +101,10 @@ public class Outil implements Serializable{
 			listParam.add(this.detailMoyen);
 		}
 		/*Mise en place et ajout des paramètres correspondant à des titres ajoutés manuellements*/
-		for(int i=listParam.size(); i<unserializeTitles().size(); i++){
+		for(int i=listParam.size(); i<Colonne.unserializeCols().size(); i++){
 			listParam.add("");
 		}
 	}
-
 
 	/**
 	 * @return le liste contenant les valeurs des attributs de l'Outil en chaine de caractère
@@ -115,14 +114,18 @@ public class Outil implements Serializable{
 		return this.listParam;
 	}
 
+
+
+	/*Fonctions relatives aux titres des colonnes / paramètres des Outils*/
+
 	/**
 	 * Crée la liste des "titres" de chaque attribut de l'Outil qui sont utilisés dans l'affichage
 	 */
 	public static void setListParamTitle(){
 		listParamTitle = new ArrayList<String>();
 		listParamTitle.clear();
-		/*Ajout des titres stockées dans titles.ser*/
-		for(String title: unserializeTitles()){
+		/*Ajout des titres stockées dans le fichier de données*/
+		for(String title: Colonne.getTitles()){
 			listParamTitle.add(title);
 		}
 	}
@@ -205,119 +208,7 @@ public class Outil implements Serializable{
 
 
 
-	/**
-	 * Ajout d'une nouvelle variable en tant que titre (attribut) dans la base de données
-	 * s'il n'est pas déjà présent et modification de la liste de position des paramètres
-	 * @param title le nom du titre du paramètre
-	 */
-	public static void addTitle(String title){
-        ArrayList<String> titles = unserializeTitles();
-		ArrayList<Integer> ordre = unserializeOrdre();
-		//vérifier présence titre
-		int i=0;
-		for(String t: titles){
-			if(t.equals(title)){
-				i++;
-			}
-		}
-		if(i==0){
-			titles.add(title);
-			ordre.add(ordre.size());
-		}
-        serializeAllTitles(titles);
-		serializeOrdre(ordre);
-		System.out.println(ordre);
-    }
-
-	/**
-	 * Suppression d'un variable dans la base de données et modification de la liste
-	 * de position des paramètres à l'affichage en fonction
-	 * @param title le nom de la variable à supprimer
-	 */
-	public static void removeTitle(String title){
-		ArrayList<Integer> ordre = unserializeOrdre();
-		ArrayList<String> titles = unserializeTitles();
-		int index = titles.indexOf(title);
-		titles.remove(title);
-		int val = ordre.get(index);
-		ordre.remove(index);
-		for(int i = 4; i<ordre.size(); i++){
-			if(ordre.get(i)>val){
-				ordre.set(i, ordre.get(i)-1);
-			}
-		}
-		serializeAllTitles(titles);
-		serializeOrdre(ordre);
-		System.out.println(ordre);
-	}
-
-	/**
-	 * Lis le fichier contenant l'ensemble des attributs de l'Outil
-	 * @return la liste des attributs contenus dans le fichier
-	 */
-    public static ArrayList<String> unserializeTitles(){
-        ArrayList<String> listTitles = new ArrayList<String>();
-        try (ObjectInputStream ois = 
-				new ObjectInputStream(
-						new FileInputStream("data/titles.ser"))) {
-			/* Lecture du fichier*/
-			while (true) {
-				listTitles.add((String) ois.readObject());
-			}
-		} catch (IOException e) {
-			//Exception lorsqu'on atteint la fin du fichier
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}   
-		/*Si aucun attribut enregistrées, ajout des 4 colonnes de bases*/
-		if(listTitles.isEmpty()){
-			ArrayList<Integer> ordre = unserializeOrdre();
-			listTitles.add("Moyens Génériques");
-			listTitles.add("Quantité");
-			listTitles.add("Utilisation pour test Manuel ou Auto (déverminage)");
-			listTitles.add("Détail du moyen");
-			for(int i=0; i<4; i++){
-				ordre.add(i);
-			}
-			serializeAllTitles(listTitles);
-			serializeOrdre(ordre);
-		}
-        return listTitles;
-
-    }
-
-	/**
-	 * Eregistre dans le fichier correpondant, les attributs de l'Outil
-	 * @param allTitles la liste des titres à enregistrer
-	 */
-    public static void serializeAllTitles(ArrayList<String> allTitles){
-        try {
-			FileOutputStream fichier = new FileOutputStream("data/titles.ser");
-			ObjectOutputStream oos = new ObjectOutputStream(fichier);
-			for(String title: allTitles){
-                oos.writeObject(title);
-            }
-            oos.close();
-		} catch (IOException e) {
-			System.out.println(e.toString());
-		}
-    }
-
-	/**
-	 * Supprime une valeur de la liste de param pour tous les 
-	 * objets Outil enregistrés
-	 * @param index l'index du param dans les listes des Outils
-	 */
-	public static void removeFromAllOutil(int index){
-		ArrayList<Element> allElt = Controller.getAllElements();
-		for(Element e: allElt){
-			for(Outil o: e.getOutils()){
-				o.setListParam();
-				o.getListParam().remove(index);
-			}
-		}
-		Element.serializeAllElements(allElt);
-	}
+	/*Fonctions liées à l'odre de stockage / affichage des paramètres*/
 
 	/**
 	 * Eregistre dans le fichier correpondant, l'ordre d'affichage 
@@ -358,4 +249,50 @@ public class Outil implements Serializable{
 		}   
         return ordre;
 	}
+
+	/**
+	 * Ajoute un nouvel entier valant la taille de la liste d'ordre avant ajout
+	 * dans la liste des ordres.
+	 * Enregistre la nouvelle liste dans le fichier lié.
+	 */
+	public static void addOrdre(){
+		ArrayList<Integer> ordre = unserializeOrdre();
+		ordre.add(ordre.size());
+		serializeOrdre(ordre);
+	}
+
+	/**
+	 * Supprime un ordre de la liste des ordres et  adapte les autres ordres à 
+	 * cette supression. Càd que les ordres supérieurs à l'ordre supprimé seront tous
+	 * décrémentés. Enregistre la nouvelle liste dans le fichier lié.
+	 * @param index la position dans la liste de l'odre supprimé
+	 */
+	public static void removeOrdre(int index){
+		ArrayList<Integer> ordre = unserializeOrdre();
+		int val = ordre.get(index);
+		ordre.remove(index);
+		for(int i = 4; i<ordre.size(); i++){
+			if(ordre.get(i)>val){
+				ordre.set(i, ordre.get(i)-1);
+			}
+		}
+		serializeOrdre(ordre);
+	}
+
+	/**
+	 * Supprime une valeur de la liste de param pour tous les 
+	 * objets Outil enregistrés
+	 * @param index l'index du param dans les listes des Outils
+	 */
+	public static void removeFromAllOutil(int index){
+		ArrayList<Element> allElt = Controller.getAllElements();
+		for(Element e: allElt){
+			for(Outil o: e.getOutils()){
+				o.setListParam();
+				o.getListParam().remove(index);
+			}
+		}
+		Element.serializeAllElements(allElt);
+	}
+
 }

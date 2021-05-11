@@ -2,6 +2,7 @@ package Controller;
 
 import java.util.ArrayList;
 
+import Model.Colonne;
 import Model.Element;
 import Model.Logs;
 
@@ -14,22 +15,24 @@ public class Main{
     public static void main(String[] args) {
 
         
-        Outil.addTitle("Moyens Génériques");
-       Outil.addTitle("Quantité");
-       Outil.addTitle("Utilisation pour test Manuel ou Auto (déverminage)");
-       Outil.addTitle("Détail du moyen");
-       Outil.addTitle("Fabricant");
-       Outil.addTitle("Référence Fabricant");
-       Outil.addTitle("Numéro de série");
-       Outil.addTitle("Outils associés");
-       Outil.addTitle("Indice outils");
-       Outil.addTitle("Référence plan / logiciel");
-       Outil.addTitle("Version plan ou logiciel");
-       Outil.addTitle("Nom du logiciel");
-       Outil.addTitle("Raccourci vers emplacement");
-       Outil.addTitle("Maintenance / Calibration");
-       Outil.addTitle("Doc de référence pour calibration");
-       Outil.addTitle("Raccourci vers photo");
+        Colonne.addNewCol("Moyens Génériques", false);
+        Colonne.addNewCol("Quantité", false);
+        Colonne.addNewCol("Utilisation pour test Manuel ou Auto (déverminage)", false);
+        Colonne.addNewCol("Détail du moyen", false);
+        Colonne.addNewCol("Fabricant", false);
+        Colonne.addNewCol("Référence Fabricant", false);
+        Colonne.addNewCol("Numéro de série", false);
+        Colonne.addNewCol("Outils associés", false);
+        Colonne.addNewCol("Indice outils", false);
+        Colonne.addNewCol("Référence plan / logiciel", false);
+        Colonne.addNewCol("Version plan ou logiciel", false);
+        Colonne.addNewCol("Nom du logiciel", false);
+        Colonne.addNewCol("Raccourci vers emplacement", false);
+        Colonne.addNewCol("Maintenance / Calibration", false);
+        Colonne.addNewCol("Doc de référence pour calibration", false);
+        Colonne.addNewCol("Raccourci vers photo", true);
+
+        System.out.println(Colonne.getTitles());
         
         Element elmt= new Element("test", "9555");
         Element elt2= new Element("test2", "9545");
@@ -70,7 +73,7 @@ public class Main{
     
         
         ArrayList<Integer> ordre = new ArrayList<Integer>();
-        for(int i=0; i<Outil.unserializeTitles().size(); i++){
+        for(int i=0; i<Colonne.unserializeCols().size(); i++){
             ordre.add(i);
         }
         Outil.serializeOrdre(ordre);
