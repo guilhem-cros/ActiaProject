@@ -94,12 +94,8 @@ public class ControllerFormOutils implements Initializable{
     @FXML
     private Button saveChangeButton;
 
-    @FXML
-    private Button cancelChangeButton;
-
     @FXML 
     private Label position;
-
 
     @FXML
     private TextField moyenGene;

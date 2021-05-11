@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="330.0" prefWidth="460.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerFormEnsembles">
+   <children>
+      <Label fx:id="titleLabel" alignment="CENTER_RIGHT" layoutX="15.0" layoutY="14.0" prefHeight="25.0" prefWidth="431.0" text="Label" textAlignment="RIGHT" wrapText="true">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="listSubElt" layoutX="90.0" layoutY="112.0" onAction="#selectSub" prefHeight="25.0" prefWidth="195.0" promptText="Sous-ensembles" visibleRowCount="4" />
+      <Button fx:id="removeSubButton" layoutX="133.0" layoutY="279.0" mnemonicParsing="false" onAction="#removeSubElt" text="Retirer le sous-ensemble">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="cancelButton" layoutX="14.0" layoutY="279.0" mnemonicParsing="false" onAction="#closeForm" text="Annuler">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Label layoutX="90.0" layoutY="89.0" text="Sélectionnez un sous-ensemble à retirer " />
+   </children>
+</Pane>

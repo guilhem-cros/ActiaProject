@@ -262,7 +262,7 @@ public class ControllerAffichageOutils implements Initializable{
     public void deleteColumn(){
         if(currentTitle == null || Outil.unserializeTitles().indexOf(currentTitle) < 4){
             Alert alert = new Alert(AlertType.WARNING);
-            Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une colonne à supprimer.", "Erreur", alert);
+            Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une colonne à supprimer (les 4 premières colonnes ne peuvent pa être supprimées).", "Erreur", alert);
         }
         else if(Controller.getCountOpenedForm()>0){
             Alert alert = new Alert(AlertType.WARNING);

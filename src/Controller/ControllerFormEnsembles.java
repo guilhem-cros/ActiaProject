@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -50,9 +51,6 @@ public class ControllerFormEnsembles implements Initializable{
     @FXML
     private Button cancelButton;
 
-    @FXML 
-    private Label title;
-
     @FXML
     private TextField searchField;
 
@@ -65,6 +63,12 @@ public class ControllerFormEnsembles implements Initializable{
     @FXML
     private Button addSubEButton;
 
+    @FXML
+    private ComboBox<String> listSubElt;
+
+    @FXML 
+    private Button removeSubButton;
+
     /**
      * Appelée à l'ouverture de la fenêtre
      * Instancie les variables met en place l'affichage de la page
@@ -74,14 +78,20 @@ public class ControllerFormEnsembles implements Initializable{
         selectedElement = Controller.getCurrentElement();
         if(Controller.getForm().equals("updateElementForm")){
             saveButton.setText("Enregistrer");
+            titleLabel.setText(selectedElement.toString());
             fillFields();
         }
         else if(Controller.getForm().equals("addElementForm")){
             saveButton.setText("Créer l'ensemble");
+            titleLabel.setText("Nouvel ensemble");
         }
         else if(Controller.getForm().equals("addSubForm")){
             search();
-            title.setText(selectedElement.toString());
+            titleLabel.setText(selectedElement.toString());
+        }
+        else if(Controller.getForm().equals("removeSubForm")){
+            setListSub();
+            titleLabel.setText(selectedElement.toString());
         }
     }
 
@@ -192,6 +202,17 @@ public class ControllerFormEnsembles implements Initializable{
             Alert alert = new Alert(AlertType.INFORMATION);
             Controller.setAlert("Modifications enregistrées.", "Lensemble a bien été retiré de la liste de sous-ensembles.", "Confirmation", alert);
         }
+    }
+
+    /**
+     * Appelée lors d'un changement de valeur sélectionné dans la ComboBox (liste)
+     * de sous-éléments du formulaire de suppression de sous-ensemble.
+     * Change la valeur du sous-enseble courrant sélectionné par la valeur courrante
+     * de la ComboBox.
+     */
+    @FXML
+    public void selectSub(ActionEvent action){
+        selectedSub = Controller.getElementByCode(Controller.sliceCode(listSubElt.getValue()));
     }
 
     /**
@@ -369,6 +390,24 @@ public class ControllerFormEnsembles implements Initializable{
         });
     }
 
+
+
+    /*Suppression de sous-ensembles*/
+
+    /**
+     * Met en place la ComboBox de sous-ensembles liée à l'élement sélectionné.
+     * Ajoute sous forme de chaine de caractères tous les sous-Elements de 
+     * l'élément sélectionné à la liste de choix de la ComboBox.
+     */
+    public void setListSub(){
+        ArrayList<Element> subElements = selectedElement.getListeSousElements();
+        Element.sortElements(subElements);
+        listSubElt.getItems().clear();
+        for(Element e: subElements){
+            String choice = e.toString();
+            listSubElt.getItems().add(choice);
+        }
+    }
 
 
     /*Fonctions diverses*/
