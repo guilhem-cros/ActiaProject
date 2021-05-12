@@ -305,7 +305,7 @@ public class Element implements Serializable{
 
     /**
      * Sélectionne tous les élèments enregistrés en fonction de la similarité d'une
-     * chaine de caractères avec le nom de l'élèment
+     * chaine de caractères avec le nom de l'élèment suivi du code de l'Element
      * @param value la chaine de caractère devant être similaire au nom
      * @return la liste d'élèments pour lequels le nom débute par la value en param
      */
@@ -313,7 +313,7 @@ public class Element implements Serializable{
         ArrayList<Element> selectedElements = new ArrayList<>();
         for(Element e :unserializeElement()){
             int length = value.length();
-            if(length<= e.getNom().length() && value.equals(e.getNom().substring(0, length))){
+            if(length<= e.invertToString().length() && value.equals(e.invertToString().substring(0, length))){
                 selectedElements.add(e);
             }
         }
@@ -323,7 +323,7 @@ public class Element implements Serializable{
 
     /**
      * Sélectionne tous les élèments enregistrés en fonction de la similarité d'une 
-     * chaine de caractères avec le code e l'élèment
+     * chaine de caractères avec le code de l'élèment suivi du nom de l'Element
      * @param code la chaine de caractère devant être similaire au code des élèments
      * @return la liste d'élèments pour lesquels le code débute par la valeur en param
      */
@@ -331,7 +331,7 @@ public class Element implements Serializable{
         ArrayList<Element> selectedElements = new ArrayList<>();
         for(Element e :unserializeElement()){
             int length = code.length();
-            if(length<= e.getCodeElt().length() && code.equals(e.getCodeElt().substring(0, length))){
+            if(length<= e.toString().length() && code.equals(e.toString().substring(0, length))){
                 selectedElements.add(e);
             }    
         }
@@ -360,7 +360,11 @@ public class Element implements Serializable{
     }
 
     public String toString(){
-        return this.codeElt + " " + this.nom + " ";
+        return this.codeElt + " " + this.nom;
+    }
+    
+    public String invertToString(){
+        return this.nom + " " + this.codeElt;
     }
 
 

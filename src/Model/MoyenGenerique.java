@@ -109,24 +109,6 @@ public class MoyenGenerique implements Serializable{
 	}
 
 	/**
-	 * Supprime un moyen générique du stockage s'il existe
-	 * @param name le nom du moyen générique à supprimer
-	 * @return la réussite ou l'échec de l'opération
-	 */
-	public static boolean removeMoyen(String name){
-		ArrayList<MoyenGenerique> allMoyens = unserializeMoyenGene(); //lecture du fichier de stockage
-		for(MoyenGenerique m: allMoyens){
-			if(m.nom.equals(name)){
-				allMoyens.remove(m); //si le nom correspond à un moyen
-				sortMoyenGen(allMoyens);
-				serializeMoyenGene(allMoyens); //réecriture du fichier avec suppression
-				return true; //la suppresion a été effectuée
-			}
-		}
-		return false;//la suppression n'a pas eut lieu
-	}
-
-	/**
 	 * vérifie la présence d'un moyen générique dans une liste de moyen 
 	 * générique à partir de son nom
 	 * @param list la liste à parcourrir 

@@ -105,9 +105,6 @@ public class Controller implements Initializable{
     @FXML
     private TextField selectedElement;
 
-    @FXML
-    private Label orLabel;
-
     @FXML 
     private TextField searchField;
 
@@ -171,6 +168,15 @@ public class Controller implements Initializable{
     @FXML
     private Button removeSubButton;
 
+    @FXML
+    private Label lab1;
+
+    @FXML
+    private Label lab2;
+
+    @FXML
+    private Label lab3;
+
 
 
     /**
@@ -201,10 +207,9 @@ public class Controller implements Initializable{
     public void selectProduct(ActionEvent action){
         setDisplayModifButtons(isAdmin);
         resetVisibility();
+        searchField.setText("");
         if(productList.getValue()!=null){
-            resetElt();
             selectedProd = getElementByCode(sliceCode(productList.getValue().toString()));
-            selectedElement.setVisible(true);
             elementButton.setVisible(true);
             createElementMenu();
             initUsableEvent();
@@ -803,7 +808,6 @@ public class Controller implements Initializable{
     public void selectElement(RadioMenuItem item){
         currentElement = getElementByCode(getCodeByItem(item));
         selectedElement.setText(item.getText());
-        searchField.setText(item.getText());
         /*On affiche les checkboxs uniquement si un choix est possible*/
         setCheckBoxes(currentElement);
     }
@@ -1000,6 +1004,7 @@ public class Controller implements Initializable{
         l.setOnMouseClicked((event) -> {
             resetElt();
             searchField.setText(l.getText());
+            selectedElement.setText(l.getText());
             if(Character.isDigit(l.getText().charAt(0))){
                 currentElement = getElementByCode(sliceCode(l.getText()));
             }
@@ -1007,7 +1012,6 @@ public class Controller implements Initializable{
                 currentElement = getElementByCode(sliceInvertCode(l.getText()));
             }
             resetVisibility();
-            selectedElement.setVisible(false);
             elementButton.setVisible(false);
             productList.setValue(null);
             setCheckBoxes(currentElement);
@@ -1046,27 +1050,18 @@ public class Controller implements Initializable{
      * @param visible true pour afficher, false pour masquer
      */
     public void setMenuDisplay(boolean visible){
-        /*Affichage du menu */
-        if(visible){
-            helpButton.setVisible(true);
-            configButton.setVisible(true);
-            productList.setVisible(true);
-            valideButton.setVisible(true);
-            logsButton.setVisible(true);
-            searchField.setVisible(true);
-            orLabel.setVisible(true);
-        }
-        /*Invisibilité du menu */
-        else{
-            helpButton.setVisible(false);
-            configButton.setVisible(false);
-            productList.setVisible(false);
-            elementButton.setVisible(false);
-            valideButton.setVisible(false);
-            logsButton.setVisible(false);
-            selectedElement.setVisible(false);
-            searchField.setVisible(false);
-            orLabel.setVisible(false);
+        helpButton.setVisible(visible);
+        configButton.setVisible(visible);
+        productList.setVisible(visible);
+        valideButton.setVisible(visible);
+        logsButton.setVisible(visible);
+        searchField.setVisible(visible);
+        lab1.setVisible(visible);
+        lab2.setVisible(visible);
+        lab3.setVisible(visible);
+        elementButton.setVisible(false);
+        selectedElement.setVisible(visible);
+        if(visible==false){
             productList.getSelectionModel().clearSelection(); //réinitialisation de la liste des produits
             resetElt();
             resetVisibility();
@@ -1147,7 +1142,6 @@ public class Controller implements Initializable{
         if(usableMenuItems!=null){
             uncheckItemsButThis(null);
         }
-        selectedElement.setVisible(false);
         elementButton.setVisible(false);
         productList.setValue(null);
     }
@@ -1274,5 +1268,4 @@ public class Controller implements Initializable{
     public static void setAdmin(boolean isAdmin) {
         Controller.isAdmin = isAdmin;
     }
-    
 }

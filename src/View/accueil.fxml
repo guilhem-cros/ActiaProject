@@ -16,7 +16,7 @@
 
 <Pane fx:id="paneId" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#clickOut" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Controller">
    <children>
-      <ComboBox fx:id="productList" layoutX="158.0" layoutY="183.0" onAction="#selectProduct" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="243.0" promptText="Sélectionnez un produit" visibleRowCount="3" />
+      <ComboBox fx:id="productList" layoutX="158.0" layoutY="183.0" onAction="#selectProduct" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="243.0" promptText="Produits" visibleRowCount="4" />
       <Button fx:id="valideButton" layoutX="490.0" layoutY="600.0" mnemonicParsing="false" onAction="#validate" prefWidth="100.0" text="Valider">
          <font>
             <Font size="16.0" />
@@ -42,12 +42,12 @@
             <Image url="@../media/logoActia.png" />
          </image>
       </ImageView>
-      <TextField fx:id="selectedElement" editable="false" layoutX="607.0" layoutY="323.0" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="300.0" promptText="Sélectionnez un ensemble" visible="false">
+      <TextField fx:id="selectedElement" editable="false" layoutX="607.0" layoutY="351.0" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="300.0" promptText="Sélectionnez un ensemble">
          <font>
             <Font size="16.0" />
          </font>
       </TextField>
-      <MenuButton fx:id="elementButton" contentDisplay="CENTER" layoutX="158.0" layoutY="323.0" maxHeight="50.0" mnemonicParsing="false" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="243.0" text="Ensemble / Sous-ensemble" visible="false">
+      <MenuButton fx:id="elementButton" contentDisplay="CENTER" layoutX="158.0" layoutY="351.0" maxHeight="50.0" mnemonicParsing="false" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="243.0" text="Sous-ensembles" visible="false">
          <font>
             <Font size="16.0" />
          </font>
@@ -142,11 +142,6 @@
             <VBox fx:id="autoCompleteBox" prefWidth="280.0" visible="false" />
          </content>
       </ScrollPane>
-      <Label fx:id="orLabel" layoutX="501.0" layoutY="190.0" text="ou">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
       <Button fx:id="addSubButton" layoutX="34.0" layoutY="585.0" mnemonicParsing="false" onAction="#addSubElt" prefHeight="36.0" prefWidth="230.0" text="Ajouter un sous-ensemble" visible="false">
          <font>
             <Font size="16.0" />
@@ -157,5 +152,20 @@
             <Font size="16.0" />
          </font>
       </Button>
+      <Label fx:id="lab1" layoutX="161.0" layoutY="158.0" text="Sélection par arborescence ">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="lab2" layoutX="607.0" layoutY="158.0" text="Sélection par barre de recherche">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="lab3" layoutX="607.0" layoutY="322.0" text="Produit sélectionné :">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
    </children>
 </Pane>
