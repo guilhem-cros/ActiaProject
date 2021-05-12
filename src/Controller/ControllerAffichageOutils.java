@@ -137,6 +137,8 @@ public class ControllerAffichageOutils implements Initializable{
         if(!Controller.getOpenedController().contains(this)){
             Controller.getOpenedController().add(this);
         }
+        BackgroundFill bf = new BackgroundFill(Color.rgb(47, 48, 54), CornerRadii.EMPTY , Insets.EMPTY);
+        pane.setBackground(new Background(bf));
         moyensGene = MoyenGenerique.unserializeMoyenGene();
         paramTitles = Outil.getParamTitle();
         setParamOfElt();

@@ -27,12 +27,12 @@
             <Font size="16.0" />
          </font>
       </Button>
-      <CheckBox fx:id="autoBox" layoutX="158.0" layoutY="477.0" mnemonicParsing="false" onAction="#setAuto" text="Auto" visible="false">
+      <CheckBox fx:id="autoBox" layoutX="158.0" layoutY="477.0" mnemonicParsing="false" onAction="#setAuto" text="Auto" textFill="WHITE" visible="false">
          <font>
             <Font size="16.0" />
          </font>
       </CheckBox>
-      <CheckBox fx:id="manuelBox" layoutX="158.0" layoutY="514.0" mnemonicParsing="false" onAction="#setManuel" text="Manuel" visible="false">
+      <CheckBox fx:id="manuelBox" layoutX="158.0" layoutY="514.0" mnemonicParsing="false" onAction="#setManuel" text="Manuel" textFill="WHITE" visible="false">
          <font>
             <Font size="16.0" />
          </font>
@@ -67,12 +67,12 @@
             <Font size="16.0" />
          </font>
       </TextField>
-      <Label fx:id="id" layoutX="258.0" layoutY="292.0" text="Identifiant : " visible="false">
+      <Label fx:id="id" layoutX="258.0" layoutY="292.0" text="Identifiant : " textFill="WHITE" visible="false">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <Label fx:id="mdp" layoutX="258.0" layoutY="357.0" text="Mot de passe : " visible="false">
+      <Label fx:id="mdp" layoutX="258.0" layoutY="357.0" text="Mot de passe : " textFill="WHITE" visible="false">
          <font>
             <Font size="16.0" />
          </font>
@@ -87,7 +87,7 @@
             <Font size="16.0" />
          </font>
       </Button>
-      <Label fx:id="infoConnect" layoutX="210.0" layoutY="186.0" maxWidth="660.0" prefWidth="660.0" text="Entrez les identifiants de connexion afin de pouvoir configurer le logiciel : " textAlignment="CENTER" visible="false" wrapText="true">
+      <Label fx:id="infoConnect" layoutX="210.0" layoutY="186.0" maxWidth="660.0" prefWidth="660.0" text="Entrez les identifiants de connexion afin de pouvoir configurer le logiciel : " textAlignment="CENTER" textFill="WHITE" visible="false" wrapText="true">
          <font>
             <Font size="20.0" />
          </font>
@@ -97,7 +97,7 @@
             <Font size="16.0" />
          </font>
       </PasswordField>
-      <Label fx:id="confirmMdp" layoutX="258.0" layoutY="421.0" text="Mot de passe : " visible="false">
+      <Label fx:id="confirmMdp" layoutX="258.0" layoutY="421.0" text="Mot de passe : " textFill="WHITE" visible="false">
          <font>
             <Font size="16.0" />
          </font>
@@ -152,17 +152,17 @@
             <Font size="16.0" />
          </font>
       </Button>
-      <Label fx:id="lab1" layoutX="161.0" layoutY="158.0" text="Sélection par arborescence ">
+      <Label fx:id="lab1" layoutX="161.0" layoutY="158.0" text="Sélection par arborescence " textFill="WHITE">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <Label fx:id="lab2" layoutX="607.0" layoutY="158.0" text="Sélection par barre de recherche">
+      <Label fx:id="lab2" layoutX="607.0" layoutY="158.0" text="Sélection par barre de recherche" textFill="WHITE">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <Label fx:id="lab3" layoutX="607.0" layoutY="322.0" text="Produit sélectionné :">
+      <Label fx:id="lab3" layoutX="607.0" layoutY="322.0" text="Produit sélectionné :" textFill="WHITE">
          <font>
             <Font size="16.0" />
          </font>

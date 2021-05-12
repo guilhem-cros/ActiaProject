@@ -313,7 +313,7 @@ public class Element implements Serializable{
         ArrayList<Element> selectedElements = new ArrayList<>();
         for(Element e :unserializeElement()){
             int length = value.length();
-            if(length<= e.invertToString().length() && value.equals(e.invertToString().substring(0, length))){
+            if(length<= e.invertToString().length() && value.equalsIgnoreCase(e.invertToString().substring(0, length))){
                 selectedElements.add(e);
             }
         }
@@ -331,7 +331,7 @@ public class Element implements Serializable{
         ArrayList<Element> selectedElements = new ArrayList<>();
         for(Element e :unserializeElement()){
             int length = code.length();
-            if(length<= e.toString().length() && code.equals(e.toString().substring(0, length))){
+            if(length<= e.toString().length() && code.equalsIgnoreCase(e.toString().substring(0, length))){
                 selectedElements.add(e);
             }    
         }

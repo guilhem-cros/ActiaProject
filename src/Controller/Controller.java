@@ -185,6 +185,8 @@ public class Controller implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        BackgroundFill bf = new BackgroundFill(Color.rgb(47, 48, 54), CornerRadii.EMPTY , Insets.EMPTY);
+        paneId.setBackground(new Background(bf));
         setSearch();
         productList.getItems().clear();
         productList.getItems().addAll(createComboBox().getItems());
