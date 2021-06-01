@@ -1,5 +1,6 @@
 package Model;
 
+import Controller.AppLaunch;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -42,11 +43,11 @@ public class MoyenGenerique implements Serializable{
 
 	/**
 	 * Stocke les noms des moyens génériques dans un fichier .ser
-	 * @param allElements ArrayList de l'ensemble des objets MoyenGenerique
+	 * @param moyensGene ArrayList de l'ensemble des objets MoyenGenerique
 	 */
 	public static void serializeMoyenGene(ArrayList<MoyenGenerique> moyensGene){
         try {
-			FileOutputStream fichier = new FileOutputStream("data/moyensGeneriques.ser");
+			FileOutputStream fichier = new FileOutputStream(AppLaunch.getCurrentPath() + "data/moyensGeneriques.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fichier);
 			for(MoyenGenerique moyen: moyensGene){
 				oos.writeUTF(moyen.nom);//écriture du nom dans le fichier
@@ -67,7 +68,7 @@ public class MoyenGenerique implements Serializable{
 		ArrayList<MoyenGenerique> allMoyensGene = new ArrayList<MoyenGenerique>();
         try (ObjectInputStream ois = 
 				new ObjectInputStream(
-						new FileInputStream("data/moyensGeneriques.ser"))) {
+						new FileInputStream(AppLaunch.getCurrentPath() + "data/moyensGeneriques.ser"))) {
 			/* Lecture du fichier*/
 			while (true) {
 				String currentName = ois.readUTF();//lecture du nom dans le fichier

@@ -1,5 +1,7 @@
 package Model;
 
+import Controller.AppLaunch;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,7 +58,7 @@ public class Config implements Serializable{
 	 */
     public static void serializeConfig(String passW, String log){
         try {
-			FileOutputStream fichier = new FileOutputStream("data/config.ser");
+			FileOutputStream fichier = new FileOutputStream(AppLaunch.getCurrentPath() + "data/config.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fichier);
             //Modification de la config actuelle
             Config.setLogin(log);
@@ -77,7 +79,7 @@ public class Config implements Serializable{
 	 */
     public static void unserializeConfig(){
         try (ObjectInputStream ois = 
-			new ObjectInputStream(new FileInputStream("data/config.ser"))) {
+			new ObjectInputStream(new FileInputStream(AppLaunch.getCurrentPath() + "data/config.ser"))) {
                 /*Lecture de l'ensemble du fichier*/
                 while (true) {
                     /*Modification de la confic actuelle*/

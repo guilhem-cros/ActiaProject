@@ -264,12 +264,12 @@ public class ControllerFormOutils implements Initializable{
      */
     @FXML
     public void updateMoyenGene(ActionEvent action){
-        if(moyenGene.getText().length()<4){
-            Alert alert = new Alert(AlertType.WARNING);
-            Controller.setAlert("Erreur de saisi", "Veuillez saisir au moins 4 caractères", "Erreur", alert);
-        }
         ArrayList<MoyenGenerique> allMoyen = MoyenGenerique.unserializeMoyenGene();
-        if(MoyenGenerique.isAlrdyInList(allMoyen, moyenGene.getText()) && !moyenGene.getText().equals(selectedMoyen)){
+        if(moyenGene.getText().length()<2){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur de saisi", "Veuillez saisir au moins 2 caractères", "Erreur", alert);
+        }
+        else if(MoyenGenerique.isAlrdyInList(allMoyen, moyenGene.getText()) && !moyenGene.getText().equals(selectedMoyen)){
             Alert alert = new Alert(AlertType.WARNING);
             Controller.setAlert("Erreur : conflit de variables", "La modification saisie correspond à un moyen générique déjà existant", "Erreur", alert);
         }
@@ -453,10 +453,12 @@ public class ControllerFormOutils implements Initializable{
                 if(i<4){
                     colPosition.setVisible(false);
                     position.setVisible(false);
+                    colTitle.setEditable(false);
                 }
                 else{
                     colPosition.setVisible(true);
                     position.setVisible(true);
+                    colTitle.setEditable(true);
                 }
             }
         }

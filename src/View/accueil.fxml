@@ -14,9 +14,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="paneId" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#clickOut" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Controller">
+<Pane fx:id="paneId" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#clickOut" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.Controller">
    <children>
-      <ComboBox fx:id="productList" layoutX="158.0" layoutY="183.0" onAction="#selectProduct" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="243.0" promptText="Produits" visibleRowCount="4" />
+      <ComboBox fx:id="productList" layoutX="158.0" layoutY="198.0" onAction="#selectProduct" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="260.0" promptText="Sélectionner un produit" visibleRowCount="4" />
       <Button fx:id="valideButton" layoutX="490.0" layoutY="600.0" mnemonicParsing="false" onAction="#validate" prefWidth="100.0" text="Valider">
          <font>
             <Font size="16.0" />
@@ -37,17 +37,17 @@
             <Font size="16.0" />
          </font>
       </CheckBox>
-      <ImageView fx:id="actiaLogo" fitHeight="100.0" fitWidth="380.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="actiaLogo" fitHeight="84.0" fitWidth="350.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../media/logoActia.png" />
          </image>
       </ImageView>
-      <TextField fx:id="selectedElement" editable="false" layoutX="607.0" layoutY="351.0" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="300.0" promptText="Sélectionnez un ensemble">
+      <TextField fx:id="selectedElement" editable="false" layoutX="607.0" layoutY="364.0" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="300.0" promptText="Sélectionnez un ensemble">
          <font>
             <Font size="16.0" />
          </font>
       </TextField>
-      <MenuButton fx:id="elementButton" contentDisplay="CENTER" layoutX="158.0" layoutY="351.0" maxHeight="50.0" mnemonicParsing="false" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="243.0" text="Sous-ensembles" visible="false">
+      <MenuButton fx:id="elementButton" contentDisplay="CENTER" layoutX="158.0" layoutY="364.0" maxHeight="50.0" mnemonicParsing="false" onMouseClicked="#clickOut" prefHeight="36.0" prefWidth="260.0" text="Sous-ensembles" visible="false">
          <font>
             <Font size="16.0" />
          </font>
@@ -117,27 +117,27 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Button fx:id="addEltButton" layoutX="867.0" layoutY="530.0" mnemonicParsing="false" onAction="#addEnsemble" prefWidth="190.0" text="Ajouter un ensemble" visible="false">
+      <Button fx:id="addEltButton" layoutX="867.0" layoutY="530.0" mnemonicParsing="false" onAction="#addEnsemble" prefWidth="190.0" text="Ajouter un produit" visible="false">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="deleteEltButton" layoutX="867.0" layoutY="640.0" mnemonicParsing="false" onAction="#deleteEnsemble" prefWidth="190.0" text="Supprimer l'ensemble" visible="false">
+      <Button fx:id="deleteEltButton" layoutX="867.0" layoutY="640.0" mnemonicParsing="false" onAction="#deleteEnsemble" prefWidth="190.0" text="Supprimer le produit" visible="false">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="updateEltButton" layoutX="867.0" layoutY="585.0" mnemonicParsing="false" onAction="#updateEnsemble" prefWidth="190.0" text="Modifier l'ensemble" visible="false">
+      <Button fx:id="updateEltButton" layoutX="867.0" layoutY="585.0" mnemonicParsing="false" onAction="#updateEnsemble" prefWidth="190.0" text="Modifier le produit" visible="false">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <TextField fx:id="searchField" layoutX="607.0" layoutY="184.0" onMouseClicked="#clicOnSearch" prefHeight="25.0" prefWidth="300.0" promptText="Recherchez directement un ensemble">
+      <TextField fx:id="searchField" layoutX="607.0" layoutY="198.0" onMouseClicked="#clicOnSearch" prefHeight="25.0" prefWidth="300.0" promptText="Recherchez directement un ensemble">
          <font>
             <Font size="16.0" />
          </font>
       </TextField>
-      <ScrollPane fx:id="searchResultsPane" layoutX="607.0" layoutY="216.0" maxHeight="104.0" maxWidth="400.0" prefHeight="104.0" prefWidth="300.0" visible="false">
+      <ScrollPane fx:id="searchResultsPane" layoutX="607.0" layoutY="234.0" maxHeight="104.0" maxWidth="400.0" prefHeight="104.0" prefWidth="300.0" visible="false">
          <content>
             <VBox fx:id="autoCompleteBox" prefWidth="280.0" visible="false" />
          </content>
@@ -147,24 +147,29 @@
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="removeSubButton" layoutX="34.0" layoutY="635.0" mnemonicParsing="false" onAction="#removeSubElt" prefHeight="36.0" prefWidth="230.0" text="Supprimer un sous-ensemble" visible="false">
+      <Button fx:id="removeSubButton" layoutX="34.0" layoutY="635.0" mnemonicParsing="false" onAction="#removeSubElt" prefHeight="36.0" prefWidth="230.0" text="Retirer un sous-ensemble" visible="false">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Label fx:id="lab1" layoutX="161.0" layoutY="158.0" text="Sélection par arborescence " textFill="WHITE">
+      <Label fx:id="lab1" layoutX="158.0" layoutY="174.0" text="Sélection par arborescence " textFill="WHITE">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <Label fx:id="lab2" layoutX="607.0" layoutY="158.0" text="Sélection par barre de recherche" textFill="WHITE">
+      <Label fx:id="lab2" layoutX="607.0" layoutY="174.0" text="Sélection par barre de recherche" textFill="WHITE">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <Label fx:id="lab3" layoutX="607.0" layoutY="322.0" text="Produit sélectionné :" textFill="WHITE">
+      <Label fx:id="lab3" layoutX="607.0" layoutY="339.0" text="Produit sélectionné :" textFill="WHITE">
          <font>
             <Font size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="17.0" layoutY="87.0" text="Constitution de bancs de tests" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="40.0" />
          </font>
       </Label>
    </children>

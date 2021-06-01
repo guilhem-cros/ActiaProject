@@ -1,5 +1,6 @@
 package Model;
 
+import Controller.AppLaunch;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -162,49 +163,9 @@ public class Logs implements Serializable{
         return listNb;
     }
 
-    
-
-   /*Sérialisation des objets Logs*/
-
     @Override
     public String toString() {
         return "Logs [login=" + login + ", paragraphe=" + paragraphe + ", password=" + password + "]";
     }
 
-
-
-    /**
-	 * Sérialise des objets Logs afin qu'ils puissent être sérialisés en même temps 
-	 * que l'objets Element auquels ils appartiennent
-	 */
-	public void serializeLogs(){
-        try {
-			FileOutputStream fichier = new FileOutputStream("data/logs.ser");
-			ObjectOutputStream oos = new ObjectOutputStream(fichier);
-			oos.writeObject(this);
-            oos.close();
-		} catch (IOException e) {
-			System.out.println(e.toString());
-		}
-	
-    }
-
-	/**
-	 * Lis des objets Logs sérialisés afin qu'ils puissent être lu et traduits en même temps 
-	 * que l'objets Element auquels ils apparatiennent
-	 */
-	public void unserializeLogs(){
-        try (ObjectInputStream ois = 
-				new ObjectInputStream(
-						new FileInputStream("data/logs.ser"))) {
-			/* Lecture du fichier*/
-			while (true) {
-				ois.readObject();
-			}
-		} catch (IOException e) {
-			//Exception lorsqu'on atteint la fin du fichier
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}   
-    }
 }

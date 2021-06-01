@@ -12,19 +12,19 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="950.0" prefWidth="1850.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerAffichageOutils">
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="950.0" prefWidth="1850.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerAffichageOutils">
    <children>
       <ImageView fx:id="logoActia" fitHeight="147.0" fitWidth="376.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../media/logoActia.png" />
          </image>
       </ImageView>
-      <Label fx:id="emptyLabel" alignment="CENTER" layoutX="700.0" layoutY="400.0" maxHeight="100.0" maxWidth="600.0" prefHeight="100.0" prefWidth="450.0" text="Label" textAlignment="CENTER" visible="false" wrapText="true">
+      <Label fx:id="emptyLabel" alignment="CENTER" layoutX="700.0" layoutY="400.0" maxHeight="100.0" maxWidth="600.0" prefHeight="100.0" prefWidth="450.0" text="Label" textFill="white" textAlignment="CENTER" visible="false" wrapText="true">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="title" alignment="CENTER_RIGHT" layoutX="811.0" layoutY="33.0" prefHeight="45.0" prefWidth="1019.0" text="Nom Ensemble" textAlignment="RIGHT">
+      <Label fx:id="title" alignment="CENTER_RIGHT" layoutX="811.0" layoutY="33.0" prefHeight="45.0" prefWidth="1019.0" text="Nom Ensemble" textFill="white" textAlignment="RIGHT">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>
@@ -34,10 +34,10 @@
          <content>
             <GridPane fx:id="grid">
               <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="160.0" minWidth="10.0" prefWidth="160.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
               </columnConstraints>
               <rowConstraints>
-                <RowConstraints maxHeight="100.0" minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="115.0" minHeight="10.0" prefHeight="115.0" vgrow="SOMETIMES" />
               </rowConstraints>
             </GridPane>
          </content>

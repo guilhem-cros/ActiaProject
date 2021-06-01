@@ -1,5 +1,6 @@
 package Model;
 
+import Controller.AppLaunch;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.io.Serializable;
 
 
-public class Element implements Serializable{
+public class Element implements Serializable {
 
 
     /*Attributs*/
@@ -23,6 +24,9 @@ public class Element implements Serializable{
     /*Le code correspondant à l'élément*/
     private String codeElt;
 
+    /*True si l'element est un produit, false si c'est un sous-ensemble*/
+    private boolean isProduct;
+
     /*La liste des outils enregistrés de l'élément*/
     private ArrayList<Outil> listeOutils;
 
@@ -31,13 +35,13 @@ public class Element implements Serializable{
 
     /*La liste des logs associées à l'éléments*/
     private ArrayList<Logs> listLogsElement;
-    
 
 
     /*Constructeurs*/
-    public Element(String nom, String codeElt){
-        this.nom=nom;
-        this.codeElt=codeElt;
+    public Element(String nom, String codeElt, boolean isProduct) {
+        this.nom = nom;
+        this.codeElt = codeElt;
+        this.isProduct = isProduct;
         listeOutils = new ArrayList<Outil>();
         listeSousElements = new ArrayList<Element>();
         listLogsElement = new ArrayList<Logs>();
@@ -96,29 +100,29 @@ public class Element implements Serializable{
 
     /*modifications sur la liste d'outils*/
 
-    public void addOutil(Outil t){
-        listeOutils.add(t);  
+    public void addOutil(Outil t) {
+        listeOutils.add(t);
     }
 
-    public void removeOutil(Outil t){
+    public void removeOutil(Outil t) {
         listeOutils.remove(t);
     }
 
     /**
      * Tri des outils de test en fct de leur mode (auto/manuel)
+     *
      * @param auto vrai pour select les outils auto, faux pour manuel
      * @return la liste des outils vérifiant auto
      */
-    public ArrayList<Outil> getOutilsByMode(boolean auto){
+    public ArrayList<Outil> getOutilsByMode(boolean auto) {
         ArrayList<Outil> sortedList = new ArrayList<Outil>();
-        for(Outil t: this.listeOutils){
-            if(auto){
-                if(t.isUtilisationAuto()){
+        for (Outil t : this.listeOutils) {
+            if (auto) {
+                if (t.isUtilisationAuto()) {
                     sortedList.add(t);
                 }
-            }
-            else{
-                if(!t.isUtilisationAuto()){
+            } else {
+                if (!t.isUtilisationAuto()) {
                     sortedList.add(t);
                 }
             }
@@ -129,58 +133,58 @@ public class Element implements Serializable{
     /**
      * @return vrai si l'element possède un/des outil(s) de mode auto
      */
-    public Boolean hasAutoOutils(){
+    public Boolean hasAutoOutils() {
         return !this.getOutilsByMode(true).isEmpty();
     }
 
     /**
      * @return vrai si l'element possède un/des outil(s) de mode manuel
      */
-    public Boolean hasManuelOutils(){
+    public Boolean hasManuelOutils() {
         return !this.getOutilsByMode(false).isEmpty();
     }
 
     /**
      * @return vrai si l'element ne possède aucun outil
      */
-    public Boolean hasNoOutil(){
+    public Boolean hasNoOutil() {
         return this.getOutilsByMode(true).isEmpty() && this.getOutilsByMode(false).isEmpty();
     }
 
 
-    
+
     /*modifications sur la liste de sous élements*/
 
     /**
-	 * Ajoute un élément à la liste de sous éléments de l'objet visé 
+     * Ajoute un élément à la liste de sous éléments de l'objet visé
      * si celui-ci n'y est pas déjà présent
-	 * @param e l'élément qu'on souhaite ajouter à la liste
-	 */
-    public void addElement(Element e){
-        if(listeSousElements.size()>0){
-            for(int i=0; i<listeSousElements.size();i++){
-                if(listeSousElements.get(i).codeElt.equals(e.codeElt)){ //on évite de dupliquer la présence d'un élément
+     *
+     * @param e l'élément qu'on souhaite ajouter à la liste
+     */
+    public void addElement(Element e) {
+        if (listeSousElements.size() > 0) {
+            for (int i = 0; i < listeSousElements.size(); i++) {
+                if (listeSousElements.get(i).codeElt.equals(e.codeElt)) { //on évite de dupliquer la présence d'un élément
                     System.out.println("Code element déjà enregistré");
-                }
-                else{
+                } else {
                     listeSousElements.add(e);
-                    i=listeSousElements.size();
-                }   
+                    i = listeSousElements.size();
+                }
             }
-        }
-        else{
+        } else {
             listeSousElements.add(e);
         }
     }
 
     /**
      * Supprime un Element de la liste de sous Element de this si celui-ci y est présent
+     *
      * @param e l'element supprimé de la liste
      */
-    public void removeElement(Element e){
+    public void removeElement(Element e) {
         ArrayList<Element> aux = this.listeSousElements;
-        for(int i=0; i<aux.size(); i++){
-            if(aux.get(i).codeElt.equals(e.codeElt)){
+        for (int i = 0; i < aux.size(); i++) {
+            if (aux.get(i).codeElt.equals(e.codeElt)) {
                 aux.remove(i);
             }
         }
@@ -189,10 +193,11 @@ public class Element implements Serializable{
 
     /**
      * Remplace un Element de la liste de sous-éléments pas un autre et tri la liste
+     *
      * @param oldElt l'ancien élément supprimé de la liste
      * @param newElt le nouvel élément ajouté à la liste
      */
-    public void updateElement(Element oldElt, Element newElt){
+    public void updateElement(Element oldElt, Element newElt) {
         int i = listeSousElements.indexOf(oldElt);
         this.listeSousElements.set(i, newElt);
         sortElements(listeSousElements);
@@ -200,12 +205,13 @@ public class Element implements Serializable{
 
     /**
      * Vérifie si code Element correspond à un sous-élément de this en fonction de son code
+     *
      * @param code une chaine de caractère correspondant à un code d'Element
      * @return true si le code correspond à un sous-élément, false sinon
      */
-    public boolean isASubElt(String code){
-        for(Element elt: listeSousElements){
-            if(elt.getCodeElt().equals(code)){
+    public boolean isASubElt(String code) {
+        for (Element elt : listeSousElements) {
+            if (elt.getCodeElt().equals(code)) {
                 return true;
             }
         }
@@ -214,14 +220,15 @@ public class Element implements Serializable{
 
     /**
      * Récupère tous les parents, grands-parents, etc, de l'Element this.
+     *
      * @param allElements la liste de tous les élèments connus
      * @return la liste de tous les Element "parent" de this.
      */
-    public ArrayList<Element> getAllParents(ArrayList<Element> allElements){
+    public ArrayList<Element> getAllParents(ArrayList<Element> allElements) {
         ArrayList<Element> allParents = new ArrayList<>();
-        for(Element e: allElements){
-            for(Element child: e.listeSousElements){
-                if(child.codeElt.equals(this.codeElt)){
+        for (Element e : allElements) {
+            for (Element child : e.listeSousElements) {
+                if (child.codeElt.equals(this.codeElt)) {
                     allParents.add(e);
                     /*appel récursif afin de remonter toute l'arborescence de l'Element*/
                     allParents.addAll(e.getAllParents(allElements));
@@ -230,16 +237,17 @@ public class Element implements Serializable{
         }
         return allParents;
     }
-    
+
     /**
      * Vérifie si this est parent d'un autre Element passé en paramètre.
+     *
      * @param allElements la liste de tous les Element
-     * @param elt l'element pour lequel on vérifie si this est un parent
+     * @param elt         l'element pour lequel on vérifie si this est un parent
      * @return true si this est parent de l'Element, false sinon
      */
-    public boolean isParent(ArrayList<Element> allElements, Element elt){
-        for(Element e: elt.getAllParents(allElements)){
-            if(e.codeElt.equals(this.codeElt)){
+    public boolean isParent(ArrayList<Element> allElements, Element elt) {
+        for (Element e : elt.getAllParents(allElements)) {
+            if (e.codeElt.equals(this.codeElt)) {
                 return true;
             }
         }
@@ -250,15 +258,15 @@ public class Element implements Serializable{
 
     /*Modifications sur la liste de logs de l'élément*/
 
-    public void addLogs(Logs l){
+    public void addLogs(Logs l) {
         listLogsElement.add(l);
     }
 
-    public void removeLogs(Logs l){
+    public void removeLogs(Logs l) {
         listLogsElement.remove(l);
     }
 
-    public boolean hasLogs(){
+    public boolean hasLogs() {
         return !listLogsElement.isEmpty();
     }
 
@@ -268,29 +276,31 @@ public class Element implements Serializable{
 
     /**
      * Fonction triant une liste d'éléments dans l'ordre décroisant de leur code
+     *
      * @param L la liste d'éléments à trier
      */
-    public static void sortElements(ArrayList<Element> L){
-        for(int i=0; i<L.size()-1; i++){
-            for(int j=i+1;j<L.size(); j++){
-                if(Integer.parseInt(L.get(i).getCodeElt()) < Integer.parseInt(L.get(j).getCodeElt())){
+    public static void sortElements(ArrayList<Element> L) {
+        for (int i = 0; i < L.size() - 1; i++) {
+            for (int j = i + 1; j < L.size(); j++) {
+                if (Integer.parseInt(L.get(i).getCodeElt()) < Integer.parseInt(L.get(j).getCodeElt())) {
                     Element aux = L.get(i);
                     L.set(i, L.get(j));
                     L.set(j, aux);
                 }
             }
         }
-        
+
     }
 
     /**
      * Trie une liste d'élèment dans l'ordre alphabétique de leur nom
+     *
      * @param L la liste d'éléments à trier
      */
-    public static void sortEltByName(ArrayList<Element> L){
-        for(int i=0; i<L.size()-1; i++){
-            for(int j=i+1;j<L.size(); j++){
-                if(L.get(i).getNom().compareTo(L.get(j).getNom())>0){
+    public static void sortEltByName(ArrayList<Element> L) {
+        for (int i = 0; i < L.size() - 1; i++) {
+            for (int j = i + 1; j < L.size(); j++) {
+                if (L.get(i).getNom().compareTo(L.get(j).getNom()) > 0) {
                     Element aux = L.get(i);
                     L.set(i, L.get(j));
                     L.set(j, aux);
@@ -306,14 +316,15 @@ public class Element implements Serializable{
     /**
      * Sélectionne tous les élèments enregistrés en fonction de la similarité d'une
      * chaine de caractères avec le nom de l'élèment suivi du code de l'Element
+     *
      * @param value la chaine de caractère devant être similaire au nom
      * @return la liste d'élèments pour lequels le nom débute par la value en param
      */
-    public static ArrayList<Element> selectByName(String value){
+    public static ArrayList<Element> selectByName(String value) {
         ArrayList<Element> selectedElements = new ArrayList<>();
-        for(Element e :unserializeElement()){
+        for (Element e : unserializeElement()) {
             int length = value.length();
-            if(length<= e.invertToString().length() && value.equalsIgnoreCase(e.invertToString().substring(0, length))){
+            if (length <= e.invertToString().length() && value.equalsIgnoreCase(e.invertToString().substring(0, length))) {
                 selectedElements.add(e);
             }
         }
@@ -322,48 +333,43 @@ public class Element implements Serializable{
     }
 
     /**
-     * Sélectionne tous les élèments enregistrés en fonction de la similarité d'une 
+     * Sélectionne tous les élèments enregistrés en fonction de la similarité d'une
      * chaine de caractères avec le code de l'élèment suivi du nom de l'Element
+     *
      * @param code la chaine de caractère devant être similaire au code des élèments
      * @return la liste d'élèments pour lesquels le code débute par la valeur en param
      */
-    public static ArrayList<Element> selectByCode(String code){
+    public static ArrayList<Element> selectByCode(String code) {
         ArrayList<Element> selectedElements = new ArrayList<>();
-        for(Element e :unserializeElement()){
+        for (Element e : unserializeElement()) {
             int length = code.length();
-            if(length<= e.toString().length() && code.equalsIgnoreCase(e.toString().substring(0, length))){
+            if (length <= e.toString().length() && code.equalsIgnoreCase(e.toString().substring(0, length))) {
                 selectedElements.add(e);
-            }    
+            }
         }
         sortElements(selectedElements);
         return selectedElements;
     }
 
     /**
-     * @return vrai si l'élément est un "produit" ~ codeElt commence par 95
+     * @return vrai si l'élément est un "produit"
      */
-    public boolean isProduit(){
-        String chars = this.codeElt;
-        char char1 = chars.charAt(0);
-        char char2 = chars.charAt(1);
-        if(char1 == '9' && char2 =='5'){
-            return true;
-        }
-        return false;
+    public boolean isProduit() {
+        return isProduct;
     }
 
     /**
      * @return vrai si l'élément ne possède aucun sous élément
-     * */
-    public boolean hasNoSubElmt(){
+     */
+    public boolean hasNoSubElmt() {
         return this.listeSousElements.isEmpty();
     }
 
-    public String toString(){
+    public String toString() {
         return this.codeElt + " " + this.nom;
     }
-    
-    public String invertToString(){
+
+    public String invertToString() {
         return this.nom + " " + this.codeElt;
     }
 
@@ -372,42 +378,43 @@ public class Element implements Serializable{
     /*Sérialisation des objets Element*/
 
     /**
-	 * Stocke les éléments dans un fichier .ser
-	 * @param allElements ArrayList de l'ensemble des éléments
-	 */
-    public static void serializeAllElements(ArrayList<Element> allElements){
+     * Stocke les éléments dans un fichier .ser
+     *
+     * @param allElements ArrayList de l'ensemble des éléments
+     */
+    public static void serializeAllElements(ArrayList<Element> allElements) {
         try {
-			FileOutputStream fichier = new FileOutputStream("data/element.ser");
-			ObjectOutputStream oos = new ObjectOutputStream(fichier);
+            FileOutputStream fichier = new FileOutputStream(AppLaunch.getCurrentPath() + "data/element.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fichier);
             //Tous les éléments de la liste sont sérializés dans le fichier précédent
-            for(Element elt: allElements){
-                oos.writeObject(elt); //séralise tous les attributs de l'élément
+            for (Element elt : allElements) {
+                oos.writeObject(elt); //sérialise tous les attributs de l'élément
             }
             oos.close();
-		} catch (IOException e) {
-			System.out.println(e.toString());
-		}
-	
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
     }
 
     /**
-	 * Récupère les ensembles stockés dans le fichier element.ser
-	 * @return arraylist contentant l'ensemble des éléments lu dans le fichier
-	 */
-    public static ArrayList<Element> unserializeElement(){
+     * Récupère les ensembles stockés dans le fichier element.ser
+     *
+     * @return arraylist contentant l'ensemble des éléments lu dans le fichier
+     */
+    public static ArrayList<Element> unserializeElement() {
         ArrayList<Element> list = new ArrayList<Element>();
-        try (ObjectInputStream ois = 
-				new ObjectInputStream(
-						new FileInputStream("data/element.ser"))) {
-			// Lecture complète du fichier
-			while (true) {
-				list.add((Element) ois.readObject());
-			}
-		} catch (IOException e) {
-			//Exception lorsqu'on atteint la fin du fichier
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-        return list; 
+        try (ObjectInputStream ois =
+                     new ObjectInputStream(
+                             new FileInputStream(AppLaunch.getCurrentPath() + "data/element.ser"))) {
+            // Lecture complète du fichier
+            while (true) {
+                list.add((Element) ois.readObject());
+            }
+        } catch (IOException e) {
+            //Exception lorsqu'on atteint la fin du fichier
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

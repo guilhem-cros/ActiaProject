@@ -1,5 +1,6 @@
 package Controller;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -10,7 +11,6 @@ import Model.Colonne;
 import Model.Element;
 import Model.MoyenGenerique;
 import Model.Outil;
-import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -73,9 +73,6 @@ public class ControllerAffichageOutils implements Initializable{
 
     /*Le titre de colonne courrament sélectionné*/
     private String currentTitle;
-
-    /*Objet nécessaire à l'ouverture de fichiers*/
-    private HostServices hostServices;
 
     
     /*Initialisation des objets XML utilisés*/
@@ -183,7 +180,7 @@ public class ControllerAffichageOutils implements Initializable{
             }
             else{
                 Controller.setForm("modifOutilForm");
-                setStage("../View/formModifOutil.fxml", "Modification de ligne");
+                setStage("View/formModifOutil.fxml", "Modification de ligne");
             }
         }
     }
@@ -201,7 +198,7 @@ public class ControllerAffichageOutils implements Initializable{
         }
         else{
             Controller.setForm("addOutilForm");
-            setStage("../View/formModifOutil.fxml", "Ajout de ligne");
+            setStage("View/formModifOutil.fxml", "Ajout de ligne");
         }
 
     }
@@ -263,7 +260,7 @@ public class ControllerAffichageOutils implements Initializable{
         }
         else{
             Controller.setForm("newColForm");
-            setStage("../View/ajoutCol.fxml", "Ajout colonne");
+            setStage("View/ajoutCol.fxml", "Ajout colonne");
         }
     }
 
@@ -285,7 +282,7 @@ public class ControllerAffichageOutils implements Initializable{
             }
             else{
                 Controller.setForm("modifColForm");
-                setStage("../View/formModifCol.fxml", "Modification de colonne");
+                setStage("View/formModifCol.fxml", "Modification de colonne");
             }
         }
     }
@@ -309,7 +306,7 @@ public class ControllerAffichageOutils implements Initializable{
             Controller.setAlert("Conflit possible", "Veuillez fermez les formulaires ouverts avant de supprimer la colonne afin d'éviter les conflits.", "Erreur", alert);
         }
         else{
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la colonne  " + currentTitle + " ?", ButtonType.YES, ButtonType.CANCEL);
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la colonne  " + currentTitle + " ?\nToutes les données associées seront également supprimées.", ButtonType.YES, ButtonType.CANCEL);
             alert.showAndWait();
             if(alert.getResult()==ButtonType.YES){    
                 int i = Colonne.getIndexByTitle(Colonne.unserializeCols(), currentTitle);
@@ -343,7 +340,7 @@ public class ControllerAffichageOutils implements Initializable{
             }
             else{
                 Controller.setForm("modifMoyenForm");
-                setStage("../View/formModifMoyen.fxml", "Modification de Moyen Générique");
+                setStage("View/formModifMoyen.fxml", "Modification de moyen générique");
             }
         }
     }   
@@ -437,7 +434,7 @@ public class ControllerAffichageOutils implements Initializable{
                     }    
                     countP++;
                 }
-                sp.setPrefHeight(100*(count+1)+20); //ajustement de la hauteur du scrollpane en fct du nb de lignes de grid
+                sp.setPrefHeight(115*(count+1)+20); //ajustement de la hauteur du scrollpane en fct du nb de lignes de grid
                 clicableItems.add(list); //ajout de la ligne courante à la liste de lignes de la grille
                 count++;
             }
@@ -533,11 +530,10 @@ public class ControllerAffichageOutils implements Initializable{
      * @return le lien hypextexte ouvrant le fichier visé
      */
     public Hyperlink setLink(String link){
-        setGetHostController(hostServices); //initialisation des hostServices pour l'ouverture de fichier
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(link));
         Hyperlink text = new Hyperlink(link);
-        text.setOnAction(e -> { 
+        text.setOnAction(e -> {
             Lanceur l = new Lanceur();
             File selectedFile = new File(link);
             /*si le fichier selectionné n'existe pas ou n'a pas été trouvé, un onglet alert est ouvert*/
@@ -548,7 +544,14 @@ public class ControllerAffichageOutils implements Initializable{
             }
             /*si le fichier selectionné existe il est ouvert*/
             else{
-               l.getHostServices().showDocument(selectedFile.getAbsolutePath());  
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                    desktop.open(selectedFile);
+                } catch (IOException ioException) { //Onglet d'erreur dans le cas ou un fichier exsistant n'est pas ouvrable
+                    ioException.printStackTrace();
+                    Alert alert = new Alert(AlertType.WARNING);
+                    Controller.setAlert("Erreur : ouverture impossible.", "Fichier existant mais impossible à lancer.", "Erreur", alert);
+                }
             } 
         }); 
         /*paramètres visuels du lien*/
@@ -577,31 +580,31 @@ public class ControllerAffichageOutils implements Initializable{
     }
 
     /**
-     * Instancie l'évènement de type clic sur toutes les lignes de la grille 
-     * si le logiciel est en mode admin. 
-     * L'Outil courant sélectionné prend la valeur de l'outil de la ligne 
-     * cliqué et le fond de la ligne change de couleur.
+     * Instancie l'évènement de type clic sur toutes les lignes de la grille
+     * L'Outil courant sélectionné prend la valeur de l'outil de la ligne si le logiciel
+     * est en mode admin
+     * Le fond de la ligne change de couleur.
      */
     public void selectForModif(){
-        if(Controller.isAdmin()){ //ne fonctionne que dans le cas ou le logiciel est en mode admin
-            BackgroundFill bf = new BackgroundFill(Color.rgb(204, 255, 179), CornerRadii.EMPTY , Insets.EMPTY); //la couleur de la ligne cliqué
-            /*parcours de toutes les lignes de la grille*/
-            for(int i=0; i<clicableItems.size(); i++){
-                int idOutil = i;
-                /*Parcours de chaque case de la grille*/
-                ArrayList<Labeled> listAux = clicableItems.get(i);
-                for(Labeled lab : listAux){
-                    lab.setOnMouseClicked(event -> { //ajout de l'évènement à chaque case
-                        resetLabels();
-                        resetTitles();
-                        /*Changement de couleur sur toute la ligne sélectionnée*/
-                        for(Labeled label: listAux){
-                            label.setBackground(new Background(bf));
-                        }
+        BackgroundFill bf = new BackgroundFill(Color.rgb(204, 255, 179), CornerRadii.EMPTY , Insets.EMPTY); //la couleur de la ligne cliqué
+        /*parcours de toutes les lignes de la grille*/
+        for(int i=0; i<clicableItems.size(); i++){
+            int idOutil = i;
+            /*Parcours de chaque case de la grille*/
+            ArrayList<Labeled> listAux = clicableItems.get(i);
+            for(Labeled lab : listAux){
+                lab.setOnMouseClicked(event -> { //ajout de l'évènement à chaque case
+                    resetLabels();
+                    resetTitles();
+                    /*Changement de couleur sur toute la ligne sélectionnée*/
+                    for(Labeled label: listAux){
+                        label.setBackground(new Background(bf));
+                    }
+                    if(Controller.isAdmin()) { //ne fonctionne que dans le cas ou le logiciel est en mode admin
                         currentOutil = initDisplayedOutils().get(idOutil);
                         currentTitle = null;
-                    });
-                }
+                    }
+                });
             }
         }
     }
@@ -649,11 +652,6 @@ public class ControllerAffichageOutils implements Initializable{
 
     /*Fonctions "diverses"*/
 
-    /*Permet d'utiliser les hostsServices depuis le controller*/
-    public void setGetHostController(HostServices hostServices){
-        this.hostServices = hostServices;
-    }    
-
     /**
      * Initialise un Stage dans l'optique d'une ouverture de nouvelle fenêtre
      * et met en place les paramètres de base de ce stage
@@ -663,7 +661,7 @@ public class ControllerAffichageOutils implements Initializable{
     public Stage setNewStage(String fxmlLink){
         /*Déclaration de la nouvelle fenetre*/
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlLink));
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxmlLink));
             Scene scene  = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);
@@ -743,10 +741,10 @@ public class ControllerAffichageOutils implements Initializable{
         l.setWrapText(true);
         l.setAlignment(Pos.CENTER);
         l.setTextAlignment(TextAlignment.CENTER);
-        l.maxHeight(100);
-        l.setPrefHeight(100);
-        l.maxWidth(160);
-        l.setPrefWidth(160);
+        l.maxHeight(115);
+        l.setPrefHeight(115);
+        l.maxWidth(200);
+        l.setPrefWidth(200);
         l.setStyle("-fx-border-color: grey;");
     }
     

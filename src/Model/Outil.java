@@ -1,6 +1,7 @@
 package Model;
 
-
+import Controller.AppLaunch;
+import Controller.Controller;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,8 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import Controller.Controller;
 
 
 public class Outil implements Serializable{
@@ -169,55 +168,16 @@ public class Outil implements Serializable{
 	}
 
 
-	/*Sérialisation des objets Outil*/
-
-	/**
-	 * Sérialise des objets Outil afin qu'ils puissent être sérailisés en même temps 
-	 * que les objets Element
-	 */
-	public void serializeOutil(){
-        try {
-			FileOutputStream fichier = new FileOutputStream("data/outils.ser");
-			ObjectOutputStream oos = new ObjectOutputStream(fichier);
-			oos.writeObject(this);
-            oos.close();
-		} catch (IOException e) {
-			System.out.println(e.toString());
-		}
-	
-    }
-
-	/**
-	 * Lis des objets Outil sérialisés afin qu'ils puissent être lu et traduits en même temps 
-	 * que les objets element
-	 */
-	public void unserializeOutil(){
-        try (ObjectInputStream ois = 
-				new ObjectInputStream(
-						new FileInputStream("data/outils.ser"))) {
-			/* Lecture du fichier*/
-			while (true) {
-				ois.readObject();
-			}
-		} catch (IOException e) {
-			//Exception lorsqu'on atteint la fin du fichier
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}   
-    }
-
-
-
 	/*Fonctions liées à l'odre de stockage / affichage des paramètres*/
 
 	/**
-	 * Eregistre dans le fichier correpondant, l'ordre d'affichage 
+	 * Eregistre dans le fichier correpondant, l'ordre d'affichage
 	 * des paramètres
-	 * @param allTitles la liste de positions d'affichage de chaque paramètre
+	 * @param ordre la liste de positions d'affichage de chaque paramètre
 	 */
 	public static void serializeOrdre(ArrayList<Integer> ordre){
 		try {
-			FileOutputStream fichier = new FileOutputStream("data/ordre.ser");
+			FileOutputStream fichier = new FileOutputStream(AppLaunch.getCurrentPath() + "data/ordre.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fichier);
 			for(Integer index: ordre){
                 oos.writeObject(index);
@@ -237,7 +197,7 @@ public class Outil implements Serializable{
 		ArrayList<Integer> ordre = new ArrayList<Integer>();
         try (ObjectInputStream ois = 
 				new ObjectInputStream(
-						new FileInputStream("data/ordre.ser"))) {
+						new FileInputStream(AppLaunch.getCurrentPath() + "data/ordre.ser"))) {
 			/* Lecture du fichier*/
 			while (true) {
 				ordre.add((Integer) ois.readObject());

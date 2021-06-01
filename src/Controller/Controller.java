@@ -1,9 +1,12 @@
 package Controller;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+
 
 import Model.Config;
 import Model.Element;
@@ -42,6 +45,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
+/**
+ * Controller général de l'application
+ * @author Guilhem Cros
+ * @version 1.0.0
+ */
 public class Controller implements Initializable{
 
     /*Compteur du nombre de formulaires liés à la page d'affichage d'outils actuellement ouverts*/
@@ -76,7 +84,7 @@ public class Controller implements Initializable{
     private static  ArrayList<ControllerAffichageLogs> openedControllerLogs;
 
 
-    /*Initialisation des objets XML utilisés*/
+    /*Initialisation des objets FXML utilisés*/
 
     @FXML
     private ImageView actiaLogo;
@@ -240,7 +248,7 @@ public class Controller implements Initializable{
         /*dans le cas ou aucun mode d'utilisation n'a été sélectionné*/
         else if((auto==false && manuel==false  && currentElement.hasAutoOutils() && currentElement.hasManuelOutils())||(auto==false && manuel==false  && isAdmin)){
             Alert alert = new Alert(AlertType.WARNING);
-            setAlert("Erreur : aucun mode sélectionné", "Veuillez sélectionner au minimun un mode d'utilisation avant de valider la recherche.","Erreur", alert);
+            setAlert("Erreur : aucun mode sélectionné", "Veuillez sélectionner au minimum un mode d'utilisation avant de valider la recherche.","Erreur", alert);
         }
         /*Si aucune erreur détectée, création et ouverture de la nouvelle fenetre*/
         else{
@@ -255,7 +263,7 @@ public class Controller implements Initializable{
                 manuel = true;
             }
             /*Déclaration de la nouvelle fenetre*/
-            Stage stage = setNewStage("../View/outils.fxml");
+            Stage stage = setNewStage("View/outils.fxml");
             /*Evènement de fermeture de fenêtre : retire le controllerAffichage correspondant de la liste des affichages ouverts*/
             stage.setOnCloseRequest(event ->{
                 for(int i=0; i<openedController.size(); i++){
@@ -318,7 +326,7 @@ public class Controller implements Initializable{
         /*Si aucune erreur décectée, création et ouverture de la nouvelle fenetre*/
         else{
             /*Déclaration de la nouvelle fenetre*/
-            Stage stage = setNewStage("../View/logs.fxml");
+            Stage stage = setNewStage("View/logs.fxml");
             /*Ajout d'un évènement de fermeture de fenêtre*/
             stage.setOnCloseRequest(event ->{
                 for(int i=0; i<openedControllerLogs.size(); i++){
@@ -451,7 +459,7 @@ public class Controller implements Initializable{
 
     /**
      * Fonction appelée lors de l'appuie sur le bouton "Quitter le mode Admin".
-     * Désacive le mode administrateur du logiciel et retourne sur le menu d'accueil
+     * Désactive le mode administrateur du logiciel et retourne sur le menu d'accueil.
      * Ouvre un onglet d'alerte confirmant la réalisation de l'action
      * @param action
      */
@@ -490,6 +498,15 @@ public class Controller implements Initializable{
     @FXML
     public void displayHelp(ActionEvent action){
         resetVisibility();
+        Desktop desktop = Desktop.getDesktop();
+        File file = new File( AppLaunch.getCurrentPath() + "Manuel_utilisation.pdf");
+        try {
+            desktop.open(file);
+        } catch (IOException ioException) { //Onglet d'erreur dans le cas ou un fichier exsistant n'est pas ouvrable
+            ioException.printStackTrace();
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur : ouverture impossible.", "Le manuel d'utilisation est introuvable.", "Erreur", alert);
+        }
     }
 
     /**
@@ -518,7 +535,7 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Appelée lors d'un clic sur la bouton "Ajouter un ensemble"
+     * Appelée lors d'un clic sur la bouton "Ajouter un produit"
      * Ouvre le formulaire de création d'ensemble si aucun autre formulaire
      * n'est déjà ouvert sur l'application, ouvre un onglet d'erreur sinon
      * @param action
@@ -527,7 +544,7 @@ public class Controller implements Initializable{
     public void addEnsemble(ActionEvent action){
         if(countOpenedForm==0){
             form="addElementForm";
-            setFormStage("../View/formModifEnsemble.fxml", "Nouvel ensemble");
+            setFormStage("View/formModifEnsemble.fxml", "Nouvel ensemble");
         }
         else{
             Alert alert = new Alert(AlertType.WARNING);
@@ -536,7 +553,7 @@ public class Controller implements Initializable{
     }
 
     /**
-     * Appelée lors d'un clic sur le bouton "Modifier l'ensemble"
+     * Appelée lors d'un clic sur le bouton "Modifier le produit"
      * Ouvre le formulaire de modification de l'ensemble si aucun autre form n'est
      * déjà ouvert et si un ensemble a été sélectionné, ouvre un onglet d'erreur sinon
      * @param action
@@ -555,12 +572,12 @@ public class Controller implements Initializable{
         }
         else{
             form = "updateElementForm";
-            setFormStage("../View/formModifEnsemble.fxml", "Modification d'ensemble");
+            setFormStage("View/formModifEnsemble.fxml", "Modification d'ensemble");
         }
     }
 
     /**
-     * Appelée lors d'un clic sur le bouton "Supprimer l'ensemble"
+     * Appelée lors d'un clic sur le bouton "Supprimer le Produit"
      * Ouvre un onglet de confirmation de suppression, si l'utilisateur confirme,
      * l'élément courant est supprimé
      * Ouvre un onglet d'erreur si aucun element n'est sélectionné ou si un formulaire
@@ -621,8 +638,9 @@ public class Controller implements Initializable{
         }
         else{
             form="addSubForm";
-            setFormStage("../View/formAddSub.fxml", "Ajout d'un sous-ensemble");
+            setFormStage("View/formAddSub.fxml", "Ajout d'un sous-ensemble");
             createElementMenu();
+            initUsableEvent();
         } 
     }    
 
@@ -649,8 +667,9 @@ public class Controller implements Initializable{
         }
         else{
             form="removeSubForm";
-            setFormStage("../View/formRemoveSub.fxml", "Suppression d'un sous-ensemble");
+            setFormStage("View/formRemoveSub.fxml", "Suppression d'un sous-ensemble");
             createElementMenu();
+            initUsableEvent();
         }
     }
     
@@ -928,7 +947,7 @@ public class Controller implements Initializable{
     public void fillVBox(String value){
         autoCompleteBox.getChildren().clear();
         /*Si la valeur du champs de recherche n'est pas vide*/
-        if(value.length()!=0){
+        if(value.length()>2){
             searchResultsPane.setPrefHeight(0);
             for(String s : setSearchedElements(value)){
                 Label l = new Label(s);
@@ -1096,7 +1115,7 @@ public class Controller implements Initializable{
     public Stage setNewStage(String fxmlLink){
         /*Déclaration de la nouvelle fenetre*/
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlLink));
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource(fxmlLink));
             Scene scene  = new Scene(root);
             Stage stage = new Stage();
             stage.setScene(scene);

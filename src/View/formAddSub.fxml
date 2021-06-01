@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="385.0" minWidth="580.0" prefHeight="386.0" prefWidth="581.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerFormEnsembles">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="385.0" minWidth="580.0" prefHeight="386.0" prefWidth="581.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerFormEnsembles">
    <children>
       <Label fx:id="titleLabel" alignment="CENTER_RIGHT" layoutX="7.0" layoutY="14.0" prefHeight="27.0" prefWidth="560.0" text="Label" textAlignment="RIGHT" wrapText="true">
          <font>

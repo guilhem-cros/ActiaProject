@@ -11,12 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 
@@ -69,6 +64,9 @@ public class ControllerFormEnsembles implements Initializable{
     @FXML 
     private Button removeSubButton;
 
+    @FXML
+    private CheckBox isProdBox;
+
     /**
      * Appelée à l'ouverture de la fenêtre
      * Instancie les variables met en place l'affichage de la page
@@ -82,8 +80,8 @@ public class ControllerFormEnsembles implements Initializable{
             fillFields();
         }
         else if(Controller.getForm().equals("addElementForm")){
-            saveButton.setText("Créer l'ensemble");
-            titleLabel.setText("Nouvel ensemble");
+            saveButton.setText("Créer le produit");
+            titleLabel.setText("Nouveau produit");
         }
         else if(Controller.getForm().equals("addSubForm")){
             search();
@@ -113,7 +111,7 @@ public class ControllerFormEnsembles implements Initializable{
         /*Si le remplissage des champs est correct*/
         else{
             if(isInt()){
-                Element e = makeElementByForm();
+                Element e = makeElementByForm(isProdBox.isSelected());
                 ArrayList<Element> allElt = Controller.getAllElements();
                 /*Dans les cas ou l'action est d'ajouter un element*/
                 if(Controller.getForm().equals("addElementForm") && !isAlreadyDefine()){
@@ -231,13 +229,13 @@ public class ControllerFormEnsembles implements Initializable{
     /*Construction et modification d'objets Element */
 
     /**
-     * Construit un objet Element avec les données entrées dans les champs de 
+     * Construit un objet Element  de type produit avec les données entrées dans les champs de
      * textes du formulaire de création d'ensemble courant
      */
-    public Element makeElementByForm(){
+    public Element makeElementByForm(boolean isProduct){
         String code = codeField.getText();
         String nom = nameField.getText();
-        return new Element(nom, code);
+        return new Element(nom, code, isProduct);
     }
 
     /**
@@ -260,6 +258,7 @@ public class ControllerFormEnsembles implements Initializable{
     public void fillFields(){
         nameField.setText(selectedElement.getNom());
         codeField.setText(selectedElement.getCodeElt());
+        isProdBox.setSelected(selectedElement.isProduit());
     }
 
     /**
@@ -305,7 +304,7 @@ public class ControllerFormEnsembles implements Initializable{
     public void fillResultsBox(String value){
         resultsBox.getChildren().clear();
         /*Si le champs de saisi n'est pas vide*/
-        if(value.length()>0){
+        if(value.length()>2){
             sPane.setPrefHeight(5);
             for(String s : setSearchedElements(value)){
                 Label l = new Label(s);

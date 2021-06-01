@@ -81,7 +81,6 @@ public class ControllerAffichageLogs implements Initializable{
 
     @FXML
     private Button cancelButton;
-    
 
     /**
      * Fonction appelée à l'ouverture de la fenêtre
@@ -89,6 +88,9 @@ public class ControllerAffichageLogs implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        BackgroundFill bf = new BackgroundFill(Color.rgb(47, 48, 54), CornerRadii.EMPTY , Insets.EMPTY);
+        pane.setBackground(new Background(bf));
+        sp.setStyle("-fx-background:#2f3036");
         /*Mise en place de la liste des ControllerAffichages "ouverts"*/
         if(Controller.getOpenedControllerLogs() == null){
             Controller.setOpenedControllerLogs(new ArrayList<ControllerAffichageLogs>());
@@ -142,7 +144,7 @@ public class ControllerAffichageLogs implements Initializable{
      * @param action
      */
     @FXML 
-    public void setUpdateMode(){
+    public void setUpdateMode(ActionEvent action){
         /*Si aucun form de modification de données n'est ouvert*/
         if(setUpConflictError()){
             if(listLogs==null || listLogs.isEmpty()){
@@ -264,7 +266,6 @@ public class ControllerAffichageLogs implements Initializable{
             Logs.sortLog(listLogs);
         }
         titleLabel.setText(selectedElt.toString());
-        sp.setStyle("-fx-background-color:transparent;");
         BackgroundFill bf = new BackgroundFill(Color.rgb(255, 248, 186), CornerRadii.EMPTY , Insets.EMPTY);
         titleGrid.setBackground(new Background(bf));
     }
