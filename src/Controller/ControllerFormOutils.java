@@ -170,6 +170,8 @@ public class ControllerFormOutils implements Initializable{
             Colonne.addNewCol(title, hyperlinkBox.isSelected());
             Outil.addOrdre();
             finalize(action);
+            Alert alert = new Alert(AlertType.INFORMATION);
+            Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
         }
     }
 
@@ -211,7 +213,7 @@ public class ControllerFormOutils implements Initializable{
                     }
                     e.addOutil(outil2);
                 }
-                Element.serializeAllElements(Controller.getAllElements());
+                Controller.setDataSaved(false);
                 originControl.setCurrentOutil(null);
                 finalize(action);
             }
@@ -253,6 +255,8 @@ public class ControllerFormOutils implements Initializable{
         else{
             SetCol();
             finalize(action);
+            Alert alert = new Alert(AlertType.INFORMATION);
+            Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
         }
     }
 
@@ -279,9 +283,10 @@ public class ControllerFormOutils implements Initializable{
                     m.setNom(moyenGene.getText());
                 }
             }
+            Controller.setDataSaved(false);
             updateOutilByMoyen(selectedMoyen, moyenGene.getText());
-            MoyenGenerique.sortMoyenGen(allMoyen);
             MoyenGenerique.serializeMoyenGene(allMoyen);
+            MoyenGenerique.sortMoyenGen(allMoyen);
             finalize(action);
         }
     }
@@ -556,7 +561,6 @@ public class ControllerFormOutils implements Initializable{
                 }
             }
         }
-        Element.serializeAllElements(Controller.getAllElements());
     }
 
     /*Fonctions diverses*/
@@ -568,8 +572,6 @@ public class ControllerFormOutils implements Initializable{
      * @param action
      */
     public void finalize(ActionEvent action){
-        Alert alert = new Alert(AlertType.INFORMATION);
-        Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
         /*Actualisation de toutes les page d'affichage ouvertes*/
         for(ControllerAffichageOutils c: Controller.getOpenedController()){
             c.initialize(null, null);

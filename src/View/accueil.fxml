@@ -172,5 +172,10 @@
             <Font name="System Bold" size="40.0" />
          </font>
       </Label>
+      <Button fx:id="saveDataButton" layoutX="715.0" layoutY="640.0" mnemonicParsing="false" onAction="#saveData" prefHeight="37.0" prefWidth="120.0" text="Enregistrer" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
    </children>
 </Pane>

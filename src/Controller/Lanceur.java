@@ -16,14 +16,26 @@ public class Lanceur extends Application{
     public static void main(String[] args){
         launch(args);
     }
-    
-	/*Création et ouverture de la fenêtre d'accueil*/
-    @Override
+
+	/**
+	 * Appelée au lancement de l'application.
+	 * Met en place la fenêtre d'accueil du logiciel.
+	 * @param stage
+	 */
+	@Override
     public void start(Stage stage){
         try {
 			Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("View/accueil.fxml"));
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
+			/*Evenement lors de la fermeture de la fenêtre : erreur si des données n'ont pas été enregistrées*/
+			stage.setOnCloseRequest(event ->{
+				if(!Controller.isDataSaved()){
+					event.consume();
+					Alert alert = new Alert(Alert.AlertType.WARNING);
+					Controller.setAlert("Données non sauvegardées", "Certaines modifications n'ont pas été enregistrées, veuillez cliquer sur Enregistrer avant de quitter.", "Sauvegarde", alert);
+				}
+			});
 			stage.setTitle("Menu Principal");
 			stage.getIcons().add(new Image("media/logoActiaPetit.png"));
 			stage.setResizable(false);
@@ -37,6 +49,11 @@ public class Lanceur extends Application{
 		}
 	}
 
+	/**
+	 * Vérifie la présence des dossiers de stockage du logiciel
+	 * @return true si les dossiers sont présent, false si au moins un
+	 * d'entre eux est absent
+	 */
 	public static boolean hasData(){
 		File f1 = new File(AppLaunch.getCurrentPath() + "data/config.ser");
 		File f2 = new File(AppLaunch.getCurrentPath() + "data/columns.ser");

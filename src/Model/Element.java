@@ -316,13 +316,13 @@ public class Element implements Serializable {
     /**
      * Sélectionne tous les élèments enregistrés en fonction de la similarité d'une
      * chaine de caractères avec le nom de l'élèment suivi du code de l'Element
-     *
      * @param value la chaine de caractère devant être similaire au nom
+     * @param elements la liste d'elements dans laquelle est recherchée une similarité
      * @return la liste d'élèments pour lequels le nom débute par la value en param
      */
-    public static ArrayList<Element> selectByName(String value) {
+    public static ArrayList<Element> selectByName(String value, ArrayList<Element> elements) {
         ArrayList<Element> selectedElements = new ArrayList<>();
-        for (Element e : unserializeElement()) {
+        for (Element e : elements) {
             int length = value.length();
             if (length <= e.invertToString().length() && value.equalsIgnoreCase(e.invertToString().substring(0, length))) {
                 selectedElements.add(e);
@@ -335,13 +335,13 @@ public class Element implements Serializable {
     /**
      * Sélectionne tous les élèments enregistrés en fonction de la similarité d'une
      * chaine de caractères avec le code de l'élèment suivi du nom de l'Element
-     *
      * @param code la chaine de caractère devant être similaire au code des élèments
+     * @param elements la liste d'element dans laquelle est recherchée un similarité
      * @return la liste d'élèments pour lesquels le code débute par la valeur en param
      */
-    public static ArrayList<Element> selectByCode(String code) {
+    public static ArrayList<Element> selectByCode(String code, ArrayList<Element> elements) {
         ArrayList<Element> selectedElements = new ArrayList<>();
-        for (Element e : unserializeElement()) {
+        for (Element e : elements) {
             int length = code.length();
             if (length <= e.toString().length() && code.equalsIgnoreCase(e.toString().substring(0, length))) {
                 selectedElements.add(e);

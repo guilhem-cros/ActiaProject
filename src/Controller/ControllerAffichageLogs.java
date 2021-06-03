@@ -82,6 +82,9 @@ public class ControllerAffichageLogs implements Initializable{
     @FXML
     private Button cancelButton;
 
+    @FXML
+    private Button saveDataButton;
+
     /**
      * Fonction appelée à l'ouverture de la fenêtre
      * Initialise les champs et variables
@@ -92,11 +95,13 @@ public class ControllerAffichageLogs implements Initializable{
         pane.setBackground(new Background(bf));
         sp.setStyle("-fx-background:#2f3036");
         /*Mise en place de la liste des ControllerAffichages "ouverts"*/
-        if(Controller.getOpenedControllerLogs() == null){
-            Controller.setOpenedControllerLogs(new ArrayList<ControllerAffichageLogs>());
+        if(Controller.getOpenedControllerLogs() == null || Controller.getOpenedControllerLogs().size()<1){
+            Controller.setOpenedControllerLogs(new ArrayList<>());
         }
         if(!Controller.getOpenedControllerLogs().contains(this)){
-            Controller.getOpenedControllerLogs().add(this);
+            ArrayList<ControllerAffichageLogs> aux = Controller.getOpenedControllerLogs();
+            aux.add(this);
+            Controller.setOpenedControllerLogs(aux);
         }
         currentLogs = null;
         setParam();
@@ -169,28 +174,25 @@ public class ControllerAffichageLogs implements Initializable{
      * Récupère toutes les données de la grille sous forme de logs et met à jour 
      * la liste de Logs de l'éléments sélectionné
      * Actualise la page
-     * Ouvre un onglet d'erreur si un autre onglet de même ensemble est ouvert ou si
+     * Ouvre un onglet d'erreur si un autre formulaire est ouvert ou si
      * l'un des champs de la grille est vide
      * @param action
      */
     @FXML
     public void saveChanges(ActionEvent action){
-        if(protectUpdate()){
-            if(setUpEmptyLogError()){
-                /*Si un form de modification de données est ouvert*/
-                if(!setUpConflictError()){
-                    initialize(null, null);
-                }
-                else{
-                    ArrayList<Logs> listLogs = readTable();
-                    selectedElt.setListLogsElement(listLogs);
-                    Element.serializeAllElements(Controller.getAllElements());
-                    cancelButton.setVisible(false);
-                    saveButton.setVisible(false);
-                    helpLabel.setVisible(false);
-                    finalize();
-                }
-                
+        if(setUpEmptyLogError()){
+            /*Si un form de modification de données est ouvert*/
+            if(!setUpConflictError()){
+                initialize(null, null);
+            }
+            else{
+                ArrayList<Logs> listLogs = readTable();
+                selectedElt.setListLogsElement(listLogs);
+                cancelButton.setVisible(false);
+                saveButton.setVisible(false);
+                helpLabel.setVisible(false);
+                Controller.setDataSaved(false);
+                finalize();
             }
         }
     }
@@ -218,32 +220,46 @@ public class ControllerAffichageLogs implements Initializable{
      */
     @FXML
     public void deleteLogs(ActionEvent action){
-        if(protectUpdate()){
-            if(currentLogs==null){
-                Alert alert = new Alert(AlertType.WARNING);
-                Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une ligne à supprimer.", "Erreur", alert);
-            }
-            else if(Controller.getCountOpenedForm()>0){
-                Alert alert = new Alert(AlertType.WARNING);
-                Controller.setAlert("Erreur : conflit de mise à jours", "Veuillez fermer tous les formulaires avant d'opérer à de nouvelles modifications", "Erreur", alert);
-            }
-            else{
-                Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la ligne des données?", ButtonType.YES, ButtonType.CANCEL);
-                alert.showAndWait();
-                if(alert.getResult()==ButtonType.YES){
-                    /*Suppression de currentLog dans la liste*/
-                    for(int i=0; i<listLogs.size(); i++){
-                        if(listLogs.get(i).equals(currentLogs)){
-                            listLogs.remove(i);
-                        }
+        if(currentLogs==null){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur, sélection invalide", "Veuillez sélectionner une ligne à supprimer.", "Erreur", alert);
+        }
+        else if(Controller.getCountOpenedForm()>0){
+            Alert alert = new Alert(AlertType.WARNING);
+            Controller.setAlert("Erreur : conflit de mise à jours", "Veuillez fermer tous les formulaires avant d'opérer à de nouvelles modifications", "Erreur", alert);
+        }
+        else{
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer la ligne des données?", ButtonType.YES, ButtonType.CANCEL);
+            alert.showAndWait();
+            if(alert.getResult()==ButtonType.YES){
+                /*Suppression de currentLog dans la liste*/
+                for(int i=0; i<listLogs.size(); i++){
+                    if(listLogs.get(i).equals(currentLogs)){
+                        listLogs.remove(i);
                     }
-                    selectedElt.setListLogsElement(listLogs);
-                    Element.serializeAllElements(Controller.getAllElements());
-                    currentLogs = null;
-                    finalize();
                 }
+                selectedElt.setListLogsElement(listLogs);
+                currentLogs = null;
+                Controller.setDataSaved(false);
+                finalize();
             }
         }
+    }
+
+    /**
+     * Appelée lors de l'appuie sur le bouton Enregistrer de la
+     * page d'affichage des moyens de tests.
+     * Enregistre les données liées aux objets Element de la list allElement
+     * dans le fichier element.ser
+     * Renvoie un onglet de confirmant l'opération
+     * @param action
+     */
+    @FXML
+    public void saveData(ActionEvent action){
+        Element.serializeAllElements(Controller.getAllElements());
+        Controller.setDataSaved(true);
+        Alert alert = new Alert(AlertType.INFORMATION);
+        Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
     }
 
 
@@ -338,6 +354,7 @@ public class ControllerAffichageLogs implements Initializable{
         addButton.setVisible(Controller.isAdmin());
         updateButton.setVisible(Controller.isAdmin());
         deleteButton.setVisible(Controller.isAdmin());
+        saveDataButton.setVisible(Controller.isAdmin());
     }
 
      /**
@@ -363,6 +380,7 @@ public class ControllerAffichageLogs implements Initializable{
         cancelButton.setVisible(true);
         deleteButton.setVisible(false);
         updateButton.setVisible(false);
+        saveDataButton.setVisible(false);
         addButton.setVisible(false);
         helpLabel.setVisible(true);
     }
@@ -425,26 +443,6 @@ public class ControllerAffichageLogs implements Initializable{
     /*Mise en place des erreurs utilisateurs*/
 
     /**
-     * Ouvre un ounglet d'erreur dans le cas ou plusieurs onglet d'affichages de Logs
-     * du même ensemble selectedElt sont ouverts afin d'éviter les conflits de modifications
-     * @return false si plus d'un onglet est ouvert, true sinon
-     */
-    public boolean protectUpdate(){
-        int count =0;
-        for(ControllerAffichageLogs c: Controller.getOpenedControllerLogs()){
-            if(c.getSelectedElt().getCodeElt().equals(this.selectedElt.getCodeElt())){
-                count++;
-            }
-        }
-        if(count>1){
-            Alert alert = new Alert(AlertType.WARNING);
-            Controller.setAlert("Erreur, conflits potentiels", "Un ou plusieurs autres onglets de mots de passe de l'ensemble " + selectedElt.getCodeElt() + " sont ouverts, veuillez les fermer pour continuer.", "Erreur", alert);
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Ouvre une fenêtre d'erreur dans le cas ou une case du tableau est vide
      * @return true si aucune case est vide, false sinon
      */
@@ -482,8 +480,6 @@ public class ControllerAffichageLogs implements Initializable{
      * Actualise la page courante
      */
     public void finalize(){
-        Alert alert = new Alert(AlertType.INFORMATION);
-        Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
         /*Actualisation de toutes les page d'affichage ouvertes*/
         this.initialize(null, null);
     }

@@ -119,6 +119,9 @@ public class ControllerAffichageOutils implements Initializable{
     @FXML
     private Button updateMoyenButton;
 
+    @FXML
+    private Button saveDataButton;
+
 
     /**
      * Fonction appelée à l'ouverture de la fenêtre
@@ -236,10 +239,8 @@ public class ControllerAffichageOutils implements Initializable{
                         i=allElt.size();//sortie de la boucle
                     }
                 }
-                Element.serializeAllElements(allElt);
                 Controller.setAllElements(allElt);
-                Alert alert2 = new Alert(AlertType.INFORMATION);
-                Controller.setAlert("Modifications enregistrées", "La ligne a bien été supprimée, l'outil a été supprimé des données", "Confirmation", alert2);
+                Controller.setDataSaved(false);
                 this.initialize(null, null);
                 currentOutil = null;
             } 
@@ -343,7 +344,23 @@ public class ControllerAffichageOutils implements Initializable{
                 setStage("View/formModifMoyen.fxml", "Modification de moyen générique");
             }
         }
-    }   
+    }
+
+    /**
+     * Appelée lors de l'appuie sur le bouton Enregistrer de la
+     * page d'affichage des moyens de tests.
+     * Enregistre les données liées aux objets Element de la liste
+     * all Ellement.
+     * Renvoie un onglet confirmant l"opération
+     * @param action
+     */
+    @FXML
+    public void saveData(ActionEvent action){
+        Element.serializeAllElements(Controller.getAllElements());
+        Controller.setDataSaved(true);
+        Alert alert = new Alert(AlertType.INFORMATION);
+        Controller.setAlert("Modifications effectuées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
+    }
 
 
 
@@ -577,6 +594,7 @@ public class ControllerAffichageOutils implements Initializable{
         newLineButton.setVisible(admin);
         deleteLineButton.setVisible(admin);
         updateMoyenButton.setVisible(admin);
+        saveDataButton.setVisible(admin);
     }
 
     /**

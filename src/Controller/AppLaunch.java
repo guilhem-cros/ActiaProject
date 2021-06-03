@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 
 /**
- * Classe appelé au lancement de l'application
+ * Classe appelé au lancement de l'application depuis le jar
  * Permet le chargement des librairies (en particulier javafx)
  * avant de commencer l'appel de fonctions liées à ces librairies
  * @author Guilhem Cros

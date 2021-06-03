@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="940.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerAffichageLogs">
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="940.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerAffichageLogs">
    <children>
       <ImageView fitHeight="81.0" fitWidth="370.0" layoutX="14.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -59,12 +59,12 @@
             </GridPane>
          </content>
       </ScrollPane>
-      <Label fx:id="infoLabel" alignment="CENTER" layoutX="282.0" layoutY="247.0" maxWidth="400.0" prefWidth="400.0" text="Label" textFill="white" textAlignment="CENTER" visible="false" wrapText="true">
+      <Label fx:id="infoLabel" alignment="CENTER" layoutX="282.0" layoutY="247.0" maxWidth="400.0" prefWidth="400.0" text="Label" textAlignment="CENTER" textFill="white" visible="false" wrapText="true">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="titleLabel" alignment="CENTER_RIGHT" layoutX="391.0" layoutY="33.0" maxHeight="60.0" maxWidth="582.0" prefHeight="36.0" prefWidth="535.0" text="Label" textFill="white" textAlignment="RIGHT" wrapText="true">
+      <Label fx:id="titleLabel" alignment="CENTER_RIGHT" layoutX="391.0" layoutY="33.0" maxHeight="60.0" maxWidth="582.0" prefHeight="36.0" prefWidth="535.0" text="Label" textAlignment="RIGHT" textFill="white" wrapText="true">
          <font>
             <Font name="System Bold" size="24.0" />
          </font>
@@ -99,5 +99,10 @@
             <Font size="16.0" />
          </font>
       </Label>
+      <Button fx:id="saveDataButton" layoutX="788.0" layoutY="621.0" mnemonicParsing="false" onAction="#saveData" text="Enregistrer">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
    </children>
 </Pane>

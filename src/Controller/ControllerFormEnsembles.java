@@ -118,9 +118,10 @@ public class ControllerFormEnsembles implements Initializable{
                     allElt.add(e);
                     saveDatas(allElt);
                     Controller.setCurrentElement(null);
+                    Controller.setDataSaved(false);
                     finalize(action);
                     Alert alert = new Alert(AlertType.INFORMATION);
-                    Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);
+                    Controller.setAlert("Modifications effctuées", "Pensez à enregistrer les modifications avant de fermer le logiciel.", "Confirmation", alert);
                 }
                 /*Dans le cas ou l'action est de modifier un element*/
                 else if(Controller.getForm().equals("updateElementForm") && (!isAlreadyDefine() || selectedElement.getCodeElt().equals(codeField.getText()))){
@@ -138,12 +139,13 @@ public class ControllerFormEnsembles implements Initializable{
                     }
                     allElt.set(i, e);
                     saveDatas(allElt);
+                    Controller.setDataSaved(false);
                     Controller.setCurrentElement(null);
                     finalize(action);
                     Controller.updateConcernedWindows(selectedElement, e);
                     selectedElement = null;
                     Alert alert = new Alert(AlertType.INFORMATION);
-                    Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont bien été enregistrées.", "Confirmation", alert);    
+                    Controller.setAlert("Modifications effectuées", "Pensez à enregistrer les modifications avant de fermer le logiciel.", "Confirmation", alert);
                 }
                 else{
                     Alert alert = new Alert(AlertType.WARNING);
@@ -171,9 +173,10 @@ public class ControllerFormEnsembles implements Initializable{
             saveDatas(Controller.getAllElements());
             selectedElement = null;
             selectedSub = null;
+            Controller.setDataSaved(false);
             finalize(action);
             Alert alert = new Alert(AlertType.INFORMATION);
-            Controller.setAlert("Modifications enregistrées", "Les modifications apportées ont biens été enregistrées.", "Confirmation", alert);
+            Controller.setAlert("Modifications effectuées", "Pensez à enregistrer les modifications avant de fermer le logiciel.", "Confirmation", alert);
         }
     }
 
@@ -196,9 +199,10 @@ public class ControllerFormEnsembles implements Initializable{
             saveDatas(Controller.getAllElements());
             selectedElement=null;
             selectedSub=null;
+            Controller.setDataSaved(false);
             finalize(action);
             Alert alert = new Alert(AlertType.INFORMATION);
-            Controller.setAlert("Modifications enregistrées.", "Lensemble a bien été retiré de la liste de sous-ensembles.", "Confirmation", alert);
+            Controller.setAlert("Modifications effectuées", "Pensez à enregistrer les modifications avant de fermer le logiciel.", "Confirmation", alert);
         }
     }
 
@@ -429,7 +433,6 @@ public class ControllerFormEnsembles implements Initializable{
     public void saveDatas(ArrayList<Element> listElt){
         Element.sortElements(listElt);
         Controller.setAllElements(listElt);
-        Element.serializeAllElements(Controller.getAllElements());
     }
 
 

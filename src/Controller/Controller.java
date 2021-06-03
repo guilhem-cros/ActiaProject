@@ -83,6 +83,9 @@ public class Controller implements Initializable{
     /*Liste des ControllerAffichageOutils (=pages d'affichages) ouvertes*/
     private static  ArrayList<ControllerAffichageLogs> openedControllerLogs;
 
+    /*Booléen indiquant si les données liées aux objets Element sont toutes sauvegardées dans les fichiers de stockage*/
+    private static boolean dataSaved = true;
+
 
     /*Initialisation des objets FXML utilisés*/
 
@@ -185,6 +188,9 @@ public class Controller implements Initializable{
     @FXML
     private Label lab3;
 
+    @FXML
+    private Button saveDataButton;
+
 
 
     /**
@@ -193,6 +199,9 @@ public class Controller implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        if(allElements==null || allElements.size()<1){
+            allElements = Element.unserializeElement();
+        }
         BackgroundFill bf = new BackgroundFill(Color.rgb(47, 48, 54), CornerRadii.EMPTY , Insets.EMPTY);
         paneId.setBackground(new Background(bf));
         setSearch();
@@ -200,7 +209,6 @@ public class Controller implements Initializable{
         productList.getItems().addAll(createComboBox().getItems());
         Config.unserializeConfig(); //initilisation de la config (mdp + log) actuelle
         form = "null";
-        
     }
 
 
@@ -219,7 +227,7 @@ public class Controller implements Initializable{
         resetVisibility();
         searchField.setText("");
         if(productList.getValue()!=null){
-            selectedProd = getElementByCode(sliceCode(productList.getValue().toString()));
+            selectedProd = getElementByCode(sliceCode(productList.getValue()));
             elementButton.setVisible(true);
             createElementMenu();
             initUsableEvent();
@@ -266,10 +274,17 @@ public class Controller implements Initializable{
             Stage stage = setNewStage("View/outils.fxml");
             /*Evènement de fermeture de fenêtre : retire le controllerAffichage correspondant de la liste des affichages ouverts*/
             stage.setOnCloseRequest(event ->{
-                for(int i=0; i<openedController.size(); i++){
-                    if(openedController.get(i).getPane().getScene().getWindow().equals(stage)){
-                        openedController.remove(i);
+                if(dataSaved){
+                    for(int i=0; i<openedController.size(); i++){
+                        if(openedController.get(i).getPane().getScene().getWindow().equals(stage)){
+                            openedController.remove(i);
+                        }
                     }
+                }
+                else{
+                    event.consume();
+                    Alert alert = new Alert(AlertType.WARNING);
+                    setAlert("Données non sauvegardées", "Certaines modifications n'ont pas été enregistrées, veuillez cliquer sur Enregistrer avant de quitter.", "Sauvegarde", alert);
                 }
             });
             stage.setTitle("Constitution Bancs de Test : " + currentElement.toString());
@@ -329,10 +344,21 @@ public class Controller implements Initializable{
             Stage stage = setNewStage("View/logs.fxml");
             /*Ajout d'un évènement de fermeture de fenêtre*/
             stage.setOnCloseRequest(event ->{
-                for(int i=0; i<openedControllerLogs.size(); i++){
-                    if(openedControllerLogs.get(i).getPane().getScene().getWindow().equals(stage)){
-                        openedControllerLogs.remove(i);
+                /*Si les données sont sauvegardées : femeture de la fenêtre*/
+                if(dataSaved){
+                    for(int i=0; i<openedControllerLogs.size(); i++){
+                        if(openedControllerLogs.get(i).getPane().getScene().getWindow().equals(stage)){
+                            ArrayList<ControllerAffichageLogs> aux = openedControllerLogs;
+                            aux.remove(i);
+                            setOpenedControllerLogs(aux);
+                        }
                     }
+                }
+                /*Fermeture de fenêtre bloquée et message d'erreur si des données ne sont pas enregistrées*/
+                else{
+                    event.consume();
+                    Alert alert = new Alert(AlertType.WARNING);
+                    setAlert("Données non sauvegardées", "Certaines modifications n'ont pas été enregistrées, veuillez cliquer sur Enregistrer avant de quitter.", "Sauvegarde", alert);
                 }
             });
             stage.setTitle("Mots de passe : " + currentElement.toString());
@@ -536,7 +562,7 @@ public class Controller implements Initializable{
 
     /**
      * Appelée lors d'un clic sur la bouton "Ajouter un produit"
-     * Ouvre le formulaire de création d'ensemble si aucun autre formulaire
+     * Ouvre le formulaire de création de produit si aucun autre formulaire
      * n'est déjà ouvert sur l'application, ouvre un onglet d'erreur sinon
      * @param action
      */
@@ -554,7 +580,7 @@ public class Controller implements Initializable{
 
     /**
      * Appelée lors d'un clic sur le bouton "Modifier le produit"
-     * Ouvre le formulaire de modification de l'ensemble si aucun autre form n'est
+     * Ouvre le formulaire de modification du produit si aucun autre form n'est
      * déjà ouvert et si un ensemble a été sélectionné, ouvre un onglet d'erreur sinon
      * @param action
      */
@@ -603,12 +629,10 @@ public class Controller implements Initializable{
                     for(Element e: allElements){
                         e.removeElement(currentElement);
                     }
-                    Element.serializeAllElements(allElements);
-                    Alert alert2 = new Alert(AlertType.INFORMATION);
-                    setAlert("Modifications enregistrées", "L'element a été supprimé des données avec succès.", "Confirmation", alert2);
                     shutDownConcernedWindows(currentElement);
                     initialize(null, null);
                     isAdmin = true;
+                    dataSaved = false;
                     resetAccueil();
                 } 
             }
@@ -671,6 +695,20 @@ public class Controller implements Initializable{
             createElementMenu();
             initUsableEvent();
         }
+    }
+
+    /**
+     * Fonction appelée lors de l'appuie sur le bouton "Enregistrer" du menu d'accueil.
+     * Enregistre toutes les données liés aux objets Element dans le fichier element.ser.
+     * Renvoie une alerte confirmant l'opération.
+     * @param action
+     */
+    @FXML
+    public void saveData(ActionEvent action){
+        Element.serializeAllElements(Controller.getAllElements());
+        dataSaved = true;
+        Alert alert = new Alert(AlertType.INFORMATION);
+        setAlert("Modifications enregistrées", "Les modifications apportées ont été enregistrées.", "Confirmation", alert);
     }
     
 
@@ -802,7 +840,6 @@ public class Controller implements Initializable{
      * @return la ComboBox contenant l'ensemble des produits (95...)
      */
     public ComboBox<String> createComboBox(){
-        allElements = Element.unserializeElement();
         Element.sortElements(allElements);
         ComboBox<String> list = new ComboBox<String>();
         list.getItems().clear();
@@ -929,10 +966,10 @@ public class Controller implements Initializable{
      */
     public static ArrayList<String> setSearchedElements(String value){
         ArrayList<String> elementsList = new ArrayList<>();
-        for(Element e : Element.selectByCode(value)){
+        for(Element e : Element.selectByCode(value, allElements)){
             elementsList.add(e.toString());
         }
-        for(Element e : Element.selectByName(value)){
+        for(Element e : Element.selectByName(value, allElements)){
             elementsList.add(e.getNom() + " " + e.getCodeElt());
         }
         return elementsList;
@@ -1100,6 +1137,7 @@ public class Controller implements Initializable{
         deleteEltButton.setVisible(displayed);
         addSubButton.setVisible(displayed);
         removeSubButton.setVisible(displayed);
+        saveDataButton.setVisible(displayed);
     }
 
 
@@ -1288,5 +1326,13 @@ public class Controller implements Initializable{
 
     public static void setAdmin(boolean isAdmin) {
         Controller.isAdmin = isAdmin;
+    }
+
+    public static boolean isDataSaved() {
+        return dataSaved;
+    }
+
+    public static void setDataSaved(boolean dataSaved) {
+        Controller.dataSaved = dataSaved;
     }
 }
