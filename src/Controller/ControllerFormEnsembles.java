@@ -121,7 +121,7 @@ public class ControllerFormEnsembles implements Initializable{
                     Controller.setDataSaved(false);
                     finalize(action);
                     Alert alert = new Alert(AlertType.INFORMATION);
-                    Controller.setAlert("Modifications effctuées", "Pensez à enregistrer les modifications avant de fermer le logiciel.", "Confirmation", alert);
+                    Controller.setAlert("Modifications effectuées", "Pensez à enregistrer les modifications avant de fermer le logiciel.", "Confirmation", alert);
                 }
                 /*Dans le cas ou l'action est de modifier un element*/
                 else if(Controller.getForm().equals("updateElementForm") && (!isAlreadyDefine() || selectedElement.getCodeElt().equals(codeField.getText()))){

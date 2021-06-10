@@ -36,6 +36,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ScrollPane;
@@ -88,9 +89,6 @@ public class Controller implements Initializable{
 
 
     /*Initialisation des objets FXML utilisés*/
-
-    @FXML
-    private ImageView actiaLogo;
    
     @FXML
     private Pane paneId;
@@ -165,21 +163,6 @@ public class Controller implements Initializable{
     private Button reInitButton;
 
     @FXML
-    private Button addEltButton;
-
-    @FXML
-    private Button deleteEltButton;
-
-    @FXML
-    private Button updateEltButton;
-
-    @FXML
-    private Button addSubButton;
-
-    @FXML
-    private Button removeSubButton;
-
-    @FXML
     private Label lab1;
 
     @FXML
@@ -190,6 +173,9 @@ public class Controller implements Initializable{
 
     @FXML
     private Button saveDataButton;
+
+    @FXML
+    private MenuBar adminMenu;
 
 
 
@@ -478,7 +464,7 @@ public class Controller implements Initializable{
      */
     @FXML
     public void reInitConfig(ActionEvent action){
-        Config.serializeConfig("actia", "admin");
+        Config.serializeConfig("dev_bdt", "admin");
         Alert alert = new Alert(AlertType.INFORMATION);
         setAlert("Login réinitisalisé", "L'identifiant et le mot de passe de connexion ont bien été réinitialisés.", "Confirmation", alert);
     }
@@ -589,7 +575,7 @@ public class Controller implements Initializable{
         /*Si aucun element n'est sélectionné : erreur*/
         if(currentElement==null){
             Alert alert = new Alert(AlertType.WARNING);
-            setAlert("Erreur : aucun ensemble sélectionné", "Veuillez sélectionner un ensemble à modifier.", "Erreur", alert);
+            setAlert("Erreur : aucun produit sélectionné", "Veuillez sélectionner un produit à modifier.", "Erreur", alert);
         }
         /*Si un autre form est ouvert : erreur préventive*/
         else if(countOpenedForm>0){
@@ -615,12 +601,12 @@ public class Controller implements Initializable{
         /*Si aucun element n'est sélectionné*/
         if(currentElement==null){
             Alert alert = new Alert(AlertType.WARNING);
-            setAlert("Erreur : aucun ensemble sélectionné", "Veuillez sélectionner un ensemble à supprimer.", "Erreur", alert);
+            setAlert("Erreur : aucun produit sélectionné", "Veuillez sélectionner un produit à supprimer.", "Erreur", alert);
         }
         else{
             /*Si aucun formulaire de modification n'est ouvert*/
             if(countOpenedForm==0){
-                Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer l'ensemble'  " + currentElement.toString() +
+                Alert alert = new Alert(AlertType.CONFIRMATION, "Supprimer le produit " + currentElement.toString() +
                      " ? Toutes les données associées disparaitront avec lui (mots de passes, outils, etc).", ButtonType.YES, ButtonType.CANCEL);
                 alert.showAndWait(); 
                 if(alert.getResult()==ButtonType.YES){
@@ -1132,11 +1118,7 @@ public class Controller implements Initializable{
      * invisibles pour false
      */
     public void setDisplayModifButtons(Boolean displayed){
-        addEltButton.setVisible(displayed);
-        updateEltButton.setVisible(displayed);
-        deleteEltButton.setVisible(displayed);
-        addSubButton.setVisible(displayed);
-        removeSubButton.setVisible(displayed);
+        adminMenu.setVisible(displayed);
         saveDataButton.setVisible(displayed);
     }
 

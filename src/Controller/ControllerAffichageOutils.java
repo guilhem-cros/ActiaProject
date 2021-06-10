@@ -26,6 +26,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
@@ -78,9 +80,6 @@ public class ControllerAffichageOutils implements Initializable{
     /*Initialisation des objets XML utilisés*/
 
     @FXML
-    private ImageView logoActia;
-
-    @FXML
     private Label title;
 
     @FXML
@@ -99,28 +98,10 @@ public class ControllerAffichageOutils implements Initializable{
     private ComboBox<String> listMoyenGene;
 
     @FXML
-    private Button newColumnButt;
-
-    @FXML 
-    private Button newLineButton;
-
-    @FXML
-    private Button setRawButt;
-
-    @FXML
-    private Button setColButton;
-
-    @FXML
-    private Button deleteColButton;
-
-    @FXML
-    private Button deleteLineButton;
-
-    @FXML
-    private Button updateMoyenButton;
-
-    @FXML
     private Button saveDataButton;
+
+    @FXML
+    private MenuBar adminMenu;
 
 
     /**
@@ -416,12 +397,6 @@ public class ControllerAffichageOutils implements Initializable{
             sp.setVisible(false);
             emptyLabel.setText("Aucun outil de test correspondant à la recherche pour l'élément " + selectedElt.getCodeElt());
             emptyLabel.setVisible(true);
-            setColButton.setVisible(false);
-            setRawButt.setVisible(false);
-            newColumnButt.setVisible(false);
-            deleteColButton.setVisible(false);
-            updateMoyenButton.setVisible(false);
-            deleteLineButton.setVisible(false);
         }
         else{
             setVisibility();
@@ -587,13 +562,7 @@ public class ControllerAffichageOutils implements Initializable{
      */
     public void setVisibility(){
         boolean admin = Controller.isAdmin();
-        newColumnButt.setVisible(admin);
-        setRawButt.setVisible(admin);
-        setColButton.setVisible(admin);
-        deleteColButton.setVisible(admin);
-        newLineButton.setVisible(admin);
-        deleteLineButton.setVisible(admin);
-        updateMoyenButton.setVisible(admin);
+        adminMenu.setVisible(admin);
         saveDataButton.setVisible(admin);
     }
 
@@ -730,7 +699,7 @@ public class ControllerAffichageOutils implements Initializable{
      */
     public void shutDown(){
         if(listOutils.isEmpty()){
-            newLineButton.setVisible(false);
+            adminMenu.setVisible(false);
         }
         else{
             Controller.setAdmin(false);
