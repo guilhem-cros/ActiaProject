@@ -104,10 +104,10 @@ public class ControllerFormEnsembles implements Initializable{
     @FXML
     public void saveElement(ActionEvent action){
         /*Si les champs ne sons pas correctement remplis*/
-        if(codeField.getText().length()<3 || nameField.getText().length()<3){
+        if(codeField.getText().length()<3 || nameField.getText().length()<3 || codeField.getText().length()>9){
             Alert alert  = new Alert(AlertType.WARNING);
-            Controller.setAlert("Erreur : champs invalide(s)", "Veuillez saisir au moins 3 caractères pour chaque champs du formulaire", "Erreur", alert);
-        } 
+            Controller.setAlert("Erreur : champs invalide(s)", "Veuillez saisir au moins 3 caractères pour chaque champs du formulaire et moins de 9 caractère pour le code du produit.", "Erreur", alert);
+        }
         /*Si le remplissage des champs est correct*/
         else{
             if(isInt()){

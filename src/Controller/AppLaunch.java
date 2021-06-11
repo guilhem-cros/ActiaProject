@@ -30,7 +30,7 @@ public class AppLaunch {
             currentPath = folderPath;
         }
         catch (IOException e){
-            e.printStackTrace();;
+            e.printStackTrace();
         }
     }
 

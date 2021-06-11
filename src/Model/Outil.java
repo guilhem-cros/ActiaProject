@@ -1,6 +1,7 @@
 package Model;
 
 import Controller.AppLaunch;
+import Controller.Lanceur;
 import Controller.Controller;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -177,7 +178,7 @@ public class Outil implements Serializable{
 	 */
 	public static void serializeOrdre(ArrayList<Integer> ordre){
 		try {
-			FileOutputStream fichier = new FileOutputStream(AppLaunch.getCurrentPath() + "data/ordre.ser");
+			FileOutputStream fichier = new FileOutputStream(Lanceur.getCurrentPath() + "data/ordre.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fichier);
 			for(Integer index: ordre){
                 oos.writeObject(index);
@@ -197,7 +198,7 @@ public class Outil implements Serializable{
 		ArrayList<Integer> ordre = new ArrayList<Integer>();
         try (ObjectInputStream ois = 
 				new ObjectInputStream(
-						new FileInputStream(AppLaunch.getCurrentPath() + "data/ordre.ser"))) {
+						new FileInputStream(Lanceur.getCurrentPath() + "data/ordre.ser"))) {
 			/* Lecture du fichier*/
 			while (true) {
 				ordre.add((Integer) ois.readObject());

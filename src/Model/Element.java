@@ -1,6 +1,7 @@
 package Model;
 
 import Controller.AppLaunch;
+import Controller.Lanceur;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -384,7 +385,7 @@ public class Element implements Serializable {
      */
     public static void serializeAllElements(ArrayList<Element> allElements) {
         try {
-            FileOutputStream fichier = new FileOutputStream(AppLaunch.getCurrentPath() + "data/element.ser");
+            FileOutputStream fichier = new FileOutputStream(Lanceur.getCurrentPath() + "data/element.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fichier);
             //Tous les éléments de la liste sont sérializés dans le fichier précédent
             for (Element elt : allElements) {
@@ -405,7 +406,7 @@ public class Element implements Serializable {
         ArrayList<Element> list = new ArrayList<Element>();
         try (ObjectInputStream ois =
                      new ObjectInputStream(
-                             new FileInputStream(AppLaunch.getCurrentPath() + "data/element.ser"))) {
+                             new FileInputStream(Lanceur.getCurrentPath() + "data/element.ser"))) {
             // Lecture complète du fichier
             while (true) {
                 list.add((Element) ois.readObject());

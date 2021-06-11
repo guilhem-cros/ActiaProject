@@ -1,6 +1,7 @@
 package Model;
 
 import Controller.AppLaunch;
+import Controller.Lanceur;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -107,7 +108,7 @@ public class Colonne implements Serializable{
     */
    public static void serialCols(ArrayList<Colonne> columns){
        try {
-           FileOutputStream fichier = new FileOutputStream(AppLaunch.getCurrentPath() + "data/columns.ser");
+           FileOutputStream fichier = new FileOutputStream(Lanceur.getCurrentPath() + "data/columns.ser");
            ObjectOutputStream oos = new ObjectOutputStream(fichier);
            for(Colonne col : columns){
                oos.writeObject(col);
@@ -126,7 +127,7 @@ public class Colonne implements Serializable{
         ArrayList<Colonne> columns = new ArrayList<Colonne>();
         try (ObjectInputStream ois = 
 				new ObjectInputStream(
-						new FileInputStream(AppLaunch.getCurrentPath() + "data/columns.ser"))) {
+						new FileInputStream(Lanceur.getCurrentPath() + "data/columns.ser"))) {
 			/* Lecture du fichier*/
 			while (true) {
 				columns.add((Colonne) ois.readObject());

@@ -75,26 +75,6 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <Label fx:id="mdp" layoutX="258.0" layoutY="357.0" text="Mot de passe : " textFill="WHITE" visible="false">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <Button fx:id="backButton" layoutX="106.0" layoutY="677.0" mnemonicParsing="false" onAction="#backToMenu" text="Retour" visible="false">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Button>
-      <Button fx:id="confirmButton" layoutX="490.0" layoutY="539.0" mnemonicParsing="false" onAction="#confirmToConfig" prefWidth="100.0" text="Confirmer" visible="false">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Button>
-      <Label fx:id="infoConnect" layoutX="210.0" layoutY="186.0" maxWidth="660.0" prefWidth="660.0" text="Entrez les identifiants de connexion afin de pouvoir configurer le logiciel : " textAlignment="CENTER" textFill="WHITE" visible="false" wrapText="true">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Label>
       <PasswordField fx:id="password" layoutX="440.0" layoutY="351.0" prefHeight="36.0" prefWidth="200.0" visible="false">
          <font>
             <Font size="16.0" />
@@ -110,7 +90,7 @@
             <Font size="16.0" />
          </font>
       </PasswordField>
-      <Button fx:id="adminQuitButton" layoutX="870.0" layoutY="25.0" mnemonicParsing="false" onAction="#exitAdminMode" text="Quitter le mode Admin" visible="false">
+      <Button fx:id="confirmButton" layoutX="490.0" layoutY="539.0" mnemonicParsing="false" onAction="#confirmToConfig" prefWidth="100.0" text="Confirmer" visible="false">
          <font>
             <Font size="16.0" />
          </font>
@@ -120,6 +100,26 @@
             <Font size="14.0" />
          </font>
       </Button>
+      <Label fx:id="mdp" layoutX="258.0" layoutY="357.0" text="Mot de passe : " textFill="WHITE" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Button fx:id="backButton" layoutX="106.0" layoutY="677.0" mnemonicParsing="false" onAction="#backToMenu" text="Retour" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="adminQuitButton" layoutX="870.0" layoutY="25.0" mnemonicParsing="false" onAction="#exitAdminMode" text="Quitter le mode Admin" visible="false">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Label fx:id="infoConnect" layoutX="210.0" layoutY="186.0" maxWidth="660.0" prefWidth="660.0" text="Entrez les identifiants de connexion afin de pouvoir configurer le logiciel : " textAlignment="CENTER" textFill="WHITE" visible="false" wrapText="true">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
       <TextField fx:id="searchField" layoutX="607.0" layoutY="262.0" onMouseClicked="#clicOnSearch" prefHeight="25.0" prefWidth="300.0" promptText="Recherchez directement un ensemble">
          <font>
             <Font size="16.0" />

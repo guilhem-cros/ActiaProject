@@ -268,9 +268,14 @@ public class Controller implements Initializable{
                     }
                 }
                 else{
-                    event.consume();
-                    Alert alert = new Alert(AlertType.WARNING);
-                    setAlert("Données non sauvegardées", "Certaines modifications n'ont pas été enregistrées, veuillez cliquer sur Enregistrer avant de quitter.", "Sauvegarde", alert);
+                    Alert alert = new Alert(AlertType.CONFIRMATION, "Quitter sans enregistrer ?", ButtonType.YES, ButtonType.CANCEL);
+                    alert.showAndWait();
+                    if(alert.getResult()==ButtonType.YES){
+                        stage.close();
+                    }
+                    else{
+                        event.consume();
+                    }
                 }
             });
             stage.setTitle("Constitution Bancs de Test : " + currentElement.toString());
@@ -342,9 +347,14 @@ public class Controller implements Initializable{
                 }
                 /*Fermeture de fenêtre bloquée et message d'erreur si des données ne sont pas enregistrées*/
                 else{
-                    event.consume();
-                    Alert alert = new Alert(AlertType.WARNING);
-                    setAlert("Données non sauvegardées", "Certaines modifications n'ont pas été enregistrées, veuillez cliquer sur Enregistrer avant de quitter.", "Sauvegarde", alert);
+                    Alert alert = new Alert(AlertType.CONFIRMATION, "Quitter sans enregistrer ?", ButtonType.YES, ButtonType.CANCEL);
+                    alert.showAndWait();
+                    if(alert.getResult()==ButtonType.YES){
+                        stage.close();
+                    }
+                    else{
+                        event.consume();
+                    }
                 }
             });
             stage.setTitle("Mots de passe : " + currentElement.toString());
@@ -511,7 +521,7 @@ public class Controller implements Initializable{
     public void displayHelp(ActionEvent action){
         resetVisibility();
         Desktop desktop = Desktop.getDesktop();
-        File file = new File( AppLaunch.getCurrentPath() + "Manuel_utilisation.pdf");
+        File file = new File( Lanceur.getCurrentPath() + "Manuel_utilisation.pdf");
         try {
             desktop.open(file);
         } catch (IOException ioException) { //Onglet d'erreur dans le cas ou un fichier exsistant n'est pas ouvrable
